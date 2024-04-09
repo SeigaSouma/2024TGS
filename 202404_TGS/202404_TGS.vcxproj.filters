@@ -43,6 +43,9 @@
     <Filter Include="flower">
       <UniqueIdentifier>{ccdee1a1-66ed-49f0-ac21-a747e4e73e6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Input">
+      <UniqueIdentifier>{4c565aa9-f542-4696-a91e-bd40a00703a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Xload.cpp">
@@ -124,9 +127,6 @@
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\impactwave.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\input.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\instantfade.cpp">
@@ -384,6 +384,18 @@
     <ClCompile Include="Libraries\Imgui\implot_items.cpp">
       <Filter>Imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\input_gamepad.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\input_keyboard.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\input_mouse.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\input.cpp">
+      <Filter>Input</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Xload.h">
@@ -471,9 +483,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\impactwave.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\input.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\instantfade.h">
@@ -733,6 +742,18 @@
     </ClInclude>
     <ClInclude Include="Libraries\Imgui\imstb_truetype.h">
       <Filter>Imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\input_gamepad.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\input_keyboard.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\input_mouse.h">
+      <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\input.h">
+      <Filter>Input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

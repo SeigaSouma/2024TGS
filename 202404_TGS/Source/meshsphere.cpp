@@ -157,7 +157,7 @@ void CMeshSphere::Uninit()
 void CMeshSphere::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 向き取得
 	MyLib::Vector3 rot = GetRotation();

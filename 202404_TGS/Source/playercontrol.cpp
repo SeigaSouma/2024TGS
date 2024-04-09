@@ -23,8 +23,8 @@ namespace
 bool CPlayerControlAttack::IsAttack(CPlayer* player)
 {
 	// インプット情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	// 現在の種類取得
 	CMotion* pMotion = player->GetMotion();

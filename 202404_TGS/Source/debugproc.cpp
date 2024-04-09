@@ -103,7 +103,7 @@ void CDebugProc::Uninit()
 void CDebugProc::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 #if _DEBUG
 	if(pInputKeyboard->GetTrigger(DIK_F1) == true)

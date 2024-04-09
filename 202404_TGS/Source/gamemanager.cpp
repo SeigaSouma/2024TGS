@@ -100,11 +100,12 @@ HRESULT CGameManager::Init()
 
 #if _DEBUG
 	m_nNowStage = 0;			// 現在のステージ
+	m_SceneType = SceneType::SCENE_DEBUG;	// シーンの種類 
 #else
 	m_nNowStage = 0;			// 現在のステージ
+	m_SceneType = SceneType::SCENE_TRANSITION;	// シーンの種類 
 #endif
 
-	m_SceneType = SceneType::SCENE_TRANSITION;	// シーンの種類 
 
 	return S_OK;
 }
@@ -174,6 +175,10 @@ void CGameManager::Update()
 
 	case SceneType::SCENE_RESULT:
 		m_bControll = false;
+		break;
+
+	case SceneType::SCENE_DEBUG:
+		m_bControll = true;
 		break;
 
 	default:

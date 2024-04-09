@@ -37,7 +37,7 @@ namespace
 	const float TIME_LOAD = 2.0f;	// ロード時間
 
 #if _DEBUG
-	const CScene::MODE STARTMODE = CScene::MODE_TITLE;
+	const CScene::MODE STARTMODE = CScene::MODE_GAME;
 #else
 	const CScene::MODE STARTMODE = CScene::MODE_TITLE;
 #endif
@@ -54,10 +54,8 @@ CManager *CManager::m_pManager = nullptr;					// マネージャのオブジェクト
 CManager::CManager()
 {
 	m_pRenderer = nullptr;			// レンダラー
-	m_pInputKeyboard = nullptr;		// キーボード
-	m_pInputGamepad = nullptr;		// ゲームパッド
+	m_pInput = nullptr;				// 入力
 	m_pSound = nullptr;				// サウンド
-	m_pInputMouse = nullptr;		// マウス
 	m_pDebugProc = nullptr;			// デバッグ表示
 	m_pLight = nullptr;				// ライト
 	m_pCamera = nullptr;			// カメラ
@@ -140,71 +138,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	m_nNumPlayer = 0;		// プレイヤーの数
 
 	//**********************************
-	// キーボード
+	// 入力
 	//**********************************
-	if (m_pInputKeyboard != nullptr)
-	{// 確保されていたら
-		return E_FAIL;
-	}
-
-	// メモリ確保
-	m_pInputKeyboard = DEBUG_NEW CInputKeyboard;
-
-	if (m_pInputKeyboard != nullptr)
-	{// メモリの確保が出来ていたら
-
-		// 初期化処理
-		hr = m_pInputKeyboard->Init(hInstance, hWnd);
-		if (FAILED(hr))
-		{// 初期化処理が失敗した場合
-			return E_FAIL;
-		}
-	}
-	
-	//**********************************
-	// ゲームパッド
-	//**********************************
-	if (m_pInputGamepad != nullptr)
-	{// 確保されていたら
-		return E_FAIL;
-	}
-
-	// メモリ確保
-	m_pInputGamepad = DEBUG_NEW CInputGamepad;
-
-	if (m_pInputGamepad != nullptr)
-	{// メモリの確保が出来ていたら
-
-		// 初期化処理
-		hr = m_pInputGamepad->Init(hInstance, hWnd);
-		if (FAILED(hr))
-		{// 初期化処理が失敗した場合
-			return E_FAIL;
-		}
-	}
-
-
-	//**********************************
-	// マウス
-	//**********************************
-	if (m_pInputMouse != nullptr)
-	{// 確保されていたら
-		return E_FAIL;
-	}
-
-	// メモリ確保
-	m_pInputMouse = DEBUG_NEW CInputMouse;
-
-	if (m_pInputMouse != nullptr)
-	{// メモリの確保が出来ていたら
-
-		// 初期化処理
-		hr = m_pInputMouse->Init(hInstance, hWnd);
-		if (FAILED(hr))
-		{// 初期化処理が失敗した場合
-			return E_FAIL;
-		}
-	}
+	// 生成
+	m_pInput = CInput::Create(hInstance, hWnd);
 
 
 	//**********************************
@@ -556,40 +493,12 @@ void CManager::Uninit()
 	// BGMストップ
 	m_pSound->StopSound();
 
-	// キーボードの破棄
-	if (m_pInputKeyboard != nullptr)
+	// 入力機器の破棄
+	if (m_pInput != nullptr)
 	{// メモリの確保が出来ていたら
 
 		// 終了処理
-		m_pInputKeyboard->Uninit();
-
-		// メモリの開放
-		delete m_pInputKeyboard;
-		m_pInputKeyboard = nullptr;
-	}
-
-	// ゲームパッドの破棄
-	if (m_pInputGamepad != nullptr)
-	{// メモリの確保が出来ていたら
-
-		// 終了処理
-		m_pInputGamepad->Uninit();
-
-		// メモリの開放
-		delete m_pInputGamepad;
-		m_pInputGamepad = nullptr;
-	}
-
-	// マウスの破棄
-	if (m_pInputMouse != nullptr)
-	{// メモリの確保が出来ていたら
-
-		// 終了処理
-		m_pInputMouse->Uninit();
-
-		// メモリの開放
-		delete m_pInputMouse;
-		m_pInputMouse = nullptr;
+		m_pInput->Release();
 	}
 
 	// レンダラーの破棄
@@ -766,7 +675,8 @@ void CManager::Uninit()
 void CManager::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = GetInputKeyboard();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
+	CInputGamepad *pInputGamepad = CInputGamepad::GetInstance();
 
 	// 過去の時間保存
 	m_OldTime = m_CurrentTime;
@@ -865,16 +775,10 @@ void CManager::Update()
 			m_pBlackFrame->Update();
 		}
 
-		// キーボードの更新処理
-		m_pInputKeyboard->Update();
+		// 入力機器の更新処理
+		m_pInput->Update();
 
-		// ゲームパッドの更新処理
-		m_pInputGamepad->Update();
-
-		// マウスの更新処理
-		m_pInputMouse->Update();
-
-		if ((pInputKeyboard->GetTrigger(DIK_P) == true || m_pInputGamepad->GetTrigger(CInputGamepad::BUTTON_START, 0) == true) &&
+		if ((pInputKeyboard->GetTrigger(DIK_P) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_START, 0) == true) &&
 			m_pFade->GetState() == CFade::STATE_NONE &&
 			(GetMode() == CScene::MODE_GAME || GetMode() == CScene::MODE::MODE_GAMETUTORIAL))
 		{// フェード中じゃないとき
@@ -1063,30 +967,6 @@ void CManager::SetEnableHitStop(int nCntHitStop)
 CRenderer *CManager::GetRenderer()
 {
 	return m_pRenderer;
-}
-
-//==========================================================================
-// キーボードの取得
-//==========================================================================
-CInputKeyboard *CManager::GetInputKeyboard()
-{
-	return m_pInputKeyboard;
-}
-
-//==========================================================================
-// ゲームパッドの取得
-//==========================================================================
-CInputGamepad *CManager::GetInputGamepad()
-{
-	return m_pInputGamepad;
-}
-
-//==========================================================================
-// マウスの取得
-//==========================================================================
-CInputMouse *CManager::GetInputMouse()
-{
-	return m_pInputMouse;
 }
 
 //==========================================================================

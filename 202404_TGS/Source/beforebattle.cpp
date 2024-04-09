@@ -119,8 +119,8 @@ void CBeforeBattle::Uninit()
 void CBeforeBattle::Update()
 {
 	// “ü—Íî•ñŽæ“¾
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON::BUTTON_A, 0) ||
 		pInputGamepad->GetTrigger(CInputGamepad::BUTTON::BUTTON_B, 0) ||

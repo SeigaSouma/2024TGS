@@ -112,8 +112,8 @@ void CTutorial::Update()
 		"切り替え：【 F 】\n\n");
 
 	// 入力情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	if (CManager::GetInstance()->GetFade()->GetState() != CFade::STATE_NONE)
 	{// フェード中は抜ける

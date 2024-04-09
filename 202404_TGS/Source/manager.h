@@ -13,6 +13,10 @@
 #include "scene.h"
 #include "sound.h"
 
+#include "input_mouse.h"
+#include "input_keyboard.h"
+#include "input_gamepad.h"
+
 // マクロ定義
 #define MOVE_LRUP			(0.75f)	// 斜め上移動
 #define MOVE_LR				(0.5f)	// 水平移動
@@ -22,9 +26,7 @@
 class CRenderer;
 class CLight;
 class CCamera;
-class CInputKeyboard;
-class CInputGamepad;
-class CInputMouse;
+class CInput;
 class CSound;
 class CTexture;
 class CDebugProc;
@@ -62,9 +64,6 @@ public:
 	static CManager *GetInstance();	// インスタンス取得
 
 	CRenderer *GetRenderer();
-	CInputKeyboard *GetInputKeyboard();
-	CInputGamepad *GetInputGamepad();
-	CInputMouse *GetInputMouse();
 	CSound *GetSound();
 	CDebugProc *GetDebugProc();
 	CLight *GetLight();
@@ -95,9 +94,7 @@ private:
 	void NoLoadSetMode(CScene::MODE mode);		// 次のモード設定
 
 	CRenderer *m_pRenderer;				// レンダラー
-	CInputKeyboard *m_pInputKeyboard;	// キーボード
-	CInputGamepad *m_pInputGamepad;		// ゲームパッド
-	CInputMouse *m_pInputMouse;			// マウス
+	CInput*m_pInput;					// 入力機器
 	CSound *m_pSound;					// サウンド
 	CDebugProc *m_pDebugProc;			// デバッグ表示
 	CLight *m_pLight;					// ライト

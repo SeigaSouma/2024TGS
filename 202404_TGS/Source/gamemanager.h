@@ -35,6 +35,7 @@ public:
 		SCENE_TRANSITIONWAIT,	// 遷移待機
 		SCENE_TRANSITION,		// 転移
 		SCENE_RESULT,			// リザルト
+		SCENE_DEBUG,			// デバッグ
 		SCENE_MAX
 	};
 

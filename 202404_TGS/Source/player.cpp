@@ -138,7 +138,6 @@ CPlayer::CPlayer(int nPriority) : CObjectChara(nPriority)
 	m_bDash = false;								// ダッシュ判定
 	m_fDashTime = 0.0f;								// ダッシュ時間
 	m_fChargeTime = 0.0f;							// チャージ時間
-	m_fWalkTime = 0.0f;
 	m_bChargeCompletion = false;					// チャージ完了フラグ
 	m_nRespawnPercent = 0;							// リスポーン確率
 	m_bTouchBeacon = false;							// ビーコンに触れてる判定
@@ -222,8 +221,6 @@ HRESULT CPlayer::Init()
 	// かご生成
 	m_pBusket = CBusket::Create(10000);
 	CFlowerBud::Create(MyLib::Vector3(0.0f, 0.0f, GOAL_Z + 1000.0f), 10000, 10000);
-
-	m_fWalkTime = TIME_START_VELOCITY;
 
 	//// スキルポイント生成
 	//m_pSkillPoint = CSkillPoint::Create();
@@ -391,7 +388,7 @@ void CPlayer::Update()
 	}
 
 	// キーボード情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
 	if (pInputKeyboard->GetTrigger(DIK_F5) == true)
 	{// F5でリセット
 		SetPosition(MyLib::Vector3(0.0f, 0.0f, -1000.0f));
@@ -491,10 +488,10 @@ void CPlayer::Controll()
 {
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// ゲームパッド情報取得
-	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad *pInputGamepad = CInputGamepad::GetInstance();
 
 	// カメラの情報取得
 	CCamera *pCamera = CManager::GetInstance()->GetCamera();
@@ -536,62 +533,134 @@ void CPlayer::Controll()
 			m_state != STATE_DEADWAIT &&
 			m_state != STATE_FADEOUT)
 		{
-			//m_pControlAtk->Attack(this);		// 攻撃操作
-			//m_pControlDefence->Defence(this);	// 防御操作
-			//m_pControlAvoid->Avoid(this);		// 回避操作
+			m_pControlAtk->Attack(this);		// 攻撃操作
+			m_pControlDefence->Defence(this);	// 防御操作
+			m_pControlAvoid->Avoid(this);		// 回避操作
 		}
 		nMotionType = pMotion->GetType();
 		fRotDest = GetRotDest();
 
+		// ダッシュ判定
+		if (pInputGamepad->GetPress(CInputGamepad::BUTTON_LB, m_nMyPlayerIdx) &&
+			pInputGamepad->IsTipStick())
+		{// 左スティックが倒れてる場合
+			m_bDash = true;
+		}
+		else
+		{
+			m_bDash = false;
+		}
+
+		if (m_bDash)
+		{
+			// ダッシュ倍率掛ける
+			fMove *= MULTIPLIY_DASH;
+		}
+
 		if ((pMotion->IsGetMove(nMotionType) == 1 || pMotion->IsGetCancelable()) &&
 			!m_pControlAtk->IsReserve() &&
+			//!m_sMotionFrag.bATK &&
 			m_state != STATE_KNOCKBACK &&
 			m_state != STATE_DEAD &&
 			m_state != STATE_DEADWAIT &&
 			m_state != STATE_FADEOUT)
 		{// 移動可能モーションの時
 
-			if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON::BUTTON_LB, 0))
-			{// 左移動
+			if (pInputKeyboard->GetPress(DIK_A) == true)
+			{//←キーが押された,左移動
 
-				move.x -= sinf(D3DX_PI * 0.25f) * VELOCITY_SIDESTEP;
+				// 移動中にする
+				m_sMotionFrag.bMove = true;
+
+				if (pInputKeyboard->GetPress(DIK_W) == true)
+				{//A+W,左上移動
+
+					move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
+					move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
+					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+				}
+				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				{//A+S,左下移動
+
+					move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
+					move.z += cosf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
+					fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+				}
+				else
+				{//A,左移動
+
+					move.x += sinf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
+					move.z += cosf(-D3DX_PI * 0.5f + Camerarot.y) * fMove;
+					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+				}
 			}
-			else if (pInputGamepad->GetTrigger(CInputGamepad::BUTTON::BUTTON_RB, 0))
-			{// 右移動
+			else if (pInputKeyboard->GetPress(DIK_D) == true)
+			{//Dキーが押された,右移動
 
-				move.x += sinf(D3DX_PI * 0.25f) * VELOCITY_SIDESTEP;
+				// 移動中にする
+				m_sMotionFrag.bMove = true;
+
+				if (pInputKeyboard->GetPress(DIK_W) == true)
+				{//D+W,右上移動
+
+					move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
+					move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
+					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+				}
+				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				{//D+S,右下移動
+
+					move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
+					move.z += cosf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
+					fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+				}
+				else
+				{//D,右移動
+
+					move.x += sinf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
+					move.z += cosf(D3DX_PI * 0.5f + Camerarot.y) * fMove;
+					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+				}
 			}
+			else if (pInputKeyboard->GetPress(DIK_W) == true)
+			{//Wが押された、上移動
 
-			m_fWalkTime += CManager::GetInstance()->GetDeltaTime();
-			float ratio = m_fWalkTime / TIME_MAXVELOCITY;
-			UtilFunc::Transformation::ValueNormalize(ratio, 1.0f, 0.0f);
+				// 移動中にする
+				m_sMotionFrag.bMove = true;
+				move.x += sinf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
+				move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
+				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+			}
+			else if (pInputKeyboard->GetPress(DIK_S) == true)
+			{//Sが押された、下移動
 
-			if (m_bDash)
+				// 移動中にする
+				m_sMotionFrag.bMove = true;
+				move.x += sinf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
+				move.z += cosf(D3DX_PI * 1.0f + Camerarot.y) * fMove;
+				fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+			}
+			else
 			{
-				fMove *= MULTIPLIY_DASH;
-
-				CMyEffekseer::GetInstance()->SetEffect(
-					CMyEffekseer::EFKLABEL::EFKLABEL_BOOST,
-					GetCenterPosition(),
-					GetRotation(), 0.0f, 60.0f);
+				// 移動中かどうか
+				m_sMotionFrag.bMove = false;
 			}
 
-			move.z += cosf(D3DX_PI * 0.0f) * (fMove * ratio);
+			if (pInputGamepad->IsTipStick())
+			{// 左スティックが倒れてる場合
 
-			m_sMotionFrag.bMove = true;
+				// 移動中にする
+				m_sMotionFrag.bMove = true;
 
-			if (!m_bDash &&
-				pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, m_nMyPlayerIdx))
-			{
+				// スティックの向き取得
+				float stickrot = pInputGamepad->GetStickRotL(m_nMyPlayerIdx);
+				UtilFunc::Transformation::RotNormalize(stickrot);
 
-				CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_SE_WINGS);
-				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_BOOST);
-
-				m_bDash = true;
-				m_pBusket->Boost();
-				move.z += 10.0f;
+				// 移動量と向き設定
+				move.x += sinf(stickrot + Camerarot.y) * fMove;
+				move.z += cosf(stickrot + Camerarot.y) * fMove;
+				fRotDest = D3DX_PI + stickrot + Camerarot.y;
 			}
-
 
 			if (m_sMotionFrag.bMove &&
 				!m_bJump)
@@ -609,6 +678,68 @@ void CPlayer::Controll()
 					pMotion->Set(MOTION_WALK);
 				}
 			}
+
+			if (m_bJump == false &&
+				(pInputKeyboard->GetTrigger(DIK_SPACE) == true ||
+					pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, m_nMyPlayerIdx)) &&
+				!m_bTouchBeacon)
+			{// ジャンプ
+
+				m_bJump = true;
+				m_sMotionFrag.bJump = true;
+				move.y += 17.0f;
+
+				//pMotion->Set(MOTION_JUMP);
+
+				// サウンド再生
+				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
+			}
+		}
+		else if (pMotion->IsGetMove(nMotionType) == 0 &&
+			m_state != STATE_DEAD &&
+			m_state != STATE_FADEOUT)
+		{
+			if (pInputKeyboard->GetPress(DIK_A) == true)
+			{//←キーが押された,左移動
+
+				if (pInputKeyboard->GetPress(DIK_W) == true)
+				{//A+W,左上移動
+					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
+				}
+				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				{//A+S,左下移動
+					fRotDest = D3DX_PI * 0.25f + Camerarot.y;
+				}
+				else
+				{//A,左移動
+					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
+				}
+			}
+			else if (pInputKeyboard->GetPress(DIK_D) == true)
+			{//Dキーが押された,右移動
+
+				if (pInputKeyboard->GetPress(DIK_W) == true)
+				{//D+W,右上移動
+					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
+				}
+				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				{//D+S,右下移動
+					fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
+				}
+				else
+				{//D,右移動
+					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
+				}
+			}
+			else if (pInputKeyboard->GetPress(DIK_W) == true)
+			{//Wが押された、上移動
+				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
+			}
+			else if (pInputKeyboard->GetPress(DIK_S) == true)
+			{//Sが押された、下移動
+				fRotDest = D3DX_PI * 0.0f + Camerarot.y;
+			}
+
 		}
 
 		// 角度の正規化
@@ -617,8 +748,8 @@ void CPlayer::Controll()
 	}
 
 	// 移動量加算
-	newPosition.x += move.x;
-	newPosition.z += move.z;
+	newPosition.x += move.x * 0.1f;
+	newPosition.z += move.z * 0.1f;
 
 	sakiPos.x = newPosition.x + sinf(D3DX_PI + rot.y) * GetRadius();
 	sakiPos.z = newPosition.z + cosf(D3DX_PI + rot.y) * GetRadius();
@@ -699,7 +830,7 @@ void CPlayer::Controll()
 	}
 	else if (m_state != STATE_KNOCKBACK && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
 	{
-		move.x += (0.0f - move.x) * 0.008f;
+		move.x += (0.0f - move.x) * 0.015f;
 		move.z += (0.0f - move.z) * 0.015f;
 	}
 
@@ -753,6 +884,57 @@ void CPlayer::Controll()
 			}
 
 			pEnemy->SetEnableRockOn(false);
+		}
+	}
+
+	// エリア制限情報取得
+	CListManager<CObjectX> List = CObjectX::GetListObj();
+	CObjectX* pList = nullptr;
+	D3DXMATRIX pmat = GetWorldMtx();
+
+	sakiPos.x = pos.x + sinf(D3DX_PI + rot.y) * 1000.0f;
+	sakiPos.z = pos.z + cosf(D3DX_PI + rot.y) * 1000.0f;
+
+	MyLib::Vector3 linevec = sakiPos - pos;
+
+	CEffect3D::Create(
+		sakiPos,
+		MyLib::Vector3(0.0f, 0.0f, 0.0f),
+		D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),
+		40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+
+	CEffect3D::Create(
+		pos,
+		MyLib::Vector3(0.0f, 0.0f, 0.0f),
+		D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),
+		40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+
+	while (List.ListLoop(&pList))
+	{
+		MyLib::Vector3 OBpos = pList->GetPosition();
+		float len = pList->GetVtxMax().x;
+
+		MyLib::AABB aabb;
+		aabb.min = pList->GetVtxMin();
+		aabb.max = pList->GetVtxMax();
+
+		D3DXMATRIX mat = pList->GetWorldMtx();
+
+		float time = 0.0f;
+		// 方向ベクトルを取得
+		MyLib::Vector3 directionVector(pmat._31, pmat._32, pmat._33);
+		bool bHit = UtilFunc::Collision::CollisionRayAABB(&pos, &linevec, &aabb, &mat, time, &OBpos);
+
+		if (bHit) {
+			// デバッグ表示
+			CManager::GetInstance()->GetDebugProc()->Print(
+				"------------------[あたった！！！！！]------------------\n");
+
+			CEffect3D::Create(
+				OBpos,
+				MyLib::Vector3(0.0f, 0.0f, 0.0f),
+				D3DXCOLOR(1.0f, 0.6f, 0.2f, 1.0f),
+				40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 		}
 	}
 
@@ -935,8 +1117,8 @@ void CPlayer::MotionBySetState()
 	
 
 	// インプット情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 }
 
@@ -1013,7 +1195,7 @@ void CPlayer::SwitchRockOnTarget()
 	MyLib::Vector3 pos = GetPosition();
 
 	// ゲームパッド情報取得
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	// 敵のリスト取得
 	CListManager<CEnemy> enemyList = CEnemy::GetListObj();
@@ -1500,9 +1682,6 @@ MyLib::HitResult_Character CPlayer::ProcessHit(const int nValue, const MyLib::Ve
 		// 体力減らす
 		nLife -= nValue;
 
-		// 移動加速初期化
-		m_fWalkTime = TIME_START_VELOCITY;
-
 		// ダッシュ判定OFF
 		m_bDash = false;
 		m_pBusket->Lost();
@@ -1511,7 +1690,7 @@ MyLib::HitResult_Character CPlayer::ProcessHit(const int nValue, const MyLib::Ve
 		my_particle::Create(GetPosition() + MyLib::Vector3(0.0f, 100.0f, 0.0f), my_particle::TYPE_POLLENLOST);
 
 		// ゲームパッド情報取得
-		CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+		CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 		pInputGamepad->SetVibration(CInputGamepad::VIBRATION_STATE_DMG, 0);
 
 		// ノックバックする時
@@ -2137,32 +2316,7 @@ void CPlayer::StateFlowering()
 
 	SetMove(0.0f);
 
-	int nType = pMotion->GetType();
-	if (nType != MOTION::MOTION_FLOWERING)
-	{
-		pMotion->Set(MOTION::MOTION_FLOWERING);
-		m_fWalkTime = 0.0f;
-		m_posKnokBack = GetPosition();
-		//SetOriginPosition(GetPosition());
-		m_pBusket->SetDisp(false);
-	}
-
-	m_fWalkTime += CManager::GetInstance()->GetDeltaTime();
-
-	if (m_fWalkTime <= TIME_FLOWERING)
-	{
-		MyLib::Vector3 pos = GetPosition();
-		MyLib::Vector3 rot = GetRotation();
-		pos.x = UtilFunc::Correction::EasingLinear(m_posKnokBack.x, CFlowerBud::GetInstance()->GetPosition().x - 200.0f, 0.0f, TIME_FLOWERING, m_fWalkTime);
-		pos.z = UtilFunc::Correction::EasingLinear(m_posKnokBack.z, CFlowerBud::GetInstance()->GetPosition().z, 0.0f, TIME_FLOWERING, m_fWalkTime);
-		rot.y = UtilFunc::Correction::EasingLinear(D3DX_PI, D3DX_PI * 1.5f, 0.0f, TIME_FLOWERING, m_fWalkTime);
-		SetPosition(pos);
-		SetRotation(rot);
-		SetRotDest(rot.y);
-	}
-
-	if (nType == MOTION::MOTION_FLOWERING &&
-		pMotion->IsFinish())
+	if (pMotion->IsFinish())
 	{
 		m_state = STATE_AFTERFLOWERING;
 	}

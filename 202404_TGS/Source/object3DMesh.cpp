@@ -570,7 +570,7 @@ void CObject3DMesh::UPVtxField(MyLib::Vector3 pos)
 		"幅拡縮：[7, 8] 【%f, %f】\n", m_fWidthLen, m_fHeightLen);
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 頂点情報の設定
 	for (int nCntHeight = 0; nCntHeight < m_nHeight + 1; nCntHeight++)

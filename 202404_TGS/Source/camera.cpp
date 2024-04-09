@@ -22,6 +22,8 @@
 #include "limitarea.h"
 #include "pause.h"
 
+#include "objectX.h"
+
 //==========================================================================
 // マクロ定義
 //==========================================================================
@@ -213,7 +215,7 @@ void CCamera::Uninit()
 void CCamera::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 高さの差分リセット
 	m_fDiffHeightSave = 0.0f;
@@ -251,7 +253,11 @@ void CCamera::Update()
 	}
 	//#endif
 
-		// テキストの描画
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	MyLib::Vector3 pos = UtilFunc::Transformation::CalcScreenToXZ(pMouse->GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), m_mtxView, m_mtxProjection);
+
+	// テキストの描画
 	CManager::GetInstance()->GetDebugProc()->Print(
 		"---------------- カメラ情報 ----------------\n"
 		"【向き】[X：%f Y：%f Z：%f]\n"
@@ -262,6 +268,18 @@ void CCamera::Update()
 		m_fDistance,
 		m_posV.x, m_posV.y, m_posV.z,
 		m_posR.x, m_posR.y, m_posR.z);
+
+	// テキストの描画
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"---------------- カメラ情報 ----------------\n"
+		"【交差点】[X：%f Y：%f Z：%f]\n",
+		pos.x, pos.y, pos.z);
+
+	CEffect3D::Create(
+		pos,
+		MyLib::Vector3(0.0f, 0.0f, 0.0f),
+		D3DXCOLOR(1.0f, 0.0f, 1.0f, 1.0f),
+		80.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 }
 
 //==========================================================================
@@ -300,7 +318,7 @@ void CCamera::MoveCameraInput()
 //==========================================================================
 void CCamera::MoveCameraStick(int nIdx)
 {
-#if 0
+#if 1
 	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_GAME ||
 		CManager::GetInstance()->GetMode() == CScene::MODE::MODE_GAMETUTORIAL)
 	{
@@ -321,16 +339,16 @@ void CCamera::MoveCameraStick(int nIdx)
 //==========================================================================
 void CCamera::MoveCameraMouse()
 {
-#if 0
+#if 1
 
 	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_GAME ||
 		CManager::GetInstance()->GetMode() == CScene::MODE::MODE_GAMETUTORIAL)
 	{
 		// キーボード情報取得
-		CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+		CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
 
 		// キーボード情報取得
-		CInputMouse* pInputMouse = CManager::GetInstance()->GetInputMouse();
+		CInputMouse* pInputMouse = CInputMouse::GetInstance();
 
 		if (pInputMouse->GetPress(CInputMouse::BUTTON_LEFT) == true &&
 			pInputMouse->GetPress(CInputMouse::BUTTON_RIGHT) == true)
@@ -412,7 +430,7 @@ void CCamera::MoveCameraMouse()
 void CCamera::MoveCameraV()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 #ifdef _DEBUG
 	// 視点移動
@@ -458,7 +476,7 @@ void CCamera::MoveCameraV()
 void CCamera::MoveCameraR()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 #ifdef _DEBUG
 	// 旋回
@@ -1747,7 +1765,7 @@ void CStateCameraR_Prayer::SetCameraR(CCamera* pCamera)
 void CCameraControlState::MoveCamera(CCamera* pCamera)
 {
 	// ゲームパッド情報取得
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	MyLib::Vector3 moverot = pCamera->GetMoveRot();
 	MyLib::Vector3 rot = pCamera->GetRotation();
@@ -1784,7 +1802,7 @@ void CCameraControlState::MoveCamera(CCamera* pCamera)
 void CCameraControlState_RockOn::MoveCamera(CCamera* pCamera)
 {
 	// ゲームパッド情報取得
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	MyLib::Vector3 moverot = pCamera->GetMoveRot();
 	MyLib::Vector3 rot = pCamera->GetRotation();

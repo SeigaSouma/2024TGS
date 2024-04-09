@@ -203,7 +203,7 @@ void CElevation::Release()
 void CElevation::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	if (pInputKeyboard->GetTrigger(DIK_F3) == true)
 	{// 切り替え
@@ -449,7 +449,7 @@ void CElevation::UPVtxField(MyLib::Vector3 pos)
 		"起伏情報保存：  [F9]\n\n", m_fBrushRange, m_fBrushStrength, m_fWidthLen, m_fHeightLen);
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	if (pInputKeyboard->GetTrigger(DIK_F9) == true)
 	{// セーブ

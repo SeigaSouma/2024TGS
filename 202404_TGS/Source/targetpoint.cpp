@@ -165,10 +165,10 @@ void CTargetPoint::Control()
 	MyLib::Vector3 Camerarot = pCamera->GetRotation();
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// ゲームパッド情報取得
-	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad *pInputGamepad = CInputGamepad::GetInstance();
 
 	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(0).x < 0)
 	{//←キーが押された,左移動

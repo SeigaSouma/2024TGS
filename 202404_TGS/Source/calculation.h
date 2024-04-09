@@ -435,7 +435,6 @@ namespace UtilFunc	// 便利関数
 			return pos;
 		}
 
-		// 比率を計算する関数
 		/**
 		@brief	比率を計算
 		@param	size		[in]	二次元サイズ
@@ -1458,6 +1457,163 @@ namespace UtilFunc	// 便利関数
 
 			return false;
 		}
+
+		/**
+		@brief	レイと球の衝突判定(3D)
+		@param	rayPos				[in]	レイの始点
+		@param	rayVec				[in]	レイの方向ベクトル
+		@param	spherePos			[in]	球の中心点
+		@param	sphereRadius		[in]	球の半径
+		@return	衝突判定
+		*/
+		inline bool CollisionRaySphere(const MyLib::Vector3& rayPos, const MyLib::Vector3& rayVec,
+			const MyLib::Vector3& spherePos, float sphereRadius)
+		{
+			// 変換後の球座標
+			MyLib::Vector3 sphereCoord;
+			sphereCoord.x = rayPos.x - spherePos.x;
+			sphereCoord.y = rayPos.y - spherePos.y;
+			sphereCoord.z = rayPos.z - spherePos.z;
+
+			float A = rayVec.Dot(rayVec);
+			float B = sphereCoord.Dot(rayVec) * 2.0f;
+			float C = sphereCoord.Dot(rayVec) - (sphereRadius * sphereRadius);
+
+			if (A == 0.0f)
+				return false; // レイの長さが0
+
+			float s = B * B - 4 * A * C;
+			if (s < 0.0f)
+				return false; // 衝突していない
+
+			s = sqrtf(s);
+			float a1 = (B - s) / A;
+			float a2 = (B + s) / A;
+
+			if (a1 < 0.0f || a2 < 0.0f)
+				return false; // レイの反対で衝突
+
+			return true;
+		}
+
+		/**
+		@brief	レイと球の衝突判定(3D)
+		@param	rayPos				[in]	レイの始点
+		@param	rayVec				[in]	レイの方向ベクトル
+		@param	spherePos			[in]	球の中心点
+		@param	sphereRadius		[in]	球の半径
+		@param	collisionStartPoint	[in]	衝突開始点
+		@param	collisionEndPoint	[in]	衝突終了点
+		@return	衝突判定
+		*/
+		inline bool CollisionRaySphere(const MyLib::Vector3& rayPos, const MyLib::Vector3& rayVec, const MyLib::Vector3& spherePos,
+			float sphereRadius, MyLib::Vector3& collisionStartPoint, MyLib::Vector3& collisionEndPoint) 
+		{
+			// 変換後の球座標
+			MyLib::Vector3 sphereCoord;
+			sphereCoord.x = spherePos.x - rayPos.x;
+			sphereCoord.y = spherePos.y - rayPos.y;
+			sphereCoord.z = spherePos.z - rayPos.z;
+
+			float A = rayVec.x * rayVec.x + rayVec.y * rayVec.y + rayVec.z * rayVec.z;
+			float B = rayVec.x * sphereCoord.x + rayVec.y * sphereCoord.y + rayVec.z * sphereCoord.z;
+			float C = sphereCoord.x * sphereCoord.x + sphereCoord.y * sphereCoord.y + sphereCoord.z * sphereCoord.z - sphereRadius * sphereRadius;
+
+			if (A == 0.0f)
+				return false; // レイの長さが0
+
+			float s = B * B - A * C;
+			if (s < 0.0f)
+				return false; // 衝突していない
+
+			s = sqrtf(s);
+			float a1 = (B - s) / A;
+			float a2 = (B + s) / A;
+
+			if (a1 < 0.0f || a2 < 0.0f)
+				return false; // レイの反対で衝突
+
+			// 衝突開始・終了地点割り出し
+			collisionStartPoint.x = rayPos.x + a1 * rayVec.x;
+			collisionStartPoint.y = rayPos.y + a1 * rayVec.y;
+			collisionStartPoint.z = rayPos.z + a1 * rayVec.z;
+			collisionEndPoint.x = rayPos.x + a2 * rayVec.x;
+			collisionEndPoint.y = rayPos.y + a2 * rayVec.y;
+			collisionEndPoint.z = rayPos.z + a2 * rayVec.z;
+
+			return true;
+		}
+
+		/**
+		@brief	レイと直方体の衝突判定(3D)
+		@param	pos		[in]	レイの始点
+		@param	dir_w	[in]	レイの方向ベクトル
+		@param	aabb	[in]	境界ボックス（ローカル）
+		@param	mat		[in]	境界ボックスのワールド変換行列
+		@param	t		[in]	衝突間隔（出力）
+		@return		衝突判定
+		*/
+		inline bool CollisionRayAABB(MyLib::Vector3* pos, MyLib::Vector3* dir_w, MyLib::AABB* aabb, D3DXMATRIX* mat, float& t, MyLib::Vector3* colPos = 0)
+		{
+
+			// レイを境界ボックスの位置へ移動
+			D3DXMATRIX invMat;
+			D3DXMatrixInverse(&invMat, 0, mat);
+
+			MyLib::Vector3 p_l, dir_l;
+			D3DXVec3TransformCoord(&p_l, pos, &invMat);
+			invMat._41 = 0.0f;
+			invMat._42 = 0.0f;
+			invMat._43 = 0.0f;
+			D3DXVec3TransformCoord(&dir_l, dir_w, &invMat);
+
+			// 交差判定
+			float p[3], d[3], min[3], max[3];
+			memcpy(p, &p_l, sizeof(MyLib::Vector3));
+			memcpy(d, &dir_l, sizeof(MyLib::Vector3));
+			memcpy(min, &aabb->min, sizeof(MyLib::Vector3));
+			memcpy(max, &aabb->max, sizeof(MyLib::Vector3));
+
+			t = -FLT_MAX;
+			float t_max = FLT_MAX;
+
+			for (int i = 0; i < 3; ++i) 
+			{
+				if (abs(d[i]) < FLT_EPSILON) 
+				{
+					if (p[i] < min[i] || p[i] > max[i])
+						return false;	// 交差していない
+				}
+				else 
+				{
+					// スラブとの距離を算出
+					// t1が近スラブ、t2が遠スラブとの距離
+					float odd = 1.0f / d[i];
+					float t1 = (min[i] - p[i]) * odd;
+					float t2 = (max[i] - p[i]) * odd;
+
+					if (t1 > t2) {
+						float tmp = t1; t1 = t2; t2 = tmp;
+					}
+
+					if (t1 > t) t = t1;
+					if (t2 < t_max) t_max = t2;
+
+					// スラブ交差チェック
+					if (t >= t_max)
+						return false;
+				}
+			}
+
+			// 交差している
+			if (colPos) {
+				*colPos = *pos + t * (*dir_w);
+			}
+
+			return true;
+		}
+
+
 	}
 
 	/**
@@ -1702,6 +1858,82 @@ namespace UtilFunc	// 便利関数
 		}
 
 		/**
+		@brief	スクリーン座標をワールド座標に変換
+		@param	Sx			[in]	スクリーンX座標
+		@param	Sy			[in]	スクリーンY座標
+		@param	fZ			[in]	射影空間でのZ値（0～1）
+		@param	ScreenSize	[in]	スクリーンサイズ
+		@param	View		[in]	ビューマトリックス
+		@param	Prj			[in]	プロジェクションマトリックス
+		@return	二次元サイズ
+		*/
+		inline MyLib::Vector3 CalcScreenToWorld(
+			int Sx, int Sy, float fZ,
+			D3DXVECTOR2 ScreenSize,
+			D3DXMATRIX View, D3DXMATRIX Prj) 
+		{
+			MyLib::Vector3 pos;
+
+			// 各行列の逆行列を算出
+			D3DXMATRIX InvView, InvPrj, VP, InvViewport;
+			D3DXMatrixInverse(&InvView, NULL, &View);
+			D3DXMatrixInverse(&InvPrj, NULL, &Prj);
+			D3DXMatrixIdentity(&VP);
+			VP._11 = ScreenSize.x / 2.0f;
+			VP._22 = -ScreenSize.y / 2.0f;
+			VP._41 = ScreenSize.x / 2.0f;
+			VP._42 = ScreenSize.y / 2.0f;
+			D3DXMatrixInverse(&InvViewport, NULL, &VP);
+
+			// 逆変換
+			D3DXMATRIX tmp = InvViewport * InvPrj * InvView;
+
+			// 変換後の座標に変換
+			MyLib::Vector3 screenPos(static_cast<float>(Sx), static_cast<float>(Sy), fZ);
+			D3DXVec3TransformCoord(&pos, &screenPos, &tmp);
+
+			return pos;
+		}
+
+		// XZ平面とスクリーン座標の交点算出関数
+		inline MyLib::Vector3  CalcScreenToXZ(
+			D3DXVECTOR2 mousepos,
+			D3DXVECTOR2 ScreenSize,
+			D3DXMATRIX View, D3DXMATRIX Prj)
+		{
+			MyLib::Vector3 pos;
+
+			MyLib::Vector3 nearpos;
+			MyLib::Vector3 farpos;
+			MyLib::Vector3 ray;
+
+			int Sx = static_cast<int>(mousepos.x), Sy = static_cast<int>(mousepos.y);
+			nearpos = CalcScreenToWorld(Sx, Sy, 0.0f, ScreenSize, View, Prj);
+			farpos = CalcScreenToWorld(Sx, Sy, 1.0f, ScreenSize, View, Prj);
+			ray = farpos - nearpos;
+			D3DXVec3Normalize(&ray, &ray);
+
+			// 床との交差が起きている場合は交点を
+			// 起きていない場合は遠くの壁との交点を出力
+			if (ray.y <= 0) {
+
+				MyLib::Vector3 planevec(0.0f, 1.0f, 0.0f);
+
+				// 床交点
+				float Lray = ray.Dot(planevec);
+
+				MyLib::Vector3 transNearPos = -nearpos;
+				float LP0 = transNearPos.Dot(planevec);
+				pos = nearpos + (LP0 / Lray) * ray;
+			}
+			else {
+				pos = farpos;
+			}
+
+			return pos;
+		}
+
+		/**
 		@brief	HSV値をRGB値に変換
 		@details https://ja.wikipedia.org/wiki/HSV%E8%89%B2%E7%A9%BA%E9%96%93
 		@param	H	[in]	色相
@@ -1830,6 +2062,7 @@ namespace UtilFunc	// 便利関数
 			}
 			return str;
 		}
+
 	}
 
 }

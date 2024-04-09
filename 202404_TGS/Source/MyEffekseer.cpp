@@ -280,7 +280,7 @@ void CMyEffekseer::Update()
 	{
 
 		// キーボード情報取得
-		CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+		CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
 		float size = 10.0f;
 
 		for (int i = 0; i < static_cast<int>(m_EffectObj.size()); i++)

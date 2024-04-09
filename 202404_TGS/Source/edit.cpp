@@ -152,7 +152,7 @@ void CEdit::Release()
 void CEdit::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 位置取得
 	MyLib::Vector3 pos = m_pObjX->GetPosition();
@@ -212,7 +212,7 @@ void CEdit::Control(CObjectX *pObjX)
 	MyLib::Vector3 Camerarot = pCamera->GetRotation();
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 位置取得
 	MyLib::Vector3 pos = pObjX->GetPosition();
@@ -393,7 +393,7 @@ void CEdit::ChangeType()
 	int nNumAll = MyMap::GetNumModelAll();
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 配置するオブジェクト変更
 	if (pInputKeyboard->GetTrigger(DIK_1) == true)
@@ -434,7 +434,7 @@ void CEdit::GrabModel()
 {
 #if TOPCUR
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
 	{

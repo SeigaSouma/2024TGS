@@ -124,7 +124,7 @@ void CEditEnemyBase::Release()
 void CEditEnemyBase::Update()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 操作
 	Control(m_pos);
@@ -205,7 +205,7 @@ void CEditEnemyBase::Control(MyLib::Vector3 &pos)
 	MyLib::Vector3 Camerarot = pCamera->GetRotation();
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	if (pInputKeyboard->GetPress(DIK_LEFT) == true)
 	{// ←キーが押された,左移動
@@ -343,7 +343,7 @@ void CEditEnemyBase::ChangeType()
 	int nNumAll = CGame::GetInstance()->GetEnemyManager()->GetPatternNum();
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 配置するオブジェクト変更
 	bool bChange = false;
@@ -417,7 +417,7 @@ void CEditEnemyBase::Grab()
 {
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 敵の拠点の取得
 	CEnemyBase *pEnemyBase = CGame::GetInstance()->GetEnemyBase();
@@ -453,7 +453,7 @@ void CEditEnemyBase::Grab()
 void CEditEnemyBase::Delete()
 {
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 敵の拠点の取得
 	CEnemyBase *pEnemyBase = CGame::GetInstance()->GetEnemyBase();

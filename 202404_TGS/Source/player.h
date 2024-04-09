@@ -252,7 +252,6 @@ private:
 	bool m_bDash;					// ダッシュ判定
 	float m_fDashTime;				// ダッシュ時間
 	float m_fChargeTime;			// チャージ時間
-	float m_fWalkTime;				
 	bool m_bChargeCompletion;		// チャージ完了フラグ
 	int m_nRespawnPercent;			// リスポーン確率
 	bool m_bTouchBeacon;			// ビーコンに触れてる判定

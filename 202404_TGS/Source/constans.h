@@ -22,6 +22,7 @@ namespace mylib_const
 	const int PRIORITY_DEFAULT = 3;		// 優先順位のデフォルト
 	const int PRIORITY_DEF2D = 4;		// 優先順位の2Dデフォルト
 	const int PRIORITY_ZSORT = 10;		// Zソート専用の優先順位
+	const int NUM_KEY_MAX = 256;		// キーの最大数
 	const int MAX_STRING = 512;			// 最大文字数
 	const int MAX_MODEL = 64;			// モデル最大数
 	const int MAX_PARTS = 32;			// パーツ最大数

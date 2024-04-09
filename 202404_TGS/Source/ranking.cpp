@@ -82,10 +82,10 @@ void CRanking::Update()
 		"切り替え：【 F 】\n\n");
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// ゲームパッド情報取得
-	CInputGamepad *pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad *pInputGamepad = CInputGamepad::GetInstance();
 
 	// 切り替えのカウンター加算
 	m_nCntSwitch++;

@@ -159,7 +159,7 @@ void CRenderer::Draw()
 	static bool bDisp = true;
 
 	// キーボード情報取得
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 //#if _DEBUG
 	if (pInputKeyboard->GetTrigger(DIK_F1) == true)

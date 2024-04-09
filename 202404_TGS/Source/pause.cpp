@@ -235,10 +235,10 @@ void CPause::UpdateColor()
 void CPause::UpdateSelect()
 {
 	// キーボード情報取得
-	CInputKeyboard* pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// ゲームパッド情報取得
-	CInputGamepad* pInputGamepad = CManager::GetInstance()->GetInputGamepad();
+	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
 	if (pInputKeyboard->GetTrigger(DIK_W) == true ||
 		pInputGamepad->GetTrigger(CInputGamepad::BUTTON::BUTTON_UP, 0) ||

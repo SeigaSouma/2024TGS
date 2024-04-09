@@ -223,9 +223,9 @@ namespace MyLib
 		@brief	内積
 		@return	2つのベクトルの内積
 		*/
-		Vector3 Dot(const Vector3& v) const
+		float Dot(const Vector3& v) const
 		{
-			return Vector3(x * v.x + y * v.y + z * v.z);
+			return x * v.x + y * v.y + z * v.z;
 		}
 
 		/**
@@ -320,6 +320,15 @@ namespace MyLib
 		// パラメータ付きコンストラクタ
 		HitResult_Character(bool bHit, bool bDamage, bool bDeath, MyLib::Vector3 pos) : 
 			ishit(bHit), isdamage(bDamage), isdeath(bDeath), hitpos(pos) {}
+	};
+
+	/**
+	@brief	AABB【ボックス情報】
+	*/
+	struct AABB 
+	{
+		MyLib::Vector3 min;
+		MyLib::Vector3 max;
 	};
 }
 

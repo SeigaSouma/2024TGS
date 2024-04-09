@@ -21,6 +21,8 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
+#define CLASS_NAME		"WindowsClass"	// ウインドウクラスの名前
+#define WINDOW_NAME		"TGS2024"	// ウインドウの名前(キャプション)
 #define SCREEN_WIDTH		(1280)		// ウインドウの幅
 #define SCREEN_HEIGHT		(720)		// ウインドウの高さ
 #define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)	// 頂点フォーマット
