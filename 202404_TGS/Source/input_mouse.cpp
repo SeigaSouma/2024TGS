@@ -28,6 +28,8 @@ CInputMouse::CInputMouse()
 	memset(&m_MouseStateRerease, 0, sizeof(XINPUT_STATE));
 	memset(&m_MouseStateRepeat, 0, sizeof(XINPUT_STATE));
 	memset(&m_aOldState, 0, sizeof(m_aOldState));	// 前回の入力情報
+	m_pViewMtx = nullptr;	// ビューマトリックス
+	m_pPrjMtx = nullptr;	// プロジェクションマトリックス
 }
 
 //==========================================================================
@@ -179,3 +181,41 @@ D3DXVECTOR2 CInputMouse::GetPosition()
 	return D3DXVECTOR2(m_pos.x, m_pos.y);
 }
 
+//==========================================================================
+// レイの始点取得
+//==========================================================================
+MyLib::Vector3 CInputMouse::GetNearPosition()
+{
+	return m_NearPos;
+}
+
+//==========================================================================
+// レイ取得
+//==========================================================================
+MyLib::Vector3 CInputMouse::GetRay()
+{
+	if (m_pViewMtx == nullptr ||
+		m_pPrjMtx == nullptr) {
+		return MyLib::Vector3();
+	}
+
+	MyLib::Vector3 farpos;
+	MyLib::Vector3 ray;
+
+	int Sx = static_cast<int>(m_pos.x), Sy = static_cast<int>(m_pos.y);
+	m_NearPos = UtilFunc::Transformation::CalcScreenToWorld(Sx, Sy, 0.0f, D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
+	farpos = UtilFunc::Transformation::CalcScreenToWorld(Sx, Sy, 1.0f, D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
+	ray = farpos - m_NearPos;
+	ray = ray.Normal();
+
+	return ray.Normal();
+}
+
+//==========================================================================
+// カメラマトリックス設定
+//==========================================================================
+void CInputMouse::SetCameraMtx(D3DXMATRIX* viewMtx, D3DXMATRIX* prjMtx)
+{
+	m_pViewMtx = viewMtx;
+	m_pPrjMtx = prjMtx;
+}

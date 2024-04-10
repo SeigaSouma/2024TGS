@@ -327,9 +327,17 @@ namespace MyLib
 	*/
 	struct AABB 
 	{
-		MyLib::Vector3 min;
-		MyLib::Vector3 max;
+		MyLib::Vector3 vtxMin;	// 最小値
+		MyLib::Vector3 vtxMax;	// 最大値
+
+		// デフォルトコンストラクタ
+		AABB() : vtxMin(), vtxMax() {}
+
+		// パラメータ付きコンストラクタ
+		AABB(const MyLib::Vector3& min, const MyLib::Vector3& max) : vtxMin(min), vtxMax(max) {}
 	};
+
+	
 }
 
 

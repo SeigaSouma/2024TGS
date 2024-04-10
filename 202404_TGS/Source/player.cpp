@@ -909,32 +909,50 @@ void CPlayer::Controll()
 		D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),
 		40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
 
+	MyLib::Vector3 mouseRay = CInputMouse::GetInstance()->GetRay();
+	MyLib::Vector3 mousePos = CInputMouse::GetInstance()->GetNearPosition();
+	
+
 	while (List.ListLoop(&pList))
 	{
 		MyLib::Vector3 OBpos = pList->GetPosition();
 		float len = pList->GetVtxMax().x;
 
 		MyLib::AABB aabb;
-		aabb.min = pList->GetVtxMin();
-		aabb.max = pList->GetVtxMax();
+		aabb.vtxMin = pList->GetVtxMin();
+		aabb.vtxMax = pList->GetVtxMax();
 
 		D3DXMATRIX mat = pList->GetWorldMtx();
 
 		float time = 0.0f;
 		// 方向ベクトルを取得
 		MyLib::Vector3 directionVector(pmat._31, pmat._32, pmat._33);
-		bool bHit = UtilFunc::Collision::CollisionRayAABB(&pos, &linevec, &aabb, &mat, time, &OBpos);
+		bool bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mat, time, &OBpos);
+
+		// テキストの描画
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"---------------- マウス情報 ----------------\n"
+			"【レイ】[X：%f Y：%f Z：%f]\n",
+			mouseRay.x, mouseRay.y, mouseRay.z);
+
+		// テキストの描画
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"【位置】[X：%f Y：%f Z：%f]\n",
+			mousePos.x, mousePos.y, mousePos.z);
 
 		if (bHit) {
 			// デバッグ表示
 			CManager::GetInstance()->GetDebugProc()->Print(
 				"------------------[あたった！！！！！]------------------\n");
 
-			CEffect3D::Create(
-				OBpos,
-				MyLib::Vector3(0.0f, 0.0f, 0.0f),
-				D3DXCOLOR(1.0f, 0.6f, 0.2f, 1.0f),
-				40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+			for (int i = 0; i < 4; i++)
+			{
+				CEffect3D::Create(
+					OBpos,
+					MyLib::Vector3(0.0f, 0.0f, 0.0f),
+					D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f),
+					40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+			}
 		}
 	}
 

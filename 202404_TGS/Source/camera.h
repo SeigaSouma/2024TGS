@@ -109,7 +109,9 @@ public:
 
 	MyLib::Vector3 GetTargetRotation();			// ’Ç]–Ú•W‚ÌŒü‚«æ“¾
 	D3DXMATRIX GetMtxView() { return m_mtxView; }
+	D3DXMATRIX* GetMtxViewPtr() { return &m_mtxView; }
 	D3DXMATRIX GetMtxProjection() { return m_mtxProjection; }
+	D3DXMATRIX* GetMtxProjectionPtr() { return &m_mtxProjection; }
 
 	void SetShake(int nTime, float fLength, float fLengthY);	// U“®İ’è
 

@@ -1571,8 +1571,8 @@ namespace UtilFunc	// •Ö—˜ŠÖ”
 			float p[3], d[3], min[3], max[3];
 			memcpy(p, &p_l, sizeof(MyLib::Vector3));
 			memcpy(d, &dir_l, sizeof(MyLib::Vector3));
-			memcpy(min, &aabb->min, sizeof(MyLib::Vector3));
-			memcpy(max, &aabb->max, sizeof(MyLib::Vector3));
+			memcpy(min, &aabb->vtxMin, sizeof(MyLib::Vector3));
+			memcpy(max, &aabb->vtxMax, sizeof(MyLib::Vector3));
 
 			t = -FLT_MAX;
 			float t_max = FLT_MAX;
