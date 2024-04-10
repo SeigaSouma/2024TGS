@@ -147,11 +147,11 @@ void CInputMouse::Update()
 	UtilFunc::Transformation::ValueNormalize(y, 720, 0);
 	m_pos.x = x, m_pos.y = y;
 
-		// テキストの描画
-		CManager::GetInstance()->GetDebugProc()->Print(
-			"---------------- マウス情報 ----------------\n"
-			"【位置】[X：%d Y：%d]\n",
-			m_pos.x, m_pos.y);
+	// テキストの描画
+	CManager::GetInstance()->GetDebugProc()->Print(
+		"---------------- マウス情報 ----------------\n"
+		"【位置】[X：%d Y：%d]\n",
+		m_pos.x, m_pos.y);
 }
 
 //==========================================================================
@@ -182,6 +182,14 @@ D3DXVECTOR2 CInputMouse::GetPosition()
 }
 
 //==========================================================================
+// 位置取得
+//==========================================================================
+MyLib::Vector3 CInputMouse::GetWorldPosition()
+{
+	return m_WorldPos = UtilFunc::Transformation::CalcScreenToXZ(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
+}
+
+//==========================================================================
 // レイの始点取得
 //==========================================================================
 MyLib::Vector3 CInputMouse::GetNearPosition()
@@ -206,8 +214,6 @@ MyLib::Vector3 CInputMouse::GetRay()
 	m_NearPos = UtilFunc::Transformation::CalcScreenToWorld(Sx, Sy, 0.0f, D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
 	farpos = UtilFunc::Transformation::CalcScreenToWorld(Sx, Sy, 1.0f, D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
 	ray = farpos - m_NearPos;
-	ray = ray.Normal();
-
 	return ray.Normal();
 }
 

@@ -46,6 +46,9 @@
     <Filter Include="Input">
       <UniqueIdentifier>{4c565aa9-f542-4696-a91e-bd40a00703a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="edit">
+      <UniqueIdentifier>{13b311fc-e62b-41e4-85d8-4d9a470aca1b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Xload.cpp">
@@ -395,6 +398,9 @@
     </ClCompile>
     <ClCompile Include="Source\input.cpp">
       <Filter>Input</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\edit_map.cpp">
+      <Filter>edit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -754,6 +760,9 @@
     </ClInclude>
     <ClInclude Include="Source\input.h">
       <Filter>Input</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\edit_map.h">
+      <Filter>edit</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

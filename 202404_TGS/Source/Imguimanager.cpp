@@ -6,8 +6,17 @@
 //==========================================================================
 #include "Imguimanager.h"
 #include "main.h"
+#include "manager.h"
 
 using namespace ImguiMgr;
+
+LPDIRECT3DTEXTURE9 texture;
+
+// ImGuiでテクスチャを表示
+ImVec2 imageSize;
+
+int textureWidth;
+int textureHeight;
 
 //==========================================================================
 // 初期化処理
@@ -49,6 +58,38 @@ void ImguiMgr::Init(HWND hwnd, LPDIRECT3DDEVICE9 pd3dDevice)
 	// プラットフォームの設定
 	ImGui_ImplWin32_Init(hwnd);
 	ImGui_ImplDX9_Init(pd3dDevice);
+
+
+
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevive = CManager::GetInstance()->GetRenderer()->GetDevice();
+	
+	// 画像のロード
+	HRESULT hr = D3DXCreateTextureFromFileEx(pDevive, "data\\TEXTURE\\forest_01.png", 0, 0, 0, 0, D3DFMT_UNKNOWN,
+		D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255),
+		NULL, NULL, &texture);
+
+	D3DSURFACE_DESC desc;
+	texture->GetLevelDesc(0, &desc);
+	textureWidth = desc.Width;
+	textureHeight = desc.Height;
+
+	imageSize = ImVec2(50, 50);
+
+	//if (SUCCEEDED(hr))
+	//{
+	//	// ImGuiでテクスチャを表示
+	//	ImVec2 imageSize(static_cast<float>(50), static_cast<float>(50));
+
+	//	if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(texture), imageSize))
+	//	{
+	//		// ドラッグ操作の開始
+	//		ImGui::SetDragDropPayload("MY_TEXTURE_TYPE", &texture, sizeof(LPDIRECT3DTEXTURE9));
+	//	}
+
+	//	// テクスチャの解放
+	//	texture->Release();
+	//}
 }
 
 //==========================================================================
@@ -73,7 +114,7 @@ void ImguiMgr::Update()
 	ImGui::NewFrame();
 
 
-#if 0
+#if 1
 	// ここにImguiのGUI要素を追加
 	ImGui::Text("Hello, ImGui!");
 	ImGui::Separator();
@@ -149,26 +190,93 @@ void ImguiMgr::Update()
 		float x, y;
 	};
 
-	// ドラッグ元
-	if (ImGui::BeginDragDropSource())
+	// ドラッグ可能な要素の描画
+
+	// ImGui::IsMouseDragging(0);	// ドラッグ中
+	
+	if (ImGui::Button("Drag me"))
+	{
+		//// ドラッグ操作の開始
+		//ImGui::SetDragDropPayload("MY_COORDINATE_TYPE", NULL, 0);
+	}
+
+	bool bDrag = false;
+	if (ImGui::IsItemHovered() && ImGui::IsMouseDown(0))
+	{
+		int n = 0;
+		bDrag = true;
+	}
+
+	
+
+	ImGuiDragDropFlags src_flags = 0;
+	src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
+	src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
+	//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
+	if (ImGui::BeginDragDropSource(src_flags))
 	{
 		static MyDragData dragData = { 10.0f, 20.0f }; // 例として座標データを設定
 		ImGui::SetDragDropPayload("MY_COORDINATE_TYPE", &dragData, sizeof(MyDragData));
-		ImGui::Text("Drag me!");
+		ImGui::Text("KOKOOOOOO");
 		ImGui::EndDragDropSource();
 	}
 
-	// ドロップ先
 	if (ImGui::BeginDragDropTarget())
 	{
+		// ドロップが受け入れられた場合の処理
 		if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("MY_COORDINATE_TYPE"))
 		{
 			// ドロップが受け入れられたときの処理
 			static const MyDragData* receivedData = reinterpret_cast<const MyDragData*>(payload->Data);
 			// receivedDataを使用して何かしらの処理を行う
 		}
-		ImGui::EndDragDropTarget();
 	}
+
+	if (ImGui::IsWindowHovered())
+	{
+		ImGui::Text("WINDOWNAI");
+		int n = 0;
+	}
+	
+
+	// ドラッグ可能な要素の描画
+	if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(texture), imageSize))
+	{
+
+	}
+
+
+	if (ImGui::BeginDragDropSource(src_flags))
+	{
+		static MyDragData dragData = { 10.0f, 20.0f }; // 例として座標データを設定
+		ImGui::SetDragDropPayload("MY_COORDINATE_TYPE", &dragData, sizeof(MyDragData));
+		ImGui::Text("KOKOOOOOO");
+		ImGui::EndDragDropSource();
+	}
+
+	/*ImVec2 mousePos = ImGui::GetIO().MousePos;
+	ImGui::SetNextWindowPos(mousePos);
+	ImGui::Begin("Preview Window", NULL, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+	ImGui::Text("Preview");
+	ImGui::End();*/
+
+	static ImVec2 s_RectanglePos = ImVec2(50, 50); // 矩形の初期位置
+
+	//// ドラッグ可能な矩形を描画
+	//ImGui::SetCursorScreenPos(s_RectanglePos);
+	//ImGui::Button("Draggable Rectangle", ImVec2(100, 50));
+
+	//// ドラッグアンドドロップイベントを処理
+	//if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+	//	// ドラッグ中の処理
+	//	ImVec2 delta = ImGui::GetIO().MouseDelta;
+	//	s_RectanglePos.x += delta.x;
+	//	s_RectanglePos.y += delta.y;
+	//}
+
+	//ImDrawList* drawList = ImGui::GetWindowDrawList();
+	//ImVec4 color = ImVec4(1.0f, 1.0f, 1.0f, 0.5f); // 透明度を指定
+	//drawList->AddRectFilled(ImVec2(1280.0f, 720.0f), ImVec2(50.0f + 1280.0f, 50.0f + 720.0f), IM_COL32(color.x * 255, color.y * 255, color.z * 255, color.w * 255));
 
 
 	// グループ

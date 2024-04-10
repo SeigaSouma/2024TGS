@@ -370,7 +370,9 @@ bool CObject::ZSort(const CObject *obj1, const CObject *obj2)
 	return bSort;
 }
 
+//==========================================================================
 // 描画設定
+//==========================================================================
 void CObject::SetEnableDisp(bool bDisp)
 {
 	m_bDisp = bDisp;
@@ -536,11 +538,6 @@ void CObject::Death()
 			pObjNext->m_pPrev = pObject->m_pPrev;
 		}
 	}
-
-	//if (m_pReleaseNext == pObject)
-	//{// 本来次に消すオブジェクトと今回消すオブジェクトが同じとき
-	//	m_pReleaseNext = pObjNext;
-	//}
 
 	// メモリの開放
 	delete pObject;

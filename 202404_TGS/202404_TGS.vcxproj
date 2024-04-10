@@ -177,6 +177,7 @@
     <ClCompile Include="Source\debugproc.cpp" />
     <ClCompile Include="Source\edit.cpp" />
     <ClCompile Include="Source\edit_enemybase.cpp" />
+    <ClCompile Include="Source\edit_map.cpp" />
     <ClCompile Include="Source\elevation.cpp" />
     <ClCompile Include="Source\enemy.cpp" />
     <ClCompile Include="Source\enemybase.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="Source\debugproc.h" />
     <ClInclude Include="Source\edit.h" />
     <ClInclude Include="Source\edit_enemybase.h" />
+    <ClInclude Include="Source\edit_map.h" />
     <ClInclude Include="Source\elevation.h" />
     <ClInclude Include="Source\enemy.h" />
     <ClInclude Include="Source\enemybase.h" />
