@@ -361,6 +361,10 @@ void CObjectX::Update()
 	SetPosition(pos);*/
 #endif
 
+	if (m_pShadow != nullptr){
+		m_pShadow->SetPosition(GetPosition());
+	}
+
 	// 全頂点チェック
 	//UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
 }

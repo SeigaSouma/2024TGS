@@ -33,6 +33,7 @@
 #include "particle.h"
 #include "myeffekseer.h"
 #include "flower_bud.h"
+#include "edit_map.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -155,6 +156,8 @@ HRESULT CGame::Init()
 
 	CManager::GetInstance()->GetCamera()->Reset(CScene::MODE_GAME);
 
+
+	m_pEditMap = CEdit_Map::Create();
 
 	// クリアの判定
 	SetEnableClear(true);
@@ -326,6 +329,10 @@ void CGame::Update()
 		}
 	}
 #endif
+
+	if (m_pEditMap != nullptr) {
+		m_pEditMap->Update();
+	}
 
 	if (GetEnemyManager() != nullptr)
 	{// 敵マネージャの更新処理

@@ -350,8 +350,8 @@ void CCamera::MoveCameraMouse()
 		// キーボード情報取得
 		CInputMouse* pInputMouse = CInputMouse::GetInstance();
 
-		if (pInputMouse->GetPress(CInputMouse::BUTTON_LEFT) == true &&
-			pInputMouse->GetPress(CInputMouse::BUTTON_RIGHT) == true)
+		if (pInputMouse->GetPress(CInputMouse::BUTTON_LEFT) &&
+			pInputMouse->GetPress(CInputMouse::BUTTON_RIGHT))
 		{// 左右同時押し
 
 	//#if _DEBUG
@@ -372,7 +372,9 @@ void CCamera::MoveCameraMouse()
 			// 注視点設定
 			SetCameraR();
 		}
-		else if (pInputMouse->GetPress(CInputMouse::BUTTON_LEFT) == true)
+		else if (
+			pInputKeyboard->GetPress(DIK_LALT) &&
+			pInputMouse->GetPress(CInputMouse::BUTTON_LEFT))
 		{// 左クリックしてるとき,視点回転
 
 			m_rot.y += pInputMouse->GetMouseMove().x * ROT_MOVE_MOUSE;

@@ -1,6 +1,6 @@
 //=============================================================================
 // 
-//  戦闘開始処理 [edit_map.cpp]
+//  マップエディタ―処理 [edit_map.cpp]
 //  Author : 相馬靜雅
 // 
 //=============================================================================
@@ -24,7 +24,10 @@ CEdit_Map::CEdit_Map()
 {
 	// 値のクリア
 	m_nModelIdx.clear();	// モデルインデックス
+	m_ModelFile.clear();	// モデルファイル
 	m_pObjX.clear();		// オブジェクトXのポインタ
+	m_bGrab = false;		// 掴み判定
+	m_bReGrab = false;		// 再掴み判定
 }
 
 //==========================================================================
@@ -34,30 +37,42 @@ CEdit_Map::~CEdit_Map()
 {
 
 }
-//
-////==========================================================================
-//// 生成処理
-////==========================================================================
-//CEdit_Map* CEdit_Map::Create()
-//{
-//	// メモリの確保
-//	CEdit_Map* pMarker = DEBUG_NEW CEdit_Map;
-//
-//	if (pMarker != nullptr)
-//	{// メモリの確保が出来ていたら
-//
-//		// 初期化処理
-//		pMarker->Init();
-//	}
-//
-//	return pMarker;
-//}
+
+//==========================================================================
+// 生成処理
+//==========================================================================
+CEdit_Map* CEdit_Map::Create()
+{
+	// メモリの確保
+	CEdit_Map* pMarker = DEBUG_NEW CEdit_Map;
+	if (pMarker != nullptr)
+	{
+		// 初期化処理
+		pMarker->Init();
+	}
+
+	return pMarker;
+}
 
 //==========================================================================
 // 初期化処理
 //==========================================================================
 HRESULT CEdit_Map::Init()
 {
+	Load();
+
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevive = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+	// 画像のロード
+	for (const auto& file : m_ModelFile)
+	{
+		m_pTexture.emplace_back();
+
+		HRESULT hr = D3DXCreateTextureFromFileEx(pDevive, file.c_str(), 0, 0, 0, 0, D3DFMT_UNKNOWN,
+			D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255),
+			NULL, NULL, &m_pTexture.back());
+	}
 
 	return S_OK;
 }
@@ -75,7 +90,125 @@ void CEdit_Map::Uninit()
 //==========================================================================
 void CEdit_Map::Update()
 {
-	
+	ImGuiDragDropFlags src_flags = 0;
+	src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
+	src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
+	//src_flags |= ImGuiDragDropFlags_SourceNoPreviewTooltip; // Hide the tooltip
+
+	ImVec2 imageSize = ImVec2(50, 50);
+	for (int i = 0; i < static_cast<int>(m_nModelIdx.size()); i++)
+	{
+		ImGui::PushID(i); // ウィジェットごとに異なるIDを割り当てる
+		{
+			// ドラッグ可能な要素の描画
+			ImGui::ImageButton(reinterpret_cast<ImTextureID>(m_pTexture[i]), imageSize);
+
+			if (ImGui::BeginDragDropSource(src_flags))
+			{
+				SDragDropData dragData;
+				dragData.nType = m_nModelIdx[i];
+				m_DragData.nType = m_nModelIdx[i];
+
+				ImGui::SetDragDropPayload("MY_COORDINATE_TYPE", &dragData, sizeof(SDragDropData));
+				ImGui::Text(m_ModelFile[i].c_str());
+				ImGui::EndDragDropSource();
+			}
+
+			if (ImGui::IsItemHovered() &&
+				ImGui::IsMouseDown(0))
+			{// UI上にカーソル && クリック
+				m_bGrab = true;
+			}
+		}
+		ImGui::PopID();
+	}
+
+	// ウィンドウのマウスホバー判定
+	ImGuiHoveredFlags frag = 128;
+	bool bHoverWindow = ImGui::IsWindowHovered(frag);
+
+
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+	MyLib::Vector3 mouseRay = CInputMouse::GetInstance()->GetRay();
+	MyLib::Vector3 mousePos = CInputMouse::GetInstance()->GetNearPosition();
+	MyLib::Vector3 mouseWorldPos = CInputMouse::GetInstance()->GetWorldPosition();
+
+	if (m_bGrab && 
+		!bHoverWindow) {
+
+		// ウィンドウ外 && オブジェクト無い状態で生成
+		if (m_DragData.objX == nullptr)
+		{
+			m_DragData.objX = CObjectX::Create(m_DragData.nType, mouseWorldPos, MyLib::Vector3(0.0f), true);
+			m_DragData.objX->SetType(CObject::TYPE_XFILE);
+		}
+	}
+	else {
+
+		// ウィンドウ内 && オブジェクトある状態で削除
+		if (m_DragData.objX != nullptr) {
+			m_DragData.objX->Kill();
+			m_DragData.objX = nullptr;
+		}
+	}
+
+	// ドラッグ中位置更新
+	if (m_DragData.objX != nullptr) {
+		m_DragData.objX->SetPosition(mouseWorldPos);
+	}
+
+	// 配置
+	if (m_bGrab &&
+		ImGui::IsMouseReleased(0))
+	{// 掴み中 && マウスリリース
+
+		if (!bHoverWindow) {
+			Regist(m_DragData.nType, mouseWorldPos, MyLib::Vector3(0.0f), true);
+		}
+		m_bGrab = false;
+	}
+
+
+
+
+
+	// 先頭を保存
+	CObjectX* pObject = nullptr;
+
+	// リストコピー
+	std::vector<CObjectX*> pObjectSort;
+	while (m_List.ListLoop(&pObject))
+	{
+		// 要素を末尾に追加
+		pObjectSort.push_back(pObject);
+	}
+
+	// Zソート
+	std::sort(pObjectSort.begin(), pObjectSort.end(), CObject::ZSort);
+
+	for (const auto& obj : pObjectSort)
+	{
+		MyLib::AABB aabb;
+		aabb.vtxMin = obj->GetVtxMin();
+		aabb.vtxMax = obj->GetVtxMax();
+
+		D3DXMATRIX mat = obj->GetWorldMtx();
+		float time = 0.0f;
+		MyLib::Vector3 OBpos;
+
+		bool bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mat, time, &OBpos);
+
+		if (bHit &&
+			ImGui::IsMouseClicked(0)) 
+		{// 被ってる && クリック
+			
+		}
+
+		if(bHit)
+			ImGui::Text("iineeeeeeeeeeeeeeeeeeeeeeeeeee");
+
+	}
+
 }
 
 //==========================================================================
@@ -132,6 +265,7 @@ void CEdit_Map::Save()
 			nShadow = 1;
 		}
 		
+		// モデルインデックス検索
 		std::vector<int>::iterator nIdx = std::find(m_nModelIdx.begin(), m_nModelIdx.end(), pObj->GetIdxXFile());
 
 		// 出力
@@ -157,7 +291,6 @@ void CEdit_Map::Save()
 //==========================================================================
 void CEdit_Map::Load()
 {
-	std::string FileName;	// ファイル名
 	char aComment[MAX_COMMENT] = {};	//コメント用
 	int nFileNum = 0;					// ファイルの数
 	int nCntTexture = 0;				// テクスチャ読み込みカウント
@@ -248,7 +381,6 @@ HRESULT CEdit_Map::ReadXFile()
 
 	// ファイルを開く
 	FILE* pFile = fopen(LOADTEXT, "r");
-
 	if (pFile == nullptr)
 	{// ファイルが開けた場合
 		return E_FAIL;
@@ -298,7 +430,6 @@ HRESULT CEdit_Map::ReadXFile()
 
 		if (strcmp(&aComment[0], "END_SCRIPT") == 0)
 		{// 終了文字でループを抜ける
-
 			break;
 		}
 	}

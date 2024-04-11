@@ -19,6 +19,17 @@ class CEdit_Map
 {
 public:
 
+	//=============================
+	// 構造体定義
+	//=============================
+	struct SDragDropData
+	{
+		int nType;		// 種類
+		CObjectX* objX;	// オブジェクトX
+
+		SDragDropData() : nType(0), objX(nullptr) {}
+	};
+
 	CEdit_Map();
 	~CEdit_Map();
 	
@@ -32,11 +43,14 @@ public:
 	void Delete(CObjectX* obj);	// 削除
 	void Regist(int idx, MyLib::Vector3 pos, MyLib::Vector3 rot, bool bShadow);	// 割り当て
 
+	static CEdit_Map* Create();	// 生成処理
 	static CListManager<CObjectX> GetListObj() { return m_List; }	// リスト取得
 
 private:
 
+	//=============================
 	// 構造体定義
+	//=============================
 	struct SMapModelInfo
 	{
 		int nIdx;
@@ -48,9 +62,15 @@ private:
 	//=============================
 	// メンバ変数
 	//=============================
-	std::vector<int> m_nModelIdx;	// モデルインデックス
-	std::vector<std::string> m_ModelFile;	// モデルインデックス
-	std::vector<CObjectX*> m_pObjX;	// オブジェクトXのポインタ
+	std::vector<int> m_nModelIdx;				// モデルインデックス
+	std::vector<std::string> m_ModelFile;		// モデルインデックス
+	std::vector<LPDIRECT3DTEXTURE9> m_pTexture;	// テクスチャのポインタ
+	std::vector<CObjectX*> m_pObjX;			// オブジェクトXのポインタ
+
+	SDragDropData m_DragData;	// ドラッグ中データ
+	bool m_bGrab;	// 掴み判定
+	bool m_bReGrab;	// 再掴み判定
+
 	static CListManager<CObjectX> m_List;	// リスト
 
 };

@@ -232,11 +232,12 @@ void ImguiMgr::Update()
 		}
 	}
 
-	if (ImGui::IsWindowHovered())
+	// ウィンドウ内判定
+	/*if (ImGui::IsWindowHovered())
 	{
 		ImGui::Text("WINDOWNAI");
 		int n = 0;
-	}
+	}*/
 	
 
 	// ドラッグ可能な要素の描画
