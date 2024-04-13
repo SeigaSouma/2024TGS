@@ -371,6 +371,20 @@ bool CObject::ZSort(const CObject *obj1, const CObject *obj2)
 }
 
 //==========================================================================
+// ãtZÉ\Å[ÉgÇÃî‰ärä÷êî
+//==========================================================================
+bool CObject::ZSortInverse(const CObject* obj1, const CObject* obj2)
+{
+	bool bSort = true;
+	if (obj1->ScreenZ() < obj2->ScreenZ())
+	{
+		bSort = false;
+	}
+
+	return bSort;
+}
+
+//==========================================================================
 // ï`âÊê›íË
 //==========================================================================
 void CObject::SetEnableDisp(bool bDisp)

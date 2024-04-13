@@ -7,6 +7,8 @@
 #include "edit_map.h"
 #include "manager.h"
 #include "calculation.h"
+#include "collisionLine_Box.h"
+#include "camera.h"
 
 //==========================================================================
 // 定数定義
@@ -128,6 +130,7 @@ void CEdit_Map::Update()
 	bool bHoverWindow = ImGui::IsWindowHovered(frag);
 
 
+	CInputKeyboard* pKeyboard = CInputKeyboard::GetInstance();
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	MyLib::Vector3 mouseRay = CInputMouse::GetInstance()->GetRay();
 	MyLib::Vector3 mousePos = CInputMouse::GetInstance()->GetNearPosition();
@@ -154,7 +157,12 @@ void CEdit_Map::Update()
 
 	// ドラッグ中位置更新
 	if (m_DragData.objX != nullptr) {
+		m_DragData.objX->SetState(CObjectX::STATE::STATE_EDIT);
 		m_DragData.objX->SetPosition(mouseWorldPos);
+
+		if (m_DragData.objX->GetCollisionLineBox() != nullptr) {
+			m_DragData.objX->GetCollisionLineBox()->SetPosition(mouseWorldPos);
+		}
 	}
 
 	// 配置
@@ -169,44 +177,70 @@ void CEdit_Map::Update()
 	}
 
 
+	/*CCamera* pCamera = CManager::GetInstance()->GetCamera();
+	MyLib::Vector3 cameraPosition = pCamera->GetPositionV();
+	D3DXMATRIX projection = pCamera->GetMtxProjection();
+	D3DXMATRIX view = pCamera->GetMtxView();
+	D3DVIEWPORT9 viewport = pCamera->GetViewPort();*/
 
 
+	if (!pKeyboard->GetPress(DIK_LALT) &&
+		!bHoverWindow &&
+		ImGui::IsMouseReleased(0))
+	{// クリック
 
-	// 先頭を保存
-	CObjectX* pObject = nullptr;
+		// 先頭を保存
+		CObjectX* pObject = nullptr;
 
-	// リストコピー
-	std::vector<CObjectX*> pObjectSort;
-	while (m_List.ListLoop(&pObject))
-	{
-		// 要素を末尾に追加
-		pObjectSort.push_back(pObject);
-	}
+		// リストコピー
+		std::vector<CObjectX*> pObjectSort;
+		while (m_List.ListLoop(&pObject))
+		{
+			// 要素を末尾に追加
+			pObjectSort.push_back(pObject);
 
-	// Zソート
-	std::sort(pObjectSort.begin(), pObjectSort.end(), CObject::ZSort);
+			//MyLib::Vector3 position = pObject->GetPosition();
 
-	for (const auto& obj : pObjectSort)
-	{
-		MyLib::AABB aabb;
-		aabb.vtxMin = obj->GetVtxMin();
-		aabb.vtxMax = obj->GetVtxMax();
+			//// カメラから矢印までの距離を計算
+			//MyLib::Vector3 t = (position - cameraPosition);
+			//float distanceToArrow = t.Length();
 
-		D3DXMATRIX mat = obj->GetWorldMtx();
-		float time = 0.0f;
-		MyLib::Vector3 OBpos;
+			//// 矢印のモデルの拡大率を設定
+			//float scaleFactor = 1.0f * (distanceToArrow / 1500.0f);
 
-		bool bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mat, time, &OBpos);
-
-		if (bHit &&
-			ImGui::IsMouseClicked(0)) 
-		{// 被ってる && クリック
-			
+			//pObject->SetScale(scaleFactor);
 		}
 
-		if(bHit)
-			ImGui::Text("iineeeeeeeeeeeeeeeeeeeeeeeeeee");
+		// Zソート
+		std::sort(pObjectSort.begin(), pObjectSort.end(), CObject::ZSortInverse);
 
+		bool bHit = false;
+		for (const auto& obj : pObjectSort)
+		{
+			if (!bHit) {
+
+				MyLib::AABB aabb;
+				aabb.vtxMin = obj->GetVtxMin();
+				aabb.vtxMax = obj->GetVtxMax();
+
+				D3DXMATRIX mat = obj->GetWorldMtx();
+				float time = 0.0f;
+				MyLib::Vector3 OBpos;
+
+				bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mat, time, &OBpos);
+
+				if (bHit)
+				{// 被ってる
+					obj->SetState(CObjectX::STATE::STATE_EDIT);
+				}
+				else {
+					obj->SetState(CObjectX::STATE::STATE_NONE);
+				}
+			}
+			else {
+				obj->SetState(CObjectX::STATE::STATE_NONE);
+			}
+		}
 	}
 
 }

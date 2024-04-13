@@ -101,7 +101,8 @@ public:
 	virtual void AddPosition(const MyLib::Vector3& pos);		// 位置設定
 
 	float ScreenZ() const;
-	static bool ZSort(const CObject *obj1, const CObject *obj2);	// Zソートの比較関数
+	static bool ZSort(const CObject* obj1, const CObject* obj2);	// Zソートの比較関数
+	static bool ZSortInverse(const CObject *obj1, const CObject *obj2);	// 逆Zソートの比較関数
 	int GetPriority() { return m_nPriority; }	// 優先順位取得
 	void SetEnableDisp(bool bDisp);		// 描画設定
 	bool IsDisp() { return m_bDisp; }					// 描画状況取得

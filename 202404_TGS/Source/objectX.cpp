@@ -11,16 +11,22 @@
 #include "texture.h"
 #include "shadow.h"
 #include "elevation.h"
+#include "collisionLine_Box.h"
+
 
 //==========================================================================
-// マクロ定義
+// 関数ポインタ
 //==========================================================================
+CObjectX::STATE_FUNC CObjectX::m_StateFunc[] =
+{
+	&CObjectX::StateNone,	// なにもなし
+	&CObjectX::StateEdit,	// エディット
+};
 
 //==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 int CObjectX::m_nNumAll = 0;	// 総数
-CListManager<CObjectX> CObjectX::m_List = {};	// 障害物のリスト
 
 //==========================================================================
 // コンストラクタ
@@ -28,23 +34,17 @@ CListManager<CObjectX> CObjectX::m_List = {};	// 障害物のリスト
 CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 {
 	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
-	SetScale(MyLib::Vector3(1.0f, 1.0f, 1.0f));		// スケール
-	SetPosition(MyLib::Vector3(0.0f, 0.0f, 0.0f));		// 位置
-	SetOldPosition(MyLib::Vector3(0.0f, 0.0f, 0.0f));	// 前回の位置
-	SetMove(MyLib::Vector3(0.0f, 0.0f, 0.0f));			// 移動量
-	SetRotation(MyLib::Vector3(0.0f, 0.0f, 0.0f));		// 向き
-	SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 色
-	SetSize(MyLib::Vector3(0.0f, 0.0f, 0.0f));			// サイズ
+	m_scale = MyLib::Vector3(1.0f, 1.0f, 1.0f);		// スケール
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);		// 色
+	m_fSize = MyLib::Vector3();						// サイズ
+	m_AABB = MyLib::AABB();							// AABB情報
+	m_state = STATE::STATE_NONE;					// 状態
 	m_bShadow = false;								// 影を使っているかどうか
-	m_nIdxTexure = 0;							// テクスチャのインデックス番号
+	m_nIdxTexure = 0;								// テクスチャのインデックス番号
 	m_nIdxXFile = 0;								// Xファイルのインデックス番号
-	m_pShadow = nullptr;								// 影の情報
+	m_pShadow = nullptr;							// 影の情報
+	m_pCollisionLineBox = nullptr;					// 当たり判定ボックス
 	m_nNumAll++;									// 総数加算
-}
-
-void CObjectX::RegistList(CObjectX* ptr)
-{
-	m_List.Regist(ptr);
 }
 
 //==========================================================================
@@ -53,7 +53,6 @@ void CObjectX::RegistList(CObjectX* ptr)
 CObjectX::~CObjectX()
 {
 
-	m_List.Delete(this);
 }
 
 //==========================================================================
@@ -153,6 +152,11 @@ CObjectX *CObjectX::Create(const char *pFileName, const MyLib::Vector3& pos, con
 		if (pObjectX != nullptr)
 		{// メモリの確保が出来ていたら
 
+			// 位置・向き
+			pObjectX->SetPosition(pos);
+			pObjectX->SetRotation(rot);
+			pObjectX->m_bShadow = bShadow;
+
 			// 初期化処理
 			HRESULT hr = pObjectX->Init(pFileName);
 
@@ -160,11 +164,6 @@ CObjectX *CObjectX::Create(const char *pFileName, const MyLib::Vector3& pos, con
 			{// 失敗していたら
 				return nullptr;
 			}
-
-			// 位置・向き
-			pObjectX->SetPosition(pos);
-			pObjectX->SetRotation(rot);
-			pObjectX->m_bShadow = bShadow;
 
 			if (bShadow == true)
 			{
@@ -197,6 +196,11 @@ CObjectX *CObjectX::Create(int nIdxXFile, const MyLib::Vector3& pos, const MyLib
 		if (pObjectX != nullptr)
 		{// メモリの確保が出来ていたら
 
+			// 位置・向き
+			pObjectX->SetPosition(pos);
+			pObjectX->SetRotation(rot);
+			pObjectX->m_bShadow = bShadow;
+
 			// 初期化処理
 			HRESULT hr = pObjectX->Init(nIdxXFile);
 
@@ -207,11 +211,6 @@ CObjectX *CObjectX::Create(int nIdxXFile, const MyLib::Vector3& pos, const MyLib
 
 			// 種類設定
 			//pObjectX->SetType(TYPE_XFILE);
-
-			// 位置・向き
-			pObjectX->SetPosition(pos);
-			pObjectX->SetRotation(rot);
-			pObjectX->m_bShadow = bShadow;
 
 			if (bShadow == true)
 			{
@@ -249,7 +248,16 @@ HRESULT CObjectX::Init()
 
 	// 全頂点チェック
 	UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
+	m_AABB.vtxMin = pXData->vtxMin;
+	m_AABB.vtxMax = pXData->vtxMax;
 
+#if _DEBUG
+	// 当たり判定ボックス生成
+	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+
+	// 当たり判定ボックスデータ設定
+	SetCollisionBoxData();
+#endif
 	return S_OK;
 }
 
@@ -280,7 +288,16 @@ HRESULT CObjectX::Init(const char *pFileName)
 
 	// 全頂点チェック
 	UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
+	m_AABB.vtxMin = pXData->vtxMin;
+	m_AABB.vtxMax = pXData->vtxMax;
 
+#if _DEBUG
+	// 当たり判定ボックス生成
+	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+
+	// 当たり判定ボックスデータ設定
+	SetCollisionBoxData();
+#endif
 	return S_OK;
 }
 
@@ -297,7 +314,16 @@ HRESULT CObjectX::Init(int nIdxXFile)
 
 	// 全頂点チェック
 	UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
+	m_AABB.vtxMin = pXData->vtxMin;
+	m_AABB.vtxMax = pXData->vtxMax;
 
+#if _DEBUG
+	// 当たり判定ボックス生成
+	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+
+	// 当たり判定ボックスデータ設定
+	SetCollisionBoxData();
+#endif
 	return S_OK;
 }
 
@@ -334,6 +360,11 @@ void CObjectX::Kill()
 		m_pShadow = nullptr;
 	}
 
+	if (m_pCollisionLineBox != nullptr) {
+		m_pCollisionLineBox->Kill();
+		m_pCollisionLineBox = nullptr;
+	}
+
 	// 終了処理
 	Uninit();
 }
@@ -343,30 +374,47 @@ void CObjectX::Kill()
 //==========================================================================
 void CObjectX::Update()
 {
-#if 0
-	// Xファイルのデータ取得
-	CXLoad *pXLoad = CXLoad::GetInstance();
-
-	// Xファイルのデータ取得
-	CXLoad::SXFile *pXData = CXLoad::GetInstance()->GetMyObject(m_nIdxXFile);
-
-	MyLib::Vector3 pos = GetPosition();
-	/*bool bLand = false;
-	float fHeight = CScene::GetElevation()->GetHeight(pos, bLand);
-	if (bLand == true)
-	{
-		pos.y = fHeight;
-	}
-
-	SetPosition(pos);*/
-#endif
+	// 状態別処理
+	(this->*(m_StateFunc[m_state]))();
 
 	if (m_pShadow != nullptr){
 		m_pShadow->SetPosition(GetPosition());
 	}
 
-	// 全頂点チェック
-	//UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
+
+	// 当たり判定ボックスデータ設定
+	SetCollisionBoxData();
+}
+
+//==========================================================================
+// なにもなし
+//==========================================================================
+void CObjectX::StateNone()
+{
+	if (m_pCollisionLineBox != nullptr) {
+		m_pCollisionLineBox->SetEnableDisp(false);
+	}
+}
+
+//==========================================================================
+// エディット状態
+//==========================================================================
+void CObjectX::StateEdit()
+{
+	if (m_pCollisionLineBox != nullptr) {
+		m_pCollisionLineBox->SetEnableDisp(true);
+	}
+}
+
+//==========================================================================
+// 当たり判定ボックスデータ設定
+//==========================================================================
+void CObjectX::SetCollisionBoxData()
+{
+	if (m_pCollisionLineBox != nullptr) {
+		m_pCollisionLineBox->SetPosition(GetPosition());
+		m_pCollisionLineBox->SetRotation(GetRotation());
+	}
 }
 
 //==========================================================================
@@ -507,7 +555,6 @@ void CObjectX::Draw()
 	pDevice->SetMaterial(&matDef);
 }
 
-
 //==========================================================================
 // 描画処理
 //==========================================================================
@@ -589,7 +636,6 @@ void CObjectX::Draw(D3DXCOLOR col)
 	// 保存していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 }
-
 
 //==========================================================================
 // 描画処理
@@ -746,8 +792,7 @@ MyLib::Vector3 CObjectX::GetSize() const
 //==========================================================================
 MyLib::Vector3 CObjectX::GetVtxMax() const
 {
-	// Xファイルのデータ取得
-	return CXLoad::GetInstance()->GetMyObject(m_nIdxXFile)->vtxMax;
+	return m_AABB.vtxMax;
 }
 
 //==========================================================================
@@ -755,8 +800,15 @@ MyLib::Vector3 CObjectX::GetVtxMax() const
 //==========================================================================
 MyLib::Vector3 CObjectX::GetVtxMin() const
 {
-	// Xファイルのデータ取得
-	return CXLoad::GetInstance()->GetMyObject(m_nIdxXFile)->vtxMin;
+	return m_AABB.vtxMin;
+}
+
+//==========================================================================
+// AABB情報取得
+//==========================================================================
+MyLib::AABB CObjectX::GetAABB() const
+{
+	return m_AABB;
 }
 
 //==========================================================================

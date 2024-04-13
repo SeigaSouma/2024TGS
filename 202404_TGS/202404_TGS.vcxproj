@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -173,6 +173,7 @@
     <ClCompile Include="Source\blackframe.cpp" />
     <ClCompile Include="Source\busket.cpp" />
     <ClCompile Include="Source\camera.cpp" />
+    <ClCompile Include="Source\collisionLine_Box.cpp" />
     <ClCompile Include="Source\collisionobject.cpp" />
     <ClCompile Include="Source\debugproc.cpp" />
     <ClCompile Include="Source\edit.cpp" />
@@ -186,8 +187,6 @@
     <ClCompile Include="Source\enemy_gobelin.cpp" />
     <ClCompile Include="Source\explosion.cpp" />
     <ClCompile Include="Source\fade.cpp" />
-    <ClCompile Include="Source\flower_bud.cpp" />
-    <ClCompile Include="Source\flower_decide.cpp" />
     <ClCompile Include="Source\fog.cpp" />
     <ClCompile Include="Source\game.cpp" />
     <ClCompile Include="Source\gamemanager.cpp" />
@@ -236,6 +235,7 @@
     <ClCompile Include="Source\objectBillboard_Anim.cpp" />
     <ClCompile Include="Source\objectChara.cpp" />
     <ClCompile Include="Source\objectHierarchy.cpp" />
+    <ClCompile Include="Source\ObjectLine.cpp" />
     <ClCompile Include="Source\objectX.cpp" />
     <ClCompile Include="Source\object_circlegauge2D.cpp" />
     <ClCompile Include="Source\particle.cpp" />
@@ -299,6 +299,7 @@
     <ClInclude Include="Source\busket.h" />
     <ClInclude Include="Source\calculation.h" />
     <ClInclude Include="Source\camera.h" />
+    <ClInclude Include="Source\collisionLine_Box.h" />
     <ClInclude Include="Source\collisionobject.h" />
     <ClInclude Include="Source\constans.h" />
     <ClInclude Include="Source\debugproc.h" />
@@ -313,8 +314,6 @@
     <ClInclude Include="Source\enemy_gobelin.h" />
     <ClInclude Include="Source\explosion.h" />
     <ClInclude Include="Source\fade.h" />
-    <ClInclude Include="Source\flower_bud.h" />
-    <ClInclude Include="Source\flower_decide.h" />
     <ClInclude Include="Source\fog.h" />
     <ClInclude Include="Source\game.h" />
     <ClInclude Include="Source\gamemanager.h" />
@@ -363,6 +362,7 @@
     <ClInclude Include="Source\objectBillboard_Anim.h" />
     <ClInclude Include="Source\objectChara.h" />
     <ClInclude Include="Source\objectHierarchy.h" />
+    <ClInclude Include="Source\ObjectLine.h" />
     <ClInclude Include="Source\objectX.h" />
     <ClInclude Include="Source\object_circlegauge2D.h" />
     <ClInclude Include="Source\particle.h" />

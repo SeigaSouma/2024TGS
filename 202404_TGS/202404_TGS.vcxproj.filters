@@ -40,9 +40,6 @@
     <Filter Include="object">
       <UniqueIdentifier>{c4e92c77-7c07-4b9f-9fb1-1446c52afc86}</UniqueIdentifier>
     </Filter>
-    <Filter Include="flower">
-      <UniqueIdentifier>{ccdee1a1-66ed-49f0-ac21-a747e4e73e6f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Input">
       <UniqueIdentifier>{4c565aa9-f542-4696-a91e-bd40a00703a5}</UniqueIdentifier>
     </Filter>
@@ -339,12 +336,6 @@
     <ClCompile Include="Source\pollen_gauge.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\flower_bud.cpp">
-      <Filter>flower</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\flower_decide.cpp">
-      <Filter>flower</Filter>
-    </ClCompile>
     <ClCompile Include="Source\resultscore.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -400,6 +391,12 @@
       <Filter>Input</Filter>
     </ClCompile>
     <ClCompile Include="Source\edit_map.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ObjectLine.cpp">
+      <Filter>object</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\collisionLine_Box.cpp">
       <Filter>edit</Filter>
     </ClCompile>
   </ItemGroup>
@@ -698,12 +695,6 @@
     <ClInclude Include="Source\pollen_gauge.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\flower_bud.h">
-      <Filter>flower</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\flower_decide.h">
-      <Filter>flower</Filter>
-    </ClInclude>
     <ClInclude Include="Source\resultscore.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -762,6 +753,12 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="Source\edit_map.h">
+      <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ObjectLine.h">
+      <Filter>object</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\collisionLine_Box.h">
       <Filter>edit</Filter>
     </ClInclude>
   </ItemGroup>

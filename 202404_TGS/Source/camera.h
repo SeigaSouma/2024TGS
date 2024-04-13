@@ -112,6 +112,7 @@ public:
 	D3DXMATRIX* GetMtxViewPtr() { return &m_mtxView; }
 	D3DXMATRIX GetMtxProjection() { return m_mtxProjection; }
 	D3DXMATRIX* GetMtxProjectionPtr() { return &m_mtxProjection; }
+	D3DVIEWPORT9 GetViewPort() { return m_viewport; };			// ビューポート
 
 	void SetShake(int nTime, float fLength, float fLengthY);	// 振動設定
 

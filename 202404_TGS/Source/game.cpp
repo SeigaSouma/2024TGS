@@ -34,6 +34,7 @@
 #include "myeffekseer.h"
 #include "flower_bud.h"
 #include "edit_map.h"
+#include "objectLine.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -158,6 +159,8 @@ HRESULT CGame::Init()
 
 
 	m_pEditMap = CEdit_Map::Create();
+
+	//CObjectLine* pppp = CObjectLine::Create(MyLib::Vector3(0.0f, 3000.0f, 0.0f), MyLib::Vector3(0.0f, 10.0f, 0.0f), mylib_const::DEFAULT_COLOR);
 
 	// クリアの判定
 	SetEnableClear(true);

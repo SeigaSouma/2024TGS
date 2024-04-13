@@ -15,6 +15,7 @@
 
 // 前方宣言
 class CShadow;
+class CCollisionLine_Box;
 
 //==========================================================================
 // クラス定義
@@ -23,6 +24,16 @@ class CShadow;
 class CObjectX : public CObject
 {
 public:
+
+	//=============================
+	// 列挙型定義
+	//=============================
+	enum STATE
+	{
+		STATE_NONE = 0,	// なにもない
+		STATE_EDIT,		// エディット
+		STATE_MAX
+	};
 
 	// マクロ定義
 #define MAX_MAT				(512)		// マテリアルサイズ
@@ -53,13 +64,18 @@ public:
 	MyLib::Vector3 GetSize() const;			// サイズの取得
 	MyLib::Vector3 GetVtxMax() const;			// 頂点の最大値取得
 	MyLib::Vector3 GetVtxMin() const;			// 頂点の最小値取得
+	MyLib::AABB GetAABB() const;				// AABB情報取得
 	int GetIdxXFile() const;				// Xファイルのインデックス取得
 	bool GetUseShadow() const;				// 影を使っているかどうか
 
+	void SetState(STATE state) { m_state = state; }	// 状態設定
+	STATE GetState() { return m_state; }			// 状態取得
+
 	float GetHeight(MyLib::Vector3 pos, bool &bLand);	// 高さ取得
-	void RegistList(CObjectX* ptr);
 
 	void Kill();
+	CCollisionLine_Box* GetCollisionLineBox() { return m_pCollisionLineBox; }	// 当たり判定ボックス取得
+
 	static CObjectX *Create();
 	static CObjectX *Create(const char *pFileName);
 	static CObjectX *Create(const char *pFileName, const MyLib::Vector3& pos, const MyLib::Vector3& rot = 0.0f, bool bShadow = false);
@@ -67,21 +83,40 @@ public:
 	CObjectX *GetObjectX();
 	static int GetNumAll();
 
-	static CListManager<CObjectX> GetListObj() { return m_List; }	// リスト取得
-
-protected:
-
 private:
+
+
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CObjectX::* STATE_FUNC)();
+	static STATE_FUNC m_StateFunc[];	// 状態関数リスト
+
+	//=============================
+	// メンバ関数
+	//=============================
+	// 状態関数
+	void StateNone();	// なにもなし
+	void StateEdit();	// エディット
+
+	// その他
+	void SetCollisionBoxData();
+
+	//=============================
+	// メンバ変数
+	//=============================
 	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
 	MyLib::Vector3 m_scale;	// スケール
 	D3DXCOLOR m_col;		// 色
 	MyLib::Vector3 m_fSize;	// サイズ
+	MyLib::AABB m_AABB;		// AABB情報
+	STATE m_state;			// 状態
 	bool m_bShadow;			// 影を使うかどうか
 	int m_nIdxTexure;		// テクスチャのインデックス番号
 	int m_nIdxXFile;		// Xファイルのインデックス番号
 	static int m_nNumAll;	// 総数
 	CShadow *m_pShadow;		// 影の情報
-	static CListManager<CObjectX> m_List;	// 障害物のリスト
+	CCollisionLine_Box* m_pCollisionLineBox;	// 当たり判定ボックス
 };
 
 

@@ -32,7 +32,6 @@
 #include "MyEffekseer.h"
 #include "busket.h"
 #include "map.h"
-#include "flower_bud.h"
 #include "rankingmanager.h"
 
 // 使用クラス
@@ -220,7 +219,6 @@ HRESULT CPlayer::Init()
 
 	// かご生成
 	m_pBusket = CBusket::Create(10000);
-	CFlowerBud::Create(MyLib::Vector3(0.0f, 0.0f, GOAL_Z + 1000.0f), 10000, 10000);
 
 	//// スキルポイント生成
 	//m_pSkillPoint = CSkillPoint::Create();
@@ -887,75 +885,6 @@ void CPlayer::Controll()
 		}
 	}
 
-	// エリア制限情報取得
-	CListManager<CObjectX> List = CObjectX::GetListObj();
-	CObjectX* pList = nullptr;
-	D3DXMATRIX pmat = GetWorldMtx();
-
-	sakiPos.x = pos.x + sinf(D3DX_PI + rot.y) * 1000.0f;
-	sakiPos.z = pos.z + cosf(D3DX_PI + rot.y) * 1000.0f;
-
-	MyLib::Vector3 linevec = sakiPos - pos;
-
-	CEffect3D::Create(
-		sakiPos,
-		MyLib::Vector3(0.0f, 0.0f, 0.0f),
-		D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),
-		40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-
-	CEffect3D::Create(
-		pos,
-		MyLib::Vector3(0.0f, 0.0f, 0.0f),
-		D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),
-		40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-
-	MyLib::Vector3 mouseRay = CInputMouse::GetInstance()->GetRay();
-	MyLib::Vector3 mousePos = CInputMouse::GetInstance()->GetNearPosition();
-	
-
-	while (List.ListLoop(&pList))
-	{
-		MyLib::Vector3 OBpos = pList->GetPosition();
-		float len = pList->GetVtxMax().x;
-
-		MyLib::AABB aabb;
-		aabb.vtxMin = pList->GetVtxMin();
-		aabb.vtxMax = pList->GetVtxMax();
-
-		D3DXMATRIX mat = pList->GetWorldMtx();
-
-		float time = 0.0f;
-		// 方向ベクトルを取得
-		MyLib::Vector3 directionVector(pmat._31, pmat._32, pmat._33);
-		bool bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mat, time, &OBpos);
-
-		// テキストの描画
-		CManager::GetInstance()->GetDebugProc()->Print(
-			"---------------- マウス情報 ----------------\n"
-			"【レイ】[X：%f Y：%f Z：%f]\n",
-			mouseRay.x, mouseRay.y, mouseRay.z);
-
-		// テキストの描画
-		CManager::GetInstance()->GetDebugProc()->Print(
-			"【位置】[X：%f Y：%f Z：%f]\n",
-			mousePos.x, mousePos.y, mousePos.z);
-
-		if (bHit) {
-			// デバッグ表示
-			CManager::GetInstance()->GetDebugProc()->Print(
-				"------------------[あたった！！！！！]------------------\n");
-
-			for (int i = 0; i < 4; i++)
-			{
-				CEffect3D::Create(
-					OBpos,
-					MyLib::Vector3(0.0f, 0.0f, 0.0f),
-					D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f),
-					40.0f, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
-			}
-		}
-	}
-
 	////if (m_pWeaponHandle != nullptr)
 	//{
 	//	// 武器の位置
@@ -1293,10 +1222,6 @@ void CPlayer::AttackAction(CMotion::AttackInfo ATKInfo, int nCntATK)
 		}*/
 		break;
 
-	case MOTION_FLOWERING:
-		CFlowerBud::GetInstance()->SetSatate(CFlowerBud::STATE::STATE_CHARGE);
-		break;
-
 	case MOTION::MOTION_DASH:
 		/*if (nCntATK == 0)
 		{
@@ -1423,48 +1348,6 @@ void CPlayer::LimitPos()
 
 	SetPosition(pos);
 	SetMove(move);
-
-	if (CGame::GetInstance()->GetGameManager()->IsControll() &&
-		m_state != STATE_FLOWERING &&
-		m_state != STATE_AFTERFLOWERING)
-	{
-		// エリア制限情報取得
-		CListManager<CObjectX> List = CObjectX::GetListObj();
-		CObjectX* pList = nullptr;
-
-		while (List.ListLoop(&pList))
-		{
-			MyLib::Vector3 OBpos = pList->GetPosition();
-			float len = pList->GetVtxMax().x;
-
-			// コライダーの数繰り返し
-			std::vector<SphereCollider> colliders = GetSphereColliders();
-			for (const auto& collider : colliders)
-			{
-				if (UtilFunc::Collision::CircleRange3D(collider.center, OBpos, collider.radius, len))
-				{
-					ProcessHit(0, OBpos);
-					break;
-				}
-			}
-		}
-	}
-
-	if (CGame::GetInstance()->GetGameManager()->GetType() == CGameManager::SceneType::SCENE_MAIN &&
-		pos.z >= GOAL_Z)
-	{
-		CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_SE_WINGS);
-		CManager::GetInstance()->GetSound()->StopSound(CSound::LABEL_SE_BOOST);
-
-		// 通常クリア状態にする
-		CGame::GetInstance()->GetGameManager()->SetType(CGameManager::SceneType::SCENE_MAINRESULT);
-		CGame::GetInstance()->GetGameManager()->GameResultSettings();
-		CFlowerBud::GetInstance()->SetCurrentPollen(10000, m_pBusket->GetPollen());
-		CManager::GetInstance()->GetRankingManager()->SetNowScore(CFlowerBud::GetInstance()->GetSpawnNum());
-		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL::LABEL_SE_GOAL);
-	}
-
-	return;
 
 	// エリア制限情報取得
 	CListManager<CLimitArea> limitareaList = CLimitArea::GetListObj();
