@@ -12,6 +12,7 @@
 #include "shadow.h"
 #include "elevation.h"
 #include "collisionLine_Box.h"
+#include "handle_Move.h"
 
 
 //==========================================================================
@@ -250,14 +251,8 @@ HRESULT CObjectX::Init()
 	UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
 	m_AABB.vtxMin = pXData->vtxMin;
 	m_AABB.vtxMax = pXData->vtxMax;
+	m_pMesh = pXData->pMesh;
 
-#if _DEBUG
-	// 当たり判定ボックス生成
-	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-
-	// 当たり判定ボックスデータ設定
-	SetCollisionBoxData();
-#endif
 	return S_OK;
 }
 
@@ -290,14 +285,8 @@ HRESULT CObjectX::Init(const char *pFileName)
 	UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
 	m_AABB.vtxMin = pXData->vtxMin;
 	m_AABB.vtxMax = pXData->vtxMax;
+	m_pMesh = pXData->pMesh;
 
-#if _DEBUG
-	// 当たり判定ボックス生成
-	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-
-	// 当たり判定ボックスデータ設定
-	SetCollisionBoxData();
-#endif
 	return S_OK;
 }
 
@@ -316,14 +305,8 @@ HRESULT CObjectX::Init(int nIdxXFile)
 	UtilFunc::Calculation::CalModelVtx(GetRotation().y, &pXData->vtxMax, &pXData->vtxMin, pXData->pMesh, pXData->pVtxBuff);
 	m_AABB.vtxMin = pXData->vtxMin;
 	m_AABB.vtxMax = pXData->vtxMax;
+	m_pMesh = pXData->pMesh;
 
-#if _DEBUG
-	// 当たり判定ボックス生成
-	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-
-	// 当たり判定ボックスデータ設定
-	SetCollisionBoxData();
-#endif
 	return S_OK;
 }
 
@@ -404,6 +387,20 @@ void CObjectX::StateEdit()
 	if (m_pCollisionLineBox != nullptr) {
 		m_pCollisionLineBox->SetEnableDisp(true);
 	}
+}
+
+//==========================================================================
+// 当たり判定ボックス生成
+//==========================================================================
+void CObjectX::CreateCollisionBox()
+{
+#if _DEBUG
+	// 当たり判定ボックス生成
+	m_pCollisionLineBox = CCollisionLine_Box::Create(m_AABB, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+
+	// 当たり判定ボックスデータ設定
+	SetCollisionBoxData();
+#endif
 }
 
 //==========================================================================
@@ -541,7 +538,7 @@ void CObjectX::Draw()
 		}
 
 		// パーツの描画
-		pXData->pMesh->DrawSubset(nCntMat);
+		m_pMesh->DrawSubset(nCntMat);
 
 		if (m_scale != MyLib::Vector3(1.0f, 1.0f, 1.0f))
 		{// 少しでも違う場合

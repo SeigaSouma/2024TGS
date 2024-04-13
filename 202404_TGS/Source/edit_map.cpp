@@ -30,6 +30,9 @@ CEdit_Map::CEdit_Map()
 	m_pObjX.clear();		// オブジェクトXのポインタ
 	m_bGrab = false;		// 掴み判定
 	m_bReGrab = false;		// 再掴み判定
+	m_pGrabObj = nullptr;	// 掴みオブジェクト
+	m_pHandle = nullptr;	// 移動ハンドル
+	m_moveAngle = CHandle_Move::HandleAngle::ANGLE_X;	// 移動の向き
 }
 
 //==========================================================================
@@ -84,7 +87,7 @@ HRESULT CEdit_Map::Init()
 //==========================================================================
 void CEdit_Map::Uninit()
 {
-
+	delete this;
 }
 
 //==========================================================================
@@ -132,9 +135,11 @@ void CEdit_Map::Update()
 
 	CInputKeyboard* pKeyboard = CInputKeyboard::GetInstance();
 	CInputMouse* pMouse = CInputMouse::GetInstance();
-	MyLib::Vector3 mouseRay = CInputMouse::GetInstance()->GetRay();
-	MyLib::Vector3 mousePos = CInputMouse::GetInstance()->GetNearPosition();
-	MyLib::Vector3 mouseWorldPos = CInputMouse::GetInstance()->GetWorldPosition();
+	MyLib::Vector3 mouseRay = pMouse->GetRay();
+	MyLib::Vector3 mousePos = pMouse->GetNearPosition();
+	MyLib::Vector3 mouseWorldPos = pMouse->GetWorldPosition();
+	MyLib::Vector3 mouseOldWorldPos = pMouse->GetOldWorldPosition();
+	MyLib::Vector3 diffpos = pMouse->GetDiffPosition();
 
 	if (m_bGrab && 
 		!bHoverWindow) {
@@ -144,6 +149,7 @@ void CEdit_Map::Update()
 		{
 			m_DragData.objX = CObjectX::Create(m_DragData.nType, mouseWorldPos, MyLib::Vector3(0.0f), true);
 			m_DragData.objX->SetType(CObject::TYPE_XFILE);
+			m_DragData.objX->CreateCollisionBox();
 		}
 	}
 	else {
@@ -176,18 +182,96 @@ void CEdit_Map::Update()
 		m_bGrab = false;
 	}
 
+	// 移動ハンドル判定
+	if (!m_bGrab &&
+		m_pHandle != nullptr &&
+		!m_bReGrab)
+	{
+		bool bHit = false, bChange = false;
 
-	/*CCamera* pCamera = CManager::GetInstance()->GetCamera();
-	MyLib::Vector3 cameraPosition = pCamera->GetPositionV();
-	D3DXMATRIX projection = pCamera->GetMtxProjection();
-	D3DXMATRIX view = pCamera->GetMtxView();
-	D3DVIEWPORT9 viewport = pCamera->GetViewPort();*/
+		// リストループ
+		CListManager<CObjectX> handleList = CHandle_Move::GetList();
+		CObjectX* pArrow = nullptr;
+		int i = 0;
+		while (handleList.ListLoop(&pArrow))
+		{
+			pArrow->SetColor(mylib_const::DEFAULT_COLOR);
 
+			if (!bHit && !bHoverWindow)
+			{
+				MyLib::AABB aabb = pArrow->GetAABB();
+				D3DXMATRIX mtx = pArrow->GetWorldMtx();
+				float time = 0.0f;
+
+				bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mtx, time);
+			}
+
+			if (bHit && !bChange)
+			{
+				pArrow->SetColor(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
+				bChange = true;
+
+				if (!pKeyboard->GetPress(DIK_LALT) &&
+					ImGui::IsMouseClicked(0))
+				{// クリック
+
+					m_bReGrab = true;
+
+					// 移動の向き
+					m_moveAngle = static_cast<CHandle_Move::HandleAngle>(i);
+				}
+				return;
+			}
+
+			i++;
+		}
+	}
+
+	// 再移動中
+	if (m_bReGrab)
+	{
+		MyLib::Vector3 pos = m_pGrabObj->GetPosition();
+
+		switch (m_moveAngle)
+		{
+		case CHandle_Move::ANGLE_Z:
+			pos.z += diffpos.z;
+			break;
+
+		case CHandle_Move::ANGLE_Y:
+			pos.y += diffpos.y * m_pHandle->GetScale();
+			break;
+
+		case CHandle_Move::ANGLE_X:
+			pos.x += diffpos.x;
+			break;
+		}
+
+		m_pGrabObj->SetPosition(pos);
+
+		if (m_pGrabObj->GetCollisionLineBox() != nullptr) {
+			m_pGrabObj->GetCollisionLineBox()->SetPosition(pos);
+		}
+
+		if (m_pHandle != nullptr) {
+			m_pHandle->SetPosition(m_pGrabObj->GetPosition());
+		}
+
+	}
+
+	if (m_bReGrab &&
+		!pKeyboard->GetPress(DIK_LALT) &&
+		ImGui::IsMouseReleased(0))
+	{// クリック
+		m_bReGrab = false;
+	}
 
 	if (!pKeyboard->GetPress(DIK_LALT) &&
 		!bHoverWindow &&
-		ImGui::IsMouseReleased(0))
+		ImGui::IsMouseClicked(0))
 	{// クリック
+
+		m_pGrabObj = nullptr;
 
 		// 先頭を保存
 		CObjectX* pObject = nullptr;
@@ -198,17 +282,6 @@ void CEdit_Map::Update()
 		{
 			// 要素を末尾に追加
 			pObjectSort.push_back(pObject);
-
-			//MyLib::Vector3 position = pObject->GetPosition();
-
-			//// カメラから矢印までの距離を計算
-			//MyLib::Vector3 t = (position - cameraPosition);
-			//float distanceToArrow = t.Length();
-
-			//// 矢印のモデルの拡大率を設定
-			//float scaleFactor = 1.0f * (distanceToArrow / 1500.0f);
-
-			//pObject->SetScale(scaleFactor);
 		}
 
 		// Zソート
@@ -232,6 +305,17 @@ void CEdit_Map::Update()
 				if (bHit)
 				{// 被ってる
 					obj->SetState(CObjectX::STATE::STATE_EDIT);
+					
+					// 掴みオブジェクト
+					m_pGrabObj = obj;
+
+					if (m_pHandle != nullptr) {
+						m_pHandle->SetPosition(m_pGrabObj->GetPosition());
+					}
+
+					if (m_pHandle == nullptr) {
+						m_pHandle = CHandle_Move::Create(m_pGrabObj->GetPosition());
+					}
 				}
 				else {
 					obj->SetState(CObjectX::STATE::STATE_NONE);
@@ -240,6 +324,11 @@ void CEdit_Map::Update()
 			else {
 				obj->SetState(CObjectX::STATE::STATE_NONE);
 			}
+		}
+
+		if (!bHit && m_pHandle != nullptr) {
+			m_pHandle->Kill();
+			m_pHandle = nullptr;
 		}
 	}
 
@@ -504,7 +593,31 @@ void CEdit_Map::Regist(int idx, MyLib::Vector3 pos, MyLib::Vector3 rot, bool bSh
 	// タイプの物を生成
 	m_pObjX.back() = CObjectX::Create(m_nModelIdx[idx], pos, rot, bShadow);
 	m_pObjX.back()->SetType(CObject::TYPE_XFILE);
+	m_pObjX.back()->CreateCollisionBox();
 
 	// リストに追加
 	m_List.Regist(m_pObjX.back());
+
+	if (m_bGrab) {
+
+		// リストコピー
+		CObjectX* pObject = nullptr;
+		while (m_List.ListLoop(&pObject))
+		{
+			pObject->SetState(CObjectX::STATE::STATE_NONE);
+		}
+
+		// 掴みオブジェクト
+		m_pGrabObj = m_pObjX.back();
+
+		m_pObjX.back()->SetState(CObjectX::STATE::STATE_EDIT);
+
+		if (m_pHandle != nullptr) {
+			m_pHandle->SetPosition(m_pGrabObj->GetPosition());
+		}
+
+		if (m_pHandle == nullptr) {
+			m_pHandle = CHandle_Move::Create(m_pGrabObj->GetPosition());
+		}
+	}
 }

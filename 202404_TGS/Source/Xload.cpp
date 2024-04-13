@@ -361,8 +361,6 @@ HRESULT CXLoad::Load(std::string file)
 	// 全頂点チェック
 	UtilFunc::Calculation::CalModelVtx(0.0f, &m_XFileInfo[nIdx].vtxMax, &m_XFileInfo[nIdx].vtxMin, m_XFileInfo[nIdx].pMesh, m_XFileInfo[nIdx].pVtxBuff);
 
-
-
 	// インデックスバッファをロック
 	WORD* pIndexBuff;
 	m_XFileInfo[nIdx].pMesh->LockIndexBuffer(D3DLOCK_READONLY, (void**)&pIndexBuff);

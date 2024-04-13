@@ -8,6 +8,7 @@
 #include "debugproc.h"
 #include "calculation.h"
 #include "manager.h"
+#include "camera.h"
 
 //==========================================================================
 // 定数定義
@@ -30,6 +31,8 @@ CInputMouse::CInputMouse()
 	memset(&m_aOldState, 0, sizeof(m_aOldState));	// 前回の入力情報
 	m_pViewMtx = nullptr;	// ビューマトリックス
 	m_pPrjMtx = nullptr;	// プロジェクションマトリックス
+	m_OldWorldPos = MyLib::Vector3();	// 前回のワールド座標
+	m_Diffposition = MyLib::Vector3();	// 差分
 }
 
 //==========================================================================
@@ -152,6 +155,33 @@ void CInputMouse::Update()
 		"---------------- マウス情報 ----------------\n"
 		"【位置】[X：%d Y：%d]\n",
 		m_pos.x, m_pos.y);
+
+	// 位置設定
+	m_OldWorldPos = m_WorldPos;
+	m_WorldPos = UtilFunc::Transformation::CalcScreenToXZ(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
+	m_WorldPos.y = UtilFunc::Transformation::CalcScreenToY(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx).y;
+
+	m_Diffposition = m_WorldPos - m_OldWorldPos;
+
+	CCamera* pCamera = CManager::GetInstance()->GetCamera();
+	if (pCamera != nullptr) {
+		MyLib::Vector3 rot = pCamera->GetRotation();
+
+		float ratio = 1.0f - (fabsf(rot.z) / static_cast<float>(D3DX_PI));
+
+		m_Diffposition.y = (m_WorldPos.y - m_OldWorldPos.y) * ratio * 200.0f;
+
+		// テキストの描画
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"【位置】[Y：%f]\n",
+			m_WorldPos.y);
+
+		// テキストの描画
+		CManager::GetInstance()->GetDebugProc()->Print(
+			"【差分】[Y：%f]\n",
+			m_Diffposition.y);
+	}
+
 }
 
 //==========================================================================
@@ -182,11 +212,19 @@ D3DXVECTOR2 CInputMouse::GetPosition()
 }
 
 //==========================================================================
+// 前回の位置取得
+//==========================================================================
+MyLib::Vector3 CInputMouse::GetOldWorldPosition()
+{
+	return m_OldWorldPos;
+}
+
+//==========================================================================
 // 位置取得
 //==========================================================================
 MyLib::Vector3 CInputMouse::GetWorldPosition()
 {
-	return m_WorldPos = UtilFunc::Transformation::CalcScreenToXZ(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
+	return m_WorldPos;
 }
 
 //==========================================================================
@@ -195,6 +233,14 @@ MyLib::Vector3 CInputMouse::GetWorldPosition()
 MyLib::Vector3 CInputMouse::GetNearPosition()
 {
 	return m_NearPos;
+}
+
+//==========================================================================
+// 差分取得
+//==========================================================================
+MyLib::Vector3 CInputMouse::GetDiffPosition()
+{
+	return m_Diffposition;
 }
 
 //==========================================================================

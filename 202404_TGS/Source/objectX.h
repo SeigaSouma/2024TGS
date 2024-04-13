@@ -16,6 +16,7 @@
 // 前方宣言
 class CShadow;
 class CCollisionLine_Box;
+class CHandle_Move;
 
 //==========================================================================
 // クラス定義
@@ -74,6 +75,7 @@ public:
 	float GetHeight(MyLib::Vector3 pos, bool &bLand);	// 高さ取得
 
 	void Kill();
+	void CreateCollisionBox();	// 当たり判定ボックス生成
 	CCollisionLine_Box* GetCollisionLineBox() { return m_pCollisionLineBox; }	// 当たり判定ボックス取得
 
 	static CObjectX *Create();
@@ -85,6 +87,13 @@ public:
 
 private:
 
+
+	struct VertexFormat
+	{
+		D3DXVECTOR3 position; // 頂点の位置
+		D3DXVECTOR3 normal;   // 頂点の法線
+		D3DXVECTOR2 texCoord; // テクスチャ座標
+	};
 
 	//=============================
 	// 関数リスト
@@ -117,6 +126,10 @@ private:
 	static int m_nNumAll;	// 総数
 	CShadow *m_pShadow;		// 影の情報
 	CCollisionLine_Box* m_pCollisionLineBox;	// 当たり判定ボックス
+
+
+	LPD3DXMESH m_pMesh;						// メッシュ(頂点情報)へのポインタ
+
 };
 
 

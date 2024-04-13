@@ -310,6 +310,8 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// シーンのロードを開始
 	GetLoadManager()->LoadScene(CScene::MODE_NONE);
 
+
+
 	return S_OK;
 }
 
@@ -854,6 +856,12 @@ void CManager::Update()
 		}
 #endif
 
+
+		if (m_pScene != nullptr)
+		{
+			m_pScene->Update();
+		}
+
 		// レンダラーの更新処理
 		if (m_pRenderer != nullptr)
 		{
@@ -868,11 +876,6 @@ void CManager::Update()
 
 		// デバッグ表示の更新処理
 		m_pDebugProc->Update();
-
-		if (m_pEdit == nullptr && m_pScene != nullptr)
-		{// メモリの確保が出来ていたら
-			m_pScene->Update();
-		}
 	}
 }
 

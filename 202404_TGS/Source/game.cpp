@@ -157,13 +157,12 @@ HRESULT CGame::Init()
 
 	CManager::GetInstance()->GetCamera()->Reset(CScene::MODE_GAME);
 
-
-	m_pEditMap = CEdit_Map::Create();
-
 	//CObjectLine* pppp = CObjectLine::Create(MyLib::Vector3(0.0f, 3000.0f, 0.0f), MyLib::Vector3(0.0f, 10.0f, 0.0f), mylib_const::DEFAULT_COLOR);
 
 	// クリアの判定
 	SetEnableClear(true);
+
+	m_pEditMap = CEdit_Map::Create();
 
 	// 成功
 	return S_OK;
@@ -333,10 +332,6 @@ void CGame::Update()
 	}
 #endif
 
-	if (m_pEditMap != nullptr) {
-		m_pEditMap->Update();
-	}
-
 	if (GetEnemyManager() != nullptr)
 	{// 敵マネージャの更新処理
 		GetEnemyManager()->Update();
@@ -368,6 +363,10 @@ void CGame::Update()
 	}
 
 #if _DEBUG
+
+	if (m_pEditMap != nullptr) {
+		m_pEditMap->Update();
+	}
 
 	if (pInputKeyboard->GetTrigger(DIK_F))
 	{

@@ -1933,6 +1933,33 @@ namespace UtilFunc	// 便利関数
 			return pos;
 		}
 
+		// Y平面とスクリーン座標の交点算出関数
+		inline MyLib::Vector3  CalcScreenToY(
+			D3DXVECTOR2 mousepos,
+			D3DXVECTOR2 ScreenSize,
+			D3DXMATRIX View, D3DXMATRIX Prj)
+		{
+			// スクリーン座標を正規化デバイス座標系（NDC）に変換
+			float ndcX = (2.0f * mousepos.x / ScreenSize.x) - 1.0f;
+			float ndcY = 1.0f - (2.0f * mousepos.y / ScreenSize.y);
+			float ndcZ = 2.0f * 0.0f - 1.0f;
+
+			// スクリーン座標をNDC座標に変換
+			D3DXVECTOR4 ndcPos(ndcX, ndcY, ndcZ, 1.0f);
+
+			// 逆ビュー変換行列と逆射影変換行列を組み合わせてワールド座標に変換
+			D3DXMATRIX invViewProjection;
+			D3DXMATRIX mtx = (View * Prj);
+
+			D3DXMatrixInverse(&invViewProjection, nullptr, &mtx);
+
+			D3DXVECTOR4 worldPos;
+			D3DXVec4Transform(&worldPos, &ndcPos, &invViewProjection);
+
+			// ワールド座標を返す
+			return MyLib::Vector3(worldPos.x / worldPos.w, worldPos.y / worldPos.w, worldPos.z / worldPos.w);
+		}
+
 		/**
 		@brief	HSV値をRGB値に変換
 		@details https://ja.wikipedia.org/wiki/HSV%E8%89%B2%E7%A9%BA%E9%96%93

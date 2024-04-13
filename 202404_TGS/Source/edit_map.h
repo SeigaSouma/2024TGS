@@ -10,6 +10,7 @@
 
 #include "listmanager.h"
 #include "objectX.h"
+#include "handle_Move.h"
 
 //==========================================================================
 // クラス定義
@@ -70,6 +71,10 @@ private:
 	SDragDropData m_DragData;	// ドラッグ中データ
 	bool m_bGrab;	// 掴み判定
 	bool m_bReGrab;	// 再掴み判定
+
+	CObjectX* m_pGrabObj;		// 掴みオブジェクト
+	CHandle_Move* m_pHandle;	// 移動ハンドル
+	CHandle_Move::HandleAngle m_moveAngle;	// 移動の向き
 
 	static CListManager<CObjectX> m_List;	// リスト
 

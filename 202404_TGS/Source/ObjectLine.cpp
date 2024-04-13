@@ -15,6 +15,7 @@
 CObjectLine::CObjectLine(int nPriority) : CObject(nPriority)
 {
 	m_Info = SLineInfo();
+	m_bZSort = false;				// Zソートのフラグ
 }
 
 //==========================================================================
@@ -129,6 +130,13 @@ void CObjectLine::Draw()
 	// ライティングを無効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
+	if (m_bZSort)
+	{
+		// Zテストを無効にする
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);	// 常に描画する
+	}
+
 	// 情報取得
 	MyLib::Vector3 pos = GetPosition();
 	MyLib::Vector3 rot = GetRotation();
@@ -161,6 +169,10 @@ void CObjectLine::Draw()
 
 	// ライティングを有効にする
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+
+	// Zテストを有効にする
+	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 }
 
 //==========================================================================

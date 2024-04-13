@@ -46,6 +46,9 @@
     <Filter Include="edit">
       <UniqueIdentifier>{13b311fc-e62b-41e4-85d8-4d9a470aca1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="handle">
+      <UniqueIdentifier>{00b034a6-ba43-4231-b582-279ce60fd58e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Xload.cpp">
@@ -398,6 +401,9 @@
     </ClCompile>
     <ClCompile Include="Source\collisionLine_Box.cpp">
       <Filter>edit</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\handle_Move.cpp">
+      <Filter>handle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -760,6 +766,9 @@
     </ClInclude>
     <ClInclude Include="Source\collisionLine_Box.h">
       <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\handle_Move.h">
+      <Filter>handle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

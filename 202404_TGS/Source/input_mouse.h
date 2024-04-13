@@ -38,9 +38,11 @@ public:
 	bool GetPress(BUTTON nKey);
 	MyLib::Vector3 GetMouseMove();
 	D3DXVECTOR2 GetPosition();			// 位置取得
+	MyLib::Vector3 GetOldWorldPosition();	// 前回の位置取得
 	MyLib::Vector3 GetWorldPosition();	// 位置取得
 	MyLib::Vector3 GetRay();			// レイ取得
 	MyLib::Vector3 GetNearPosition();	// レイの始点取得
+	MyLib::Vector3 GetDiffPosition();	// 差分取得
 	void SetCameraMtx(D3DXMATRIX* viewMtx, D3DXMATRIX* prjMtx);	// カメラマトリックス設定
 
 	static CInputMouse* GetInstance() { return m_pThisPtr; }	// インスタンス取得
@@ -57,7 +59,9 @@ private:
 	DIMOUSESTATE2 m_MouseStateRepeat;	// リピート情報
 	BYTE m_aOldState[BUTTON::BUTTON_MAX];	// 前回の入力情報を保存
 	POINT m_pos;
+	MyLib::Vector3 m_OldWorldPos;	// 前回のワールド座標
 	MyLib::Vector3 m_WorldPos;	// ワールド座標
+	MyLib::Vector3 m_Diffposition;	// 差分
 	MyLib::Vector3 m_NearPos;	// レイの始点
 	D3DXMATRIX* m_pViewMtx;	// ビューマトリックス
 	D3DXMATRIX* m_pPrjMtx;	// プロジェクションマトリックス
