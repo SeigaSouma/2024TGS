@@ -1933,6 +1933,48 @@ namespace UtilFunc	// 便利関数
 			return pos;
 		}
 
+		// XZ平面とスクリーン座標の交点算出関数
+		inline MyLib::Vector3  CalcScreenToXZ(
+			D3DXVECTOR2 mousepos,
+			D3DXVECTOR2 ScreenSize,
+			D3DXMATRIX View, D3DXMATRIX Prj,
+			float farDistance)
+		{
+			MyLib::Vector3 pos;
+
+			MyLib::Vector3 nearpos;
+			MyLib::Vector3 farpos;
+			MyLib::Vector3 ray;
+
+			int Sx = static_cast<int>(mousepos.x), Sy = static_cast<int>(mousepos.y);
+			nearpos = CalcScreenToWorld(Sx, Sy, 0.0f, ScreenSize, View, Prj);
+			farpos = CalcScreenToWorld(Sx, Sy, 1.0f, ScreenSize, View, Prj);
+			ray = farpos - nearpos;
+			D3DXVec3Normalize(&ray, &ray);
+
+			// farposを再計算する
+			farpos = nearpos + ray * farDistance;
+
+			// 床との交差が起きている場合は交点を
+			// 起きていない場合は遠くの壁との交点を出力
+			if (ray.y <= 0) {
+
+				MyLib::Vector3 planevec(0.0f, 1.0f, 0.0f);
+
+				// 床交点
+				float Lray = ray.Dot(planevec);
+
+				MyLib::Vector3 transNearPos = -nearpos;
+				float LP0 = transNearPos.Dot(planevec);
+				pos = nearpos + (LP0 / Lray) * ray;
+			}
+			else {
+				pos = farpos;
+			}
+
+			return pos;
+		}
+
 		// Y平面とスクリーン座標の交点算出関数
 		inline MyLib::Vector3  CalcScreenToY(
 			D3DXVECTOR2 mousepos,
@@ -1958,6 +2000,33 @@ namespace UtilFunc	// 便利関数
 
 			// ワールド座標を返す
 			return MyLib::Vector3(worldPos.x / worldPos.w, worldPos.y / worldPos.w, worldPos.z / worldPos.w);
+		}
+
+		// Y平面とスクリーン座標の交点算出関数
+		inline MyLib::Vector3  CalcScreenToY(
+			D3DXVECTOR2 mousepos,
+			D3DXVECTOR2 ScreenSize,
+			D3DXMATRIX View, D3DXMATRIX Prj,
+			float farDistance)
+		{
+			MyLib::Vector3 pos;
+
+			MyLib::Vector3 nearpos;
+			MyLib::Vector3 farpos;
+			MyLib::Vector3 ray;
+
+			int Sx = static_cast<int>(mousepos.x), Sy = static_cast<int>(mousepos.y);
+			nearpos = CalcScreenToWorld(Sx, Sy, 0.0f, ScreenSize, View, Prj);
+			farpos = CalcScreenToWorld(Sx, Sy, 1.0f, ScreenSize, View, Prj);
+			ray = farpos - nearpos;
+			D3DXVec3Normalize(&ray, &ray);
+
+			// farposを再計算する
+			farpos = nearpos + ray * farDistance;
+
+			pos = farpos;
+
+			return pos;
 		}
 
 		/**

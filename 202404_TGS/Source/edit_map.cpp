@@ -164,10 +164,13 @@ void CEdit_Map::Update()
 	// ドラッグ中位置更新
 	if (m_DragData.objX != nullptr) {
 		m_DragData.objX->SetState(CObjectX::STATE::STATE_EDIT);
-		m_DragData.objX->SetPosition(mouseWorldPos);
+
+		MyLib::Vector3 setpos = mouseWorldPos;
+		setpos.y = 0.0f;
+		m_DragData.objX->SetPosition(setpos);
 
 		if (m_DragData.objX->GetCollisionLineBox() != nullptr) {
-			m_DragData.objX->GetCollisionLineBox()->SetPosition(mouseWorldPos);
+			m_DragData.objX->GetCollisionLineBox()->SetPosition(setpos);
 		}
 	}
 
@@ -177,7 +180,10 @@ void CEdit_Map::Update()
 	{// 掴み中 && マウスリリース
 
 		if (!bHoverWindow) {
-			Regist(m_DragData.nType, mouseWorldPos, MyLib::Vector3(0.0f), true);
+
+			MyLib::Vector3 setpos = mouseWorldPos;
+			setpos.y = 0.0f;
+			Regist(m_DragData.nType, setpos, MyLib::Vector3(0.0f), true);
 		}
 		m_bGrab = false;
 	}

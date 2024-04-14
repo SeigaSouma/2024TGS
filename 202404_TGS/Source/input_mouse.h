@@ -44,6 +44,8 @@ public:
 	MyLib::Vector3 GetNearPosition();	// レイの始点取得
 	MyLib::Vector3 GetDiffPosition();	// 差分取得
 	void SetCameraMtx(D3DXMATRIX* viewMtx, D3DXMATRIX* prjMtx);	// カメラマトリックス設定
+	void SetFarDistance(float distance) { m_fFarDistance = distance; }	// 遠方壁までの距離設定
+	float GetFarDistance() { return m_fFarDistance; }					// 遠方壁までの距離取得
 
 	static CInputMouse* GetInstance() { return m_pThisPtr; }	// インスタンス取得
 	static CInputMouse* Create(HINSTANCE hInstance, HWND hWnd);	// 生成処理
@@ -65,6 +67,7 @@ private:
 	MyLib::Vector3 m_NearPos;	// レイの始点
 	D3DXMATRIX* m_pViewMtx;	// ビューマトリックス
 	D3DXMATRIX* m_pPrjMtx;	// プロジェクションマトリックス
+	float m_fFarDistance;	// 遠方壁までの距離
 
 	static CInputMouse* m_pThisPtr;	// 自身のポインタ
 };

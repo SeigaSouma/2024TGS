@@ -16,6 +16,7 @@
 namespace
 {
 	const float MOUSE_SENS = 0.5f;	// マウス感度の補正
+	const float LENGTH_DEFAULT = 800.0f;
 }
 CInputMouse* CInputMouse::m_pThisPtr = nullptr;	// 自身のポインタ
 
@@ -31,8 +32,10 @@ CInputMouse::CInputMouse()
 	memset(&m_aOldState, 0, sizeof(m_aOldState));	// 前回の入力情報
 	m_pViewMtx = nullptr;	// ビューマトリックス
 	m_pPrjMtx = nullptr;	// プロジェクションマトリックス
+	m_WorldPos = MyLib::Vector3();
 	m_OldWorldPos = MyLib::Vector3();	// 前回のワールド座標
 	m_Diffposition = MyLib::Vector3();	// 差分
+	m_fFarDistance = 0.0f;				// 遠方壁までの距離
 }
 
 //==========================================================================
@@ -108,6 +111,9 @@ HRESULT CInputMouse::Init(HINSTANCE hInstance, HWND hWnd)
 	// マウスカーソルの消去
 	//ShowCursor(false);
 
+	// 遠方壁までの距離
+	m_fFarDistance = LENGTH_DEFAULT;
+
 	return S_OK;
 }
 
@@ -158,29 +164,30 @@ void CInputMouse::Update()
 
 	// 位置設定
 	m_OldWorldPos = m_WorldPos;
-	m_WorldPos = UtilFunc::Transformation::CalcScreenToXZ(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx);
-	m_WorldPos.y = UtilFunc::Transformation::CalcScreenToY(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx).y;
+	m_WorldPos = UtilFunc::Transformation::CalcScreenToXZ(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx, m_fFarDistance);
+	m_WorldPos.y = UtilFunc::Transformation::CalcScreenToY(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx, m_fFarDistance).y;
 
 	m_Diffposition = m_WorldPos - m_OldWorldPos;
+	m_Diffposition.y *= 0.5f;
 
-	CCamera* pCamera = CManager::GetInstance()->GetCamera();
-	if (pCamera != nullptr) {
-		MyLib::Vector3 rot = pCamera->GetRotation();
+	//CCamera* pCamera = CManager::GetInstance()->GetCamera();
+	//if (pCamera != nullptr) {
+	//	MyLib::Vector3 rot = pCamera->GetRotation();
 
-		float ratio = 1.0f - (fabsf(rot.z) / static_cast<float>(D3DX_PI));
+	//	float ratio = 1.0f - (fabsf(rot.z) / static_cast<float>(D3DX_PI));
 
-		m_Diffposition.y = (m_WorldPos.y - m_OldWorldPos.y) * ratio * 200.0f;
+	//	m_Diffposition.y = (m_WorldPos.y - m_OldWorldPos.y) * ratio;
 
-		// テキストの描画
-		CManager::GetInstance()->GetDebugProc()->Print(
-			"【位置】[Y：%f]\n",
-			m_WorldPos.y);
+	//	// テキストの描画
+	//	CManager::GetInstance()->GetDebugProc()->Print(
+	//		"【位置】[Y：%f]\n",
+	//		m_WorldPos.y);
 
-		// テキストの描画
-		CManager::GetInstance()->GetDebugProc()->Print(
-			"【差分】[Y：%f]\n",
-			m_Diffposition.y);
-	}
+	//	// テキストの描画
+	//	CManager::GetInstance()->GetDebugProc()->Print(
+	//		"【差分】[Y：%f]\n",
+	//		m_Diffposition.y);
+	//}
 
 }
 

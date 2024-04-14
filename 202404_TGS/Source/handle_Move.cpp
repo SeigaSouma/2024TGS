@@ -170,6 +170,8 @@ void CHandle_Move::Update()
 	MyLib::Vector3 t = (pos - cameraPosition);
 	float distanceToArrow = t.Length();
 
+	CInputMouse::GetInstance()->SetFarDistance(distanceToArrow);
+
 	// –îˆó‚Ìƒ‚ƒfƒ‹‚ÌŠg‘å—¦‚ğİ’è
 	m_scale = 1.0f * (distanceToArrow / 2000.0f);
 
