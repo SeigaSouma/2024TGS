@@ -9,6 +9,16 @@
 #include "calculation.h"
 #include "3D_Effect.h"
 
+namespace 
+{
+	const int IDXLIST[12][2] =	// インデックス格納
+	{
+		{0, 1}, {1, 5}, {5, 4}, {4, 0}, // 底面
+		{3, 2}, {2, 6}, {6, 7}, {7, 3}, // 上面
+		{0, 2}, {1, 3}, {4, 6}, {5, 7}  // 側面
+	};
+}
+
 //==========================================================================
 // コンストラクタ
 //==========================================================================
@@ -89,18 +99,10 @@ HRESULT CCollisionLine_Box::Init()
 	m_pLine[11] = CObjectLine::Create(vtx[5], vtx[7], m_LineColor);
 #else
 
-	// インデックス格納
-	int idx[12][2] = 
-	{
-		{0, 1}, {1, 5}, {5, 4}, {4, 0}, // 底面の辺
-		{3, 2}, {2, 6}, {6, 7}, {7, 3}, // 上面の辺
-		{0, 2}, {1, 3}, {4, 6}, {5, 7}  // 側面の辺
-	};
-
 	// ライン生成
 	for (int i = 0; i < 12; ++i) 
 	{
-		m_pLine[i] = CObjectLine::Create(vtx[idx[i][0]], vtx[idx[i][1]], m_LineColor);
+		m_pLine[i] = CObjectLine::Create(vtx[IDXLIST[i][0]], vtx[IDXLIST[i][1]], m_LineColor);
 	}
 #endif
 
@@ -174,5 +176,33 @@ void CCollisionLine_Box::SetPosition(const MyLib::Vector3& pos)
 			continue;
 		}
 		m_pLine[i]->SetPosition(pos);
+	}
+}
+
+//==========================================================================
+// AAbB情報設定
+//==========================================================================
+void CCollisionLine_Box::SetAABB(MyLib::AABB aabb)
+{
+	// 情報設定
+	m_AABB = aabb;
+
+	// ボックスの頂点
+	MyLib::Vector3 vtx[8];
+	vtx[0] = m_AABB.vtxMin; // 最小頂点
+	vtx[1] = MyLib::Vector3(m_AABB.vtxMin.x, m_AABB.vtxMin.y, m_AABB.vtxMax.z);
+	vtx[2] = MyLib::Vector3(m_AABB.vtxMin.x, m_AABB.vtxMax.y, m_AABB.vtxMin.z);
+	vtx[3] = MyLib::Vector3(m_AABB.vtxMin.x, m_AABB.vtxMax.y, m_AABB.vtxMax.z);
+
+	vtx[4] = MyLib::Vector3(m_AABB.vtxMax.x, m_AABB.vtxMin.y, m_AABB.vtxMin.z);
+	vtx[5] = MyLib::Vector3(m_AABB.vtxMax.x, m_AABB.vtxMin.y, m_AABB.vtxMax.z);
+	vtx[6] = MyLib::Vector3(m_AABB.vtxMax.x, m_AABB.vtxMax.y, m_AABB.vtxMin.z);
+	vtx[7] = m_AABB.vtxMax; // 最大頂点
+
+	// ライン生成
+	for (int i = 0; i < 12; ++i)
+	{
+		m_pLine[i]->SetLeftPosition(vtx[IDXLIST[i][0]]);
+		m_pLine[i]->SetRightPosition(vtx[IDXLIST[i][1]]);
 	}
 }

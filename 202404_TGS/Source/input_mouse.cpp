@@ -33,9 +33,10 @@ CInputMouse::CInputMouse()
 	m_pViewMtx = nullptr;	// ビューマトリックス
 	m_pPrjMtx = nullptr;	// プロジェクションマトリックス
 	m_WorldPos = MyLib::Vector3();
-	m_OldWorldPos = MyLib::Vector3();	// 前回のワールド座標
-	m_Diffposition = MyLib::Vector3();	// 差分
-	m_fFarDistance = 0.0f;				// 遠方壁までの距離
+	m_OldWorldPos = MyLib::Vector3();		// 前回のワールド座標
+	m_WorldDiffposition = MyLib::Vector3();	// ワールド座標の差分
+	m_fFarDistance = 0.0f;					// 遠方壁までの距離
+	m_fScreenDiffFactor = 0.0f;				// スクリーン差分の係数
 }
 
 //==========================================================================
@@ -148,8 +149,23 @@ void CInputMouse::Update()
 		m_pDevice->Acquire();
 	}
 
+	// 位置取得
 	GetCursorPos(&m_pos);
 	ScreenToClient(FindWindowA(CLASS_NAME, WINDOW_NAME), &m_pos);
+
+	// 差分割り出し
+	m_nDeltaX = m_pos.x - m_posOld.x;
+	int deltaY = m_pos.y - m_posOld.y;
+
+	// 1ドラッグ分の係数
+	const float coefficient = 0.01f;
+
+	// ドラッグ操作量割り出し
+	m_fScreenDiffFactor = (abs(m_nDeltaX) + abs(deltaY)) * coefficient;
+
+	// 過去の位置保存
+	m_posOld = m_pos;
+
 
 	int x = m_pos.x, y = m_pos.y;
 	UtilFunc::Transformation::ValueNormalize(x, 1280, 0);
@@ -167,27 +183,9 @@ void CInputMouse::Update()
 	m_WorldPos = UtilFunc::Transformation::CalcScreenToXZ(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx, m_fFarDistance);
 	m_WorldPos.y = UtilFunc::Transformation::CalcScreenToY(GetPosition(), D3DXVECTOR2(SCREEN_WIDTH, SCREEN_HEIGHT), *m_pViewMtx, *m_pPrjMtx, m_fFarDistance).y;
 
-	m_Diffposition = m_WorldPos - m_OldWorldPos;
-	m_Diffposition.y *= 0.5f;
-
-	//CCamera* pCamera = CManager::GetInstance()->GetCamera();
-	//if (pCamera != nullptr) {
-	//	MyLib::Vector3 rot = pCamera->GetRotation();
-
-	//	float ratio = 1.0f - (fabsf(rot.z) / static_cast<float>(D3DX_PI));
-
-	//	m_Diffposition.y = (m_WorldPos.y - m_OldWorldPos.y) * ratio;
-
-	//	// テキストの描画
-	//	CManager::GetInstance()->GetDebugProc()->Print(
-	//		"【位置】[Y：%f]\n",
-	//		m_WorldPos.y);
-
-	//	// テキストの描画
-	//	CManager::GetInstance()->GetDebugProc()->Print(
-	//		"【差分】[Y：%f]\n",
-	//		m_Diffposition.y);
-	//}
+	// ワールド座標の差分
+	m_WorldDiffposition = m_WorldPos - m_OldWorldPos;
+	m_WorldDiffposition.y *= 0.5f;
 
 }
 
@@ -243,11 +241,11 @@ MyLib::Vector3 CInputMouse::GetNearPosition()
 }
 
 //==========================================================================
-// 差分取得
+// ワールド座標の差分取得
 //==========================================================================
-MyLib::Vector3 CInputMouse::GetDiffPosition()
+MyLib::Vector3 CInputMouse::GetWorldDiffPosition()
 {
-	return m_Diffposition;
+	return m_WorldDiffposition;
 }
 
 //==========================================================================

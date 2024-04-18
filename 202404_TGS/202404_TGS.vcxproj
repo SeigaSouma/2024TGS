@@ -177,6 +177,7 @@
     <ClCompile Include="Source\collisionobject.cpp" />
     <ClCompile Include="Source\debugproc.cpp" />
     <ClCompile Include="Source\edit.cpp" />
+    <ClCompile Include="Source\edithandle.cpp" />
     <ClCompile Include="Source\edit_enemybase.cpp" />
     <ClCompile Include="Source\edit_map.cpp" />
     <ClCompile Include="Source\elevation.cpp" />
@@ -193,6 +194,7 @@
     <ClCompile Include="Source\game_pressenter.cpp" />
     <ClCompile Include="Source\game_tutorial.cpp" />
     <ClCompile Include="Source\handle_Move.cpp" />
+    <ClCompile Include="Source\handle_Scale.cpp" />
     <ClCompile Include="Source\hp_gauge.cpp" />
     <ClCompile Include="Source\hp_gauge_tip.cpp" />
     <ClCompile Include="Source\hp_gauge_tip_billboard.cpp" />
@@ -305,6 +307,7 @@
     <ClInclude Include="Source\constans.h" />
     <ClInclude Include="Source\debugproc.h" />
     <ClInclude Include="Source\edit.h" />
+    <ClInclude Include="Source\edithandle.h" />
     <ClInclude Include="Source\edit_enemybase.h" />
     <ClInclude Include="Source\edit_map.h" />
     <ClInclude Include="Source\elevation.h" />
@@ -321,6 +324,7 @@
     <ClInclude Include="Source\game_pressenter.h" />
     <ClInclude Include="Source\game_tutorial.h" />
     <ClInclude Include="Source\handle_Move.h" />
+    <ClInclude Include="Source\handle_Scale.h" />
     <ClInclude Include="Source\hp_gauge.h" />
     <ClInclude Include="Source\hp_gauge_tip.h" />
     <ClInclude Include="Source\hp_gauge_tip_billboard.h" />

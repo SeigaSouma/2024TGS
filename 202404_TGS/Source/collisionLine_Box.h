@@ -28,6 +28,7 @@ public:
 	void Draw() override {}
 	void SetPosition(const MyLib::Vector3& pos) override;	// ˆÊ’uİ’è
 
+	void SetAABB(MyLib::AABB aabb);	// AAbBî•ñİ’è
 	void Kill();
 
 	static CCollisionLine_Box* Create(const MyLib::AABB& aabb, const D3DXCOLOR& col);

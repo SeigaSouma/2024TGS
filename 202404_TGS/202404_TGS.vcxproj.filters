@@ -405,6 +405,12 @@
     <ClCompile Include="Source\handle_Move.cpp">
       <Filter>handle</Filter>
     </ClCompile>
+    <ClCompile Include="Source\edithandle.cpp">
+      <Filter>handle</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\handle_Scale.cpp">
+      <Filter>handle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Xload.h">
@@ -768,6 +774,12 @@
       <Filter>edit</Filter>
     </ClInclude>
     <ClInclude Include="Source\handle_Move.h">
+      <Filter>handle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\edithandle.h">
+      <Filter>handle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\handle_Scale.h">
       <Filter>handle</Filter>
     </ClInclude>
   </ItemGroup>

@@ -39,6 +39,7 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);		// 色
 	m_fSize = MyLib::Vector3();						// サイズ
 	m_AABB = MyLib::AABB();							// AABB情報
+	m_OriginAABB = MyLib::AABB();					// 元のAABB情報
 	m_state = STATE::STATE_NONE;					// 状態
 	m_bShadow = false;								// 影を使っているかどうか
 	m_nIdxTexure = 0;								// テクスチャのインデックス番号
@@ -253,6 +254,9 @@ HRESULT CObjectX::Init()
 	m_AABB.vtxMax = pXData->vtxMax;
 	m_pMesh = pXData->pMesh;
 
+	// 元のAABB情報
+	m_OriginAABB = m_AABB;
+
 	return S_OK;
 }
 
@@ -287,6 +291,9 @@ HRESULT CObjectX::Init(const char *pFileName)
 	m_AABB.vtxMax = pXData->vtxMax;
 	m_pMesh = pXData->pMesh;
 
+	// 元のAABB情報
+	m_OriginAABB = m_AABB;
+
 	return S_OK;
 }
 
@@ -306,6 +313,9 @@ HRESULT CObjectX::Init(int nIdxXFile)
 	m_AABB.vtxMin = pXData->vtxMin;
 	m_AABB.vtxMax = pXData->vtxMax;
 	m_pMesh = pXData->pMesh;
+
+	// 元のAABB情報
+	m_OriginAABB = m_AABB;
 
 	return S_OK;
 }
@@ -409,6 +419,19 @@ void CObjectX::CreateCollisionBox()
 void CObjectX::SetCollisionBoxData()
 {
 	if (m_pCollisionLineBox != nullptr) {
+
+		MyLib::AABB aabb;
+		aabb.vtxMin.x = m_OriginAABB.vtxMin.x * m_scale.x;
+		aabb.vtxMin.y = m_OriginAABB.vtxMin.y * m_scale.y;
+		aabb.vtxMin.z = m_OriginAABB.vtxMin.z * m_scale.z;
+
+		aabb.vtxMax.x = m_OriginAABB.vtxMax.x * m_scale.x;
+		aabb.vtxMax.y = m_OriginAABB.vtxMax.y * m_scale.y;
+		aabb.vtxMax.z = m_OriginAABB.vtxMax.z * m_scale.z;
+
+		m_pCollisionLineBox->SetAABB(aabb);
+
+		// 位置・向き設定
 		m_pCollisionLineBox->SetPosition(GetPosition());
 		m_pCollisionLineBox->SetRotation(GetRotation());
 	}

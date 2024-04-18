@@ -15,7 +15,13 @@
 //==========================================================================
 namespace
 {
-	const char* LOADTEXT = "data\\TEXT\\map\\info.txt";				// テクスチャのファイル
+	const char* LOADTEXT = "data\\TEXT\\map\\info.txt";		// テクスチャのファイル
+	const char* TEXTURE_HANDLE[] =							// テクスチャのファイル
+	{
+		"data\\TEXTURE\\handle\\move.png",
+		"data\\TEXTURE\\handle\\scale.png",
+		"data\\TEXTURE\\handle\\rotation.png",
+	};
 }
 CListManager<CObjectX> CEdit_Map::m_List = {};	// リスト
 
@@ -32,7 +38,10 @@ CEdit_Map::CEdit_Map()
 	m_bReGrab = false;		// 再掴み判定
 	m_pGrabObj = nullptr;	// 掴みオブジェクト
 	m_pHandle = nullptr;	// 移動ハンドル
-	m_moveAngle = CHandle_Move::HandleAngle::ANGLE_X;	// 移動の向き
+	m_HandleType = CHandle::HandleType::TYPE_MOVE;	// ハンドルの種類
+	m_moveAngle = CHandle::HandleAngle::ANGLE_X;	// 移動の向き
+
+	memset(m_HandleTex, 0, sizeof(m_HandleTex));// テクスチャのポインタ
 }
 
 //==========================================================================
@@ -79,6 +88,14 @@ HRESULT CEdit_Map::Init()
 			NULL, NULL, &m_pTexture.back());
 	}
 
+	int max = static_cast<int>(CHandle::HandleType::TYPE_MAX);
+	for (int i = 0; i < max; i++)
+	{
+		D3DXCreateTextureFromFileEx(pDevive, TEXTURE_HANDLE[i], 0, 0, 0, 0, D3DFMT_UNKNOWN,
+			D3DPOOL_MANAGED, D3DX_DEFAULT, D3DX_DEFAULT, D3DCOLOR_ARGB(255, 255, 255, 255),
+			NULL, NULL, &m_HandleTex[i]);
+	}
+
 	return S_OK;
 }
 
@@ -87,6 +104,23 @@ HRESULT CEdit_Map::Init()
 //==========================================================================
 void CEdit_Map::Uninit()
 {
+	for (const auto& texture : m_pTexture)
+	{
+		texture->Release();
+	}
+	m_pTexture.clear();
+
+	int max = static_cast<int>(CHandle::HandleType::TYPE_MAX);
+	for (int i = 0; i < max; i++)
+	{
+		if (m_HandleTex[i] == nullptr) {
+			continue;
+		}
+
+		m_HandleTex[i]->Release();
+		m_HandleTex[i] = nullptr;
+	}
+
 	delete this;
 }
 
@@ -105,6 +139,10 @@ void CEdit_Map::Update()
 	{
 		ImGui::PushID(i); // ウィジェットごとに異なるIDを割り当てる
 		{
+			if (i % 5 != 0) {
+				ImGui::SameLine();
+			}
+
 			// ドラッグ可能な要素の描画
 			ImGui::ImageButton(reinterpret_cast<ImTextureID>(m_pTexture[i]), imageSize);
 
@@ -139,7 +177,200 @@ void CEdit_Map::Update()
 	MyLib::Vector3 mousePos = pMouse->GetNearPosition();
 	MyLib::Vector3 mouseWorldPos = pMouse->GetWorldPosition();
 	MyLib::Vector3 mouseOldWorldPos = pMouse->GetOldWorldPosition();
-	MyLib::Vector3 diffpos = pMouse->GetDiffPosition();
+
+
+
+
+
+	//=============================
+	// Imgui設定
+	//=============================
+	if (m_pGrabObj != nullptr) {
+
+		ImGui::Begin("Transform");
+		//ImGui::Begin("Transform", NULL, ImGuiWindowFlags_MenuBar);
+
+		// 移動ボタン
+		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(m_HandleTex[CHandle::HandleType::TYPE_MOVE]), imageSize))
+		{
+			m_HandleType = CHandle::HandleType::TYPE_MOVE;
+			ChangeHandle();
+		}
+		ImGui::SameLine();
+
+		// スケールボタン
+		if(ImGui::ImageButton(reinterpret_cast<ImTextureID>(m_HandleTex[CHandle::HandleType::TYPE_SCALE]), imageSize))
+		{
+			m_HandleType = CHandle::HandleType::TYPE_SCALE;
+			ChangeHandle();
+		}
+		ImGui::SameLine();
+
+
+		if (!bHoverWindow) {
+			bHoverWindow = ImGui::IsWindowHovered(frag);
+		}
+
+		//=============================
+		// 向き設定
+		//=============================
+		ImGui::Dummy(ImVec2(0.0f, 10.0f));
+		float windowWidth = 100.0f;
+		const float  ROT_MOVE = D3DX_PI * 0.01f;
+		const float  POS_MOVE = 0.5f;
+
+		//if (ImGui::CollapsingHeader("Transform"))
+		{
+			//// チェックボックスを表示
+			//unsigned int checkboxFlags = 0;
+			//static bool readOnlyCheckboxState = false; // チェックボックスの読み取り専用状態
+
+			////ImGui::CheckboxFlags("チェックボックス", &checkboxFlags, 1 << 0, ImGuiCheckboxFlags_No ImGuiCheckboxFlags_NoCheckOnClick);
+
+
+			//// チェックボックスを表示し、読み取り専用状態であれば無効化する
+			//ImGui::PushItemFlag(ImGuiItemFlags_Disabled, readOnlyCheckboxState); // 読み取り専用状態ならチェックボックスを無効化
+			//ImGui::Checkbox("読み取り専用チェックボックス", &readOnlyCheckboxState);
+			//ImGui::PopItemFlag(); // チェックボックスの無効化を解除
+
+
+			// リセット
+			if (ImGui::Button("ALL RESET")) {
+				m_pGrabObj->SetPosition(0.0f);
+				m_pGrabObj->SetRotation(0.0f);
+				m_pGrabObj->SetScale(1.0f);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("POS RESET")) {
+				m_pGrabObj->SetPosition(0.0f);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("ROT RESET")) {
+				m_pGrabObj->SetRotation(0.0f);
+			}
+			ImGui::SameLine();
+			if (ImGui::Button("SCALE RESET")) {
+				m_pGrabObj->SetScale(1.0f);
+			}
+
+			//=============================
+			// 位置設定
+			//=============================
+			MyLib::Vector3 pos = m_pGrabObj->GetPosition();
+
+			// X
+			ImGui::PushID(0); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("x", &pos.x, POS_MOVE, 0.0f, 0.0f, "%.2f");
+				ImGui::SameLine();
+			}
+			ImGui::PopID();
+
+			// Y
+			ImGui::PushID(0); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("y", &pos.y, POS_MOVE, 0.0f, 0.0f, "%.2f");
+				ImGui::SameLine();
+			}
+			ImGui::PopID();
+
+			// Z
+			ImGui::PushID(0); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("z", &pos.z, POS_MOVE, 0.0f, 0.0f, "%.2f");
+			}
+			ImGui::PopID();
+
+			// 位置設定
+			m_pGrabObj->SetPosition(pos);
+			if (m_pGrabObj->GetCollisionLineBox() != nullptr) {
+				m_pGrabObj->GetCollisionLineBox()->SetPosition(pos);
+			}
+			if (m_pHandle != nullptr) {
+				m_pHandle->SetPosition(m_pGrabObj->GetPosition());
+			}
+
+
+			//=============================
+			// 向き設定
+			//=============================
+			MyLib::Vector3 rot = m_pGrabObj->GetRotation();
+
+			// X
+			ImGui::PushID(1); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("x", &rot.x, ROT_MOVE, 0.0f, 0.0f, "%.2f");
+				ImGui::SameLine();
+			}
+			ImGui::PopID();
+
+			// Y
+			ImGui::PushID(1); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("y", &rot.y, ROT_MOVE, 0.0f, 0.0f, "%.2f");
+				ImGui::SameLine();
+			}
+			ImGui::PopID();
+
+			// Z
+			ImGui::PushID(1); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("z", &rot.z, ROT_MOVE, 0.0f, 0.0f, "%.2f");
+			}
+			ImGui::PopID();
+
+			// 向き設定
+			UtilFunc::Transformation::RotNormalize(rot);
+			m_pGrabObj->SetRotation(rot);
+
+
+			//=============================
+			// 拡縮設定
+			//=============================
+			MyLib::Vector3 scale = m_pGrabObj->GetScale();
+
+			// X
+			ImGui::PushID(2); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("x", &scale.x, 0.01f, 0.0f, 0.0f, "%.2f");
+				ImGui::SameLine();
+			}
+			ImGui::PopID();
+
+			// Y
+			ImGui::PushID(2); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("y", &scale.y, 0.01f, 0.0f, 0.0f, "%.2f");
+				ImGui::SameLine();
+			}
+			ImGui::PopID();
+
+			// Z
+			ImGui::PushID(2); // ウィジェットごとに異なるIDを割り当てる
+			{
+				ImGui::SetNextItemWidth(windowWidth);
+				ImGui::DragFloat("z", &scale.z, 0.01f, 0.0f, 0.0f, "%.2f");
+			}
+			ImGui::PopID();
+
+			// 拡縮設定
+			m_pGrabObj->SetScale(scale);
+		}
+		ImGui::End();
+	}
+
+
+
+
+
 
 	if (m_bGrab && 
 		!bHoverWindow) {
@@ -188,72 +419,50 @@ void CEdit_Map::Update()
 		m_bGrab = false;
 	}
 
+
+
 	// 移動ハンドル判定
 	if (!m_bGrab &&
 		m_pHandle != nullptr &&
 		!m_bReGrab)
 	{
-		bool bHit = false, bChange = false;
+		if (m_pHandle->IsHoverHandle() &&
+			!pKeyboard->GetPress(DIK_LALT) &&
+			ImGui::IsMouseClicked(0))
+		{// クリック
 
-		// リストループ
-		CListManager<CObjectX> handleList = CHandle_Move::GetList();
-		CObjectX* pArrow = nullptr;
-		int i = 0;
-		while (handleList.ListLoop(&pArrow))
-		{
-			pArrow->SetColor(mylib_const::DEFAULT_COLOR);
+			m_bReGrab = true;
 
-			if (!bHit && !bHoverWindow)
-			{
-				MyLib::AABB aabb = pArrow->GetAABB();
-				D3DXMATRIX mtx = pArrow->GetWorldMtx();
-				float time = 0.0f;
-
-				bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mtx, time);
-			}
-
-			if (bHit && !bChange)
-			{
-				pArrow->SetColor(D3DXCOLOR(0.0f, 1.0f, 1.0f, 1.0f));
-				bChange = true;
-
-				if (!pKeyboard->GetPress(DIK_LALT) &&
-					ImGui::IsMouseClicked(0))
-				{// クリック
-
-					m_bReGrab = true;
-
-					// 移動の向き
-					m_moveAngle = static_cast<CHandle_Move::HandleAngle>(i);
-				}
-				return;
-			}
-
-			i++;
+			// 移動の向き
+			m_moveAngle = m_pHandle->GetHoverAngle();
+			m_pHandle->SetState(CHandle::State::STATE_GRAB);
+			return;
 		}
 	}
 
 	// 再移動中
-	if (m_bReGrab)
+	MyLib::Vector3 diffpos = pMouse->GetWorldDiffPosition();
+	if (m_bReGrab &&
+		m_pGrabObj != nullptr)
 	{
 		MyLib::Vector3 pos = m_pGrabObj->GetPosition();
+		MyLib::Vector3 rot = m_pGrabObj->GetRotation();
+		MyLib::Vector3 scale = m_pGrabObj->GetScale();
 
-		switch (m_moveAngle)
-		{
-		case CHandle_Move::ANGLE_Z:
-			pos.z += diffpos.z;
-			break;
+		// 差分取得
+		CHandle::SEditHandleInfo info = m_pHandle->GetDiff(m_moveAngle);
+		pos += info.pos;
+		rot += info.rot;
+		UtilFunc::Transformation::RotNormalize(rot);
 
-		case CHandle_Move::ANGLE_Y:
-			pos.y += diffpos.y * m_pHandle->GetScale();
-			break;
-
-		case CHandle_Move::ANGLE_X:
-			pos.x += diffpos.x;
-			break;
-		}
+		scale += info.scale;
+		if (scale.x <= 0.1f) scale.x = 0.1f;
+		if (scale.y <= 0.1f) scale.y = 0.1f;
+		if (scale.z <= 0.1f) scale.z = 0.1f;
 
 		m_pGrabObj->SetPosition(pos);
+		m_pGrabObj->SetRotation(rot);
+		m_pGrabObj->SetScale(scale);
 
 		if (m_pGrabObj->GetCollisionLineBox() != nullptr) {
 			m_pGrabObj->GetCollisionLineBox()->SetPosition(pos);
@@ -262,14 +471,15 @@ void CEdit_Map::Update()
 		if (m_pHandle != nullptr) {
 			m_pHandle->SetPosition(m_pGrabObj->GetPosition());
 		}
-
 	}
+
 
 	if (m_bReGrab &&
 		!pKeyboard->GetPress(DIK_LALT) &&
 		ImGui::IsMouseReleased(0))
-	{// クリック
+	{// リリース
 		m_bReGrab = false;
+		m_pHandle->SetState(CHandle::State::STATE_NONE);
 	}
 
 	if (!pKeyboard->GetPress(DIK_LALT) &&
@@ -320,7 +530,7 @@ void CEdit_Map::Update()
 					}
 
 					if (m_pHandle == nullptr) {
-						m_pHandle = CHandle_Move::Create(m_pGrabObj->GetPosition());
+						m_pHandle = CHandle::Create(m_HandleType, m_pGrabObj->GetPosition());
 					}
 				}
 				else {
@@ -337,6 +547,22 @@ void CEdit_Map::Update()
 			m_pHandle = nullptr;
 		}
 	}
+
+}
+
+//==========================================================================
+// ハンドル切り替え
+//==========================================================================
+void CEdit_Map::ChangeHandle()
+{
+	// 削除
+	if (m_pHandle != nullptr) {
+		m_pHandle->Kill();
+		m_pHandle = nullptr;
+	}
+
+	// ハンドル生成
+	m_pHandle = CHandle::Create(m_HandleType, m_pGrabObj->GetPosition());
 
 }
 
@@ -623,7 +849,7 @@ void CEdit_Map::Regist(int idx, MyLib::Vector3 pos, MyLib::Vector3 rot, bool bSh
 		}
 
 		if (m_pHandle == nullptr) {
-			m_pHandle = CHandle_Move::Create(m_pGrabObj->GetPosition());
+			m_pHandle = CHandle::Create(CHandle::HandleType::TYPE_MOVE, m_pGrabObj->GetPosition());
 		}
 	}
 }

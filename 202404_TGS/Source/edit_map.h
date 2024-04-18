@@ -10,7 +10,7 @@
 
 #include "listmanager.h"
 #include "objectX.h"
-#include "handle_Move.h"
+#include "edithandle.h"
 
 //==========================================================================
 // クラス定義
@@ -58,7 +58,11 @@ private:
 		std::string fileName;
 	};
 
-	HRESULT ReadXFile();
+	//=============================
+	// メンバ関数
+	//=============================
+	HRESULT ReadXFile();	// ファイル読み込み
+	void ChangeHandle();	// ハンドル切り替え
 
 	//=============================
 	// メンバ変数
@@ -68,13 +72,17 @@ private:
 	std::vector<LPDIRECT3DTEXTURE9> m_pTexture;	// テクスチャのポインタ
 	std::vector<CObjectX*> m_pObjX;			// オブジェクトXのポインタ
 
+	LPDIRECT3DTEXTURE9 m_HandleTex[CHandle::HandleType::TYPE_MAX];	// テクスチャのポインタ
+
+
 	SDragDropData m_DragData;	// ドラッグ中データ
 	bool m_bGrab;	// 掴み判定
 	bool m_bReGrab;	// 再掴み判定
 
-	CObjectX* m_pGrabObj;		// 掴みオブジェクト
-	CHandle_Move* m_pHandle;	// 移動ハンドル
-	CHandle_Move::HandleAngle m_moveAngle;	// 移動の向き
+	CObjectX* m_pGrabObj;				// 掴みオブジェクト
+	CHandle* m_pHandle;					// 移動ハンドル
+	CHandle::HandleType m_HandleType;	// ハンドルの種類
+	CHandle::HandleAngle m_moveAngle;	// 移動の向き
 
 	static CListManager<CObjectX> m_List;	// リスト
 

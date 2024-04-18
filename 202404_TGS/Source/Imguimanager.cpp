@@ -114,7 +114,7 @@ void ImguiMgr::Update()
 	ImGui::NewFrame();
 
 
-#if 1
+#if 0
 	// ここにImguiのGUI要素を追加
 	ImGui::Text("Hello, ImGui!");
 	ImGui::Separator();
@@ -184,6 +184,29 @@ void ImguiMgr::Update()
 	ImGui::Begin("My Window2");
 	ImGui::Text("This is my window content.");
 	ImGui::End();
+
+
+	// メニューバー
+	ImGui::BeginMainMenuBar();
+	if (ImGui::BeginMenu("File"))
+	{
+		if (ImGui::MenuItem("New"))
+		{
+			// New メニューが選択されたときの処理
+		}
+		if (ImGui::MenuItem("Open"))
+		{
+			// Open メニューが選択されたときの処理
+		}
+		ImGui::EndMenu();
+	}
+	if (ImGui::BeginMenu("Edit"))
+	{
+		// Edit メニューの項目を追加する
+		ImGui::EndMenu();
+	}
+	// 他のメニューを追加する
+	ImGui::EndMainMenuBar();
 
 
 	struct MyDragData {
