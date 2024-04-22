@@ -42,13 +42,29 @@ public:
 		MOTION_DEF = 0,				// ニュートラルモーション
 		MOTION_WALK,				// 移動
 		MOTION_DASH,				// ダッシュ
+		MOTION_AVOID,				// 回避
+		MOTION_ATK,					// 攻撃
+		MOTION_ATK2,				// 攻撃(派生1)
+		MOTION_ATK3,				// 攻撃(派生2)
+		MOTION_ATK4,				// 攻撃(派生3)
+		MOTION_JUMP,				// ジャンプ
+		MOTION_FALL,				// 落下中
 		MOTION_DMG,					// ダメージ
 		MOTION_KNOCKBACK,			// ノックバック
 		MOTION_KNOCKBACK_PASSIVE,	// ノックバック受け身
 		MOTION_DOWN,				// ダウン
 		MOTION_DEADWAIT,			// 死亡待機
 		MOTION_DEAD,				// 死亡
-		MOTION_FLOWERING,			// 開花
+		MOTION_RESPAWN,				// 復活
+		MOTION_PRAYER,				// 祈り
+		MOTION_PRAYERLOOP,			// 祈りループ
+		MOTION_GUARD,				// ガード
+		MOTION_GUARD_DMG,			// ガードダメージ
+		MOTION_COUNTER_ACCEPT,		// 反撃受け付け
+		MOTION_COUNTER_TURN,		// 反撃受け流し
+		MOTION_COUNTER_ATTACK,		// 反撃
+		MOTION_DASHATK,				// ダッシュ攻撃
+		MOTION_ATK4_FINISH,			// 4段階目攻撃のチャージ
 		MOTION_MAX
 	};
 
@@ -223,11 +239,12 @@ private:
 	void StateAfterFlowering();	// 開花後
 
 	// その他関数
-	virtual void Controll();	// 操作
-	void LimitPos();			// 位置制限
-	void MotionBySetState();	// モーション別の状態設定
-	void ResetFrag();			// フラグリセット
-	void RockOn();				// ロックオン
+	virtual void Controll();		// 操作
+	void LimitPos();				// 位置制限
+	void CollisionMapObject();		// マップオブジェクトとの当たり判定
+	void MotionBySetState();		// モーション別の状態設定
+	void ResetFrag();				// フラグリセット
+	void RockOn();					// ロックオン
 	void UpdateDamageReciveTimer();	// ダメージ受付時間更新
 
 	// モーション系関数

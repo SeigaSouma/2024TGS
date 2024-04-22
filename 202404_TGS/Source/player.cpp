@@ -33,6 +33,7 @@
 #include "busket.h"
 #include "map.h"
 #include "rankingmanager.h"
+#include "edit_map.h"
 
 // 使用クラス
 #include "playercontrol.h"
@@ -42,7 +43,7 @@
 //==========================================================================
 namespace
 {
-	const char* CHARAFILE = "data\\TEXT\\character\\player\\bee\\setup_player.txt";	// キャラクターファイル
+	const char* CHARAFILE = "data\\TEXT\\character\\player\\tyuuni\\setup_player.txt";	// キャラクターファイル
 	const float JUMP = 20.0f * 1.5f;			// ジャンプ力初期値
 	const float TIME_DMG = static_cast<float>(20) / static_cast<float>(mylib_const::DEFAULT_FPS);	// ダメージ時間
 	const int INVINCIBLE_INT = 2;				// 無敵の間隔
@@ -517,7 +518,6 @@ void CPlayer::Controll()
 
 	// 移動量取得
 	float fMove = GetVelocity();
-	float fMoveOrigin = GetVelocity();
 
 	// 経過時間取得
 	float fCurrentTime = CManager::GetInstance()->GetDeltaTime();
@@ -687,7 +687,7 @@ void CPlayer::Controll()
 				m_sMotionFrag.bJump = true;
 				move.y += 17.0f;
 
-				//pMotion->Set(MOTION_JUMP);
+				pMotion->Set(MOTION_JUMP);
 
 				// サウンド再生
 				CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_JUMP);
@@ -746,8 +746,8 @@ void CPlayer::Controll()
 	}
 
 	// 移動量加算
-	newPosition.x += move.x * 0.1f;
-	newPosition.z += move.z * 0.1f;
+	newPosition.x += move.x;
+	newPosition.z += move.z;
 
 	sakiPos.x = newPosition.x + sinf(D3DX_PI + rot.y) * GetRadius();
 	sakiPos.z = newPosition.z + cosf(D3DX_PI + rot.y) * GetRadius();
@@ -823,13 +823,13 @@ void CPlayer::Controll()
 	// 慣性補正
 	if (m_state == STATE_DMG)
 	{
-		move.x += (0.0f - move.x) * 0.015f;
-		move.z += (0.0f - move.z) * 0.015f;
+		move.x += (0.0f - move.x) * 0.1f;
+		move.z += (0.0f - move.z) * 0.1f;
 	}
 	else if (m_state != STATE_KNOCKBACK && m_state != STATE_DEAD && m_state != STATE_FADEOUT)
 	{
-		move.x += (0.0f - move.x) * 0.015f;
-		move.z += (0.0f - move.z) * 0.015f;
+		move.x += (0.0f - move.x) * 0.25f;
+		move.z += (0.0f - move.z) * 0.25f;
 	}
 
 
@@ -1002,21 +1002,21 @@ void CPlayer::MotionSet()
 				pMotion->Set(MOTION_WALK);
 			}
 		}
-		//else if (m_sMotionFrag.bJump == true && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
-		//{// ジャンプ中
+		else if (m_sMotionFrag.bJump == true && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
+		{// ジャンプ中
 
-		//	// ジャンプのフラグOFF
-		//	m_sMotionFrag.bJump = false;
+			// ジャンプのフラグOFF
+			m_sMotionFrag.bJump = false;
 
-		//	// ジャンプモーション
-		//	pMotion->Set(MOTION_JUMP);
-		//}
-		//else if (m_bJump == true && m_sMotionFrag.bJump == false && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
-		//{// ジャンプ中&&ジャンプモーションが終わってる時
+			// ジャンプモーション
+			pMotion->Set(MOTION_JUMP);
+		}
+		else if (m_bJump == true && m_sMotionFrag.bJump == false && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
+		{// ジャンプ中&&ジャンプモーションが終わってる時
 
-		//	// 落下モーション
-		//	pMotion->Set(MOTION_FALL);
-		//}
+			// 落下モーション
+			pMotion->Set(MOTION_FALL);
+		}
 		else
 		{
 			// ニュートラルモーション
@@ -1329,26 +1329,6 @@ void CPlayer::LimitPos()
 {
 	MyLib::Vector3 pos = GetPosition();
 
-	if (m_state != STATE_AFTERFLOWERING)
-	{
-		pos.y = 0.0f;
-	}
-
-	if (pos.x >= 1400.0f)
-	{
-		pos.x = 1400.0f;
-	}
-	if (pos.x <= -1400.0f)
-	{
-		pos.x = -1400.0f;
-	}
-
-	MyLib::Vector3 move = GetMove();
-	move.y = 0.0f;
-
-	SetPosition(pos);
-	SetMove(move);
-
 	// エリア制限情報取得
 	CListManager<CLimitArea> limitareaList = CLimitArea::GetListObj();
 	CLimitArea* pLimitArea = nullptr;
@@ -1370,6 +1350,8 @@ void CPlayer::LimitPos()
 		pos = pos.Normal() * mylib_const::RADIUS_STAGE;
 	}
 	SetPosition(pos);
+
+	//CollisionMapObject();
 }
 
 //==========================================================================
@@ -1508,6 +1490,164 @@ bool CPlayer::Collision(MyLib::Vector3 &pos, MyLib::Vector3 &move)
 	SetRotation(rot);
 
 	return bNowLand;
+}
+
+
+// 球とAABBの当たり判定
+bool SphereAABBCollision(const D3DXVECTOR3& sphereCenter, float sphereRadius, const D3DXVECTOR3& boxMin, const D3DXVECTOR3& boxMax)
+{
+	// 球の中心をAABBの内部にクランプする
+	D3DXVECTOR3 closestPoint;
+	closestPoint.x = max(boxMin.x, min(sphereCenter.x, boxMax.x));
+	closestPoint.y = max(boxMin.y, min(sphereCenter.y, boxMax.y));
+	closestPoint.z = max(boxMin.z, min(sphereCenter.z, boxMax.z));
+
+	// 球の中心とAABBの最も近い点の距離を計算する
+	D3DXVECTOR3 aaaaaaaaaaaa = (sphereCenter - closestPoint);
+	float distanceSquared = D3DXVec3LengthSq(&aaaaaaaaaaaa);
+
+	// 球の半径の2乗と比較する
+	return distanceSquared <= (sphereRadius * sphereRadius);
+}
+
+// 回転行列を適用する関数
+void TransformBoundingBox(const D3DXVECTOR3& boxMin, const D3DXVECTOR3& boxMax, const D3DXMATRIX& rotationMatrix, D3DXVECTOR3& transformedMin, D3DXVECTOR3& transformedMax)
+{
+	D3DXVECTOR3 corners[8] = {
+		D3DXVECTOR3(boxMin.x, boxMin.y, boxMin.z),
+		D3DXVECTOR3(boxMax.x, boxMin.y, boxMin.z),
+		D3DXVECTOR3(boxMin.x, boxMax.y, boxMin.z),
+		D3DXVECTOR3(boxMax.x, boxMax.y, boxMin.z),
+		D3DXVECTOR3(boxMin.x, boxMin.y, boxMax.z),
+		D3DXVECTOR3(boxMax.x, boxMin.y, boxMax.z),
+		D3DXVECTOR3(boxMin.x, boxMax.y, boxMax.z),
+		D3DXVECTOR3(boxMax.x, boxMax.y, boxMax.z)
+	};
+
+	// 各頂点を回転行列で変換する
+	for (int i = 0; i < 8; ++i)
+	{
+		D3DXVec3TransformCoord(&corners[i], &corners[i], &rotationMatrix);
+	}
+
+	// 変換後の頂点から新しいAABBの最小値と最大値を計算する
+	transformedMin = transformedMax = corners[0];
+	for (int i = 1; i < 8; ++i)
+	{
+		transformedMin = D3DXVECTOR3(min(transformedMin.x, corners[i].x),
+			min(transformedMin.y, corners[i].y),
+			min(transformedMin.z, corners[i].z));
+
+		transformedMax = D3DXVECTOR3(max(transformedMax.x, corners[i].x),
+			max(transformedMax.y, corners[i].y),
+			max(transformedMax.z, corners[i].z));
+	}
+}
+
+
+//==========================================================================
+// マップオブジェクトとの当たり判定
+//==========================================================================
+void CPlayer::CollisionMapObject()
+{
+	// マップオブジェクト取得
+	CListManager<CObjectX> mapList = CEdit_Map::GetListObj();
+	CObjectX* pObj = nullptr;
+
+	// 情報取得
+	MyLib::Vector3 pos = GetPosition();
+	float radius = GetRadius();
+
+	CEffect3D::Create(
+		pos,
+		MyLib::Vector3(0.0f, 0.0f, 0.0f),
+		D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f),
+		radius, 2, CEffect3D::MOVEEFFECT_NONE, CEffect3D::TYPE_NORMAL);
+
+	while (mapList.ListLoop(&pObj))
+	{
+		MyLib::Vector3 crossPos = 0.0f;
+		if (UtilFunc::Collision::CollisionCircleToAABB(pos, radius, pObj->GetAABB(), pObj->GetWorldMtx()))
+		{
+			//pos = crossPos;
+
+			MyLib::Vector3 move = GetMove();
+			move.x = 0.0f, move.z = 0.0f;
+			SetMove(move);
+			int n = 0;
+		}
+
+		/*if (UtilFunc::Collision::CircleAABBIntersect(pos, radius, pObj->GetWorldMtx(), pObj->GetAABB(), crossPos)) {
+			pos += crossPos;
+
+		}*/
+	}
+
+
+
+	//CObjectX* pppp = mapList.GetData(0);
+
+	//// 球とAABBのパラメータ
+	//D3DXVECTOR3 boxMin = pppp->GetAABB().vtxMin;
+	//D3DXVECTOR3 boxMax = pppp->GetAABB().vtxMax;
+
+	//MyLib::Vector3 rot = pppp->GetRotation();
+
+	//// AABBの回転行列
+	//D3DXMATRIX rotationMatrix;
+	//D3DXMatrixRotationYawPitchRoll(&rotationMatrix, rot.y, rot.x, rot.z);
+
+	//// 回転行列を適用したAABBの最小値と最大値を計算する
+	//D3DXVECTOR3 transformedMin, transformedMax;
+	//TransformBoundingBox(boxMin, boxMax, rotationMatrix, transformedMin, transformedMax);
+
+	//// 球と回転したAABBの当たり判定
+	//bool collision = SphereAABBCollision(pos, radius, transformedMin, transformedMax);
+
+	//if (collision)
+	//{
+	//	// 衝突した場合の処理
+
+	//	// AABBの各辺に対する球の中心からの距離を計算
+	//	float distX = max(transformedMin.x - pos.x, pos.x - transformedMax.x);
+	//	float distY = max(transformedMin.y - pos.y, pos.y - transformedMax.y);
+	//	float distZ = max(transformedMin.z - pos.z, pos.z - transformedMax.z);
+
+	//	// 押し戻しベクトルの初期化
+	//	D3DXVECTOR3 pushBackVector(0.0f, 0.0f, 0.0f);
+
+	//	// 球がAABBの外側にめり込んでいる辺を特定し、対応する方向に押し戻す
+	//	if (distX < distY && distX < distZ) {
+	//		// X軸方向に押し戻す
+	//		pushBackVector.x = (distX + radius) * (pos.x < transformedMin.x ? 1 : -1);
+	//	}
+	//	else if (distY < distX && distY < distZ) {
+	//		// Y軸方向に押し戻す
+	//		pushBackVector.y = (distY + radius) * (pos.y < transformedMin.y ? 1 : -1);
+	//	}
+	//	else {
+	//		// Z軸方向に押し戻す
+	//		pushBackVector.z = (distZ + radius) * (pos.z < transformedMin.z ? 1 : -1);
+	//	}
+
+	//	// 球を押し戻す
+	//	pos += pushBackVector;
+	//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	SetPosition(pos);
 }
 
 //==========================================================================

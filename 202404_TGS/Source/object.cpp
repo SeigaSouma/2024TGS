@@ -361,13 +361,7 @@ float CObject::ScreenZ() const
 //==========================================================================
 bool CObject::ZSort(const CObject *obj1, const CObject *obj2)
 {
-	bool bSort = false;
-	if (obj1->ScreenZ() < obj2->ScreenZ())
-	{
-		bSort = true;
-	}
-
-	return bSort;
+	return obj1->ScreenZ() < obj2->ScreenZ();
 }
 
 //==========================================================================
@@ -375,13 +369,7 @@ bool CObject::ZSort(const CObject *obj1, const CObject *obj2)
 //==========================================================================
 bool CObject::ZSortInverse(const CObject* obj1, const CObject* obj2)
 {
-	bool bSort = true;
-	if (obj1->ScreenZ() < obj2->ScreenZ())
-	{
-		bSort = false;
-	}
-
-	return bSort;
+	return obj1->ScreenZ() > obj2->ScreenZ();
 }
 
 //==========================================================================

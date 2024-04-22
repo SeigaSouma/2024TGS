@@ -79,6 +79,7 @@ private:
 	bool m_bGrab;	// 掴み判定
 	bool m_bReGrab;	// 再掴み判定
 
+	CObjectX* m_pCopyObj;				// コピーオブジェクト
 	CObjectX* m_pGrabObj;				// 掴みオブジェクト
 	CHandle* m_pHandle;					// 移動ハンドル
 	CHandle::HandleType m_HandleType;	// ハンドルの種類

@@ -92,7 +92,7 @@ private:
 	//=============================
 	// ä÷êîÉäÉXÉg
 	//=============================
-	typedef void(CHandle::* STATE_FUNC)();
+	typedef void(CHandle::*STATE_FUNC)();
 	static STATE_FUNC m_StateFunc[];
 
 	//=============================

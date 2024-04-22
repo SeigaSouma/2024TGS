@@ -30,7 +30,10 @@ namespace UtilFunc
 	namespace Transformation
 	{
 		template<class T> void ValueNormalize(T& Value, T MaxValue, T MinValue);	// 値の正規化処理
-		MyLib::Vector3 RotationChangeToForwardVector(float rot);
+		template<class T> const T& Clamp(T Value, T MinValue, T MaxValue);			
+			MyLib::Vector3 RotationChangeToForwardVector(float rot);
+		MyLib::Vector3 WorldMtxChangeToPosition(D3DXMATRIX worldmtx);	// ワールドマトリックスをposに変換
+		MyLib::Vector3 MtxChangeToMatrix(const D3DXMATRIX& matrix);
 	}
 
 	namespace Collision
@@ -1613,6 +1616,211 @@ namespace UtilFunc	// 便利関数
 			return true;
 		}
 
+		/**
+		@brief	円とAABBの当たり判定
+		@param	circleCenter		[in]	円の中心位置
+		@param	radius				[in]	半径
+		@param	aabb				[in]	境界ボックス（ローカル）
+		@param	crossPosition		[inout]	交点
+		@return	void
+		*/
+		inline bool CollisionCircleToAABB(const MyLib::Vector3& circleCenter, const float radius, MyLib::AABB aabb, MyLib::Vector3& crossPosition)
+		{
+			// AABBの中心
+			MyLib::Vector3 aabbCenter = {
+				(aabb.vtxMin.x + aabb.vtxMax.x) * 0.5f,
+				(aabb.vtxMin.y + aabb.vtxMax.y) * 0.5f,
+				(aabb.vtxMin.z + aabb.vtxMax.z) * 0.5f
+			};
+
+			// AABBの半幅
+			MyLib::Vector3 aabbHalfExtents = {
+				(aabb.vtxMax.x - aabb.vtxMin.x) * 0.5f,
+				(aabb.vtxMax.y - aabb.vtxMin.y) * 0.5f,
+				(aabb.vtxMax.z - aabb.vtxMin.z) * 0.5f
+			};
+
+			// AABBと円の中心点の距離の絶対値
+			MyLib::Vector3 difference = {
+				std::abs(circleCenter.x - aabbCenter.x),
+				std::abs(circleCenter.y - aabbCenter.y),
+				std::abs(circleCenter.z - aabbCenter.z)
+			};
+
+			UtilFunc::Transformation::ValueNormalize(difference.x, aabbHalfExtents.x, -aabbHalfExtents.x);
+			UtilFunc::Transformation::ValueNormalize(difference.y, aabbHalfExtents.y, -aabbHalfExtents.y);
+			UtilFunc::Transformation::ValueNormalize(difference.z, aabbHalfExtents.z, -aabbHalfExtents.z);
+
+			MyLib::Vector3 clamped = difference;
+				
+			MyLib::Vector3 closestPoint = {
+				aabbCenter.x + clamped.x,
+				aabbCenter.y + clamped.y,
+				aabbCenter.z + clamped.z
+			};
+			MyLib::Vector3 direction = {
+				circleCenter.x - closestPoint.x,
+				circleCenter.y - closestPoint.y,
+				circleCenter.z - closestPoint.z
+			};
+			float distance = direction.Length();
+
+			// 円がAABBの中にある場合
+			if (distance < radius)
+			{
+				crossPosition = {
+					direction.x * (radius - distance),
+					direction.y * (radius - distance),
+					direction.z * (radius - distance)
+				};
+				return true;
+			}
+
+			return false;
+		}
+
+		/**
+		@brief	円とAABBの当たり判定
+		@param	circleCenter	[in]	円の中心位置
+		@param	radius			[in]	半径
+		@param	aabb			[in]	境界ボックス（ローカル）
+		@param	aabbMatrix		[in]	AABBのワールドマトリックス
+		@return	void
+		*/
+		inline bool CollisionCircleToAABB(MyLib::Vector3& circleCenter, const float radius, MyLib::AABB aabb, D3DXMATRIX aabbMatrix)
+		{
+			// AABBの中心
+			MyLib::Vector3 aabbCenter = {
+				(aabb.vtxMin.x + aabb.vtxMax.x) * 0.5f,
+				(aabb.vtxMin.y + aabb.vtxMax.y) * 0.5f,
+				(aabb.vtxMin.z + aabb.vtxMax.z) * 0.5f
+			};
+			aabbCenter += UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix);
+
+			// AABBのスケーリングを考慮して中心を計算
+			aabbCenter.x = UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix).x + aabbCenter.x * UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix).x;
+			aabbCenter.y = UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix).y + aabbCenter.y * UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix).y;
+			aabbCenter.z = UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix).z + aabbCenter.z * UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix).z;
+
+			// AABBの半幅
+			MyLib::Vector3 aabbHalfExtents = {
+				(aabb.vtxMax.x - aabb.vtxMin.x) * 0.5f,
+				(aabb.vtxMax.y - aabb.vtxMin.y) * 0.5f,
+				(aabb.vtxMax.z - aabb.vtxMin.z) * 0.5f
+			};
+
+			// AABBのスケーリングを考慮して半幅を計算
+			D3DXVECTOR3 scale = UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix);
+			aabbHalfExtents.x *= scale.x;
+			aabbHalfExtents.y *= scale.y;
+			aabbHalfExtents.z *= scale.z;
+
+			// AABBのローカル空間に円の位置を変換
+			MyLib::Vector3 localCenter, diffCenter = { circleCenter.x - aabbCenter.x, circleCenter.y - aabbCenter.y, circleCenter.z - aabbCenter.z };
+			D3DXVec3TransformCoord(&localCenter, &diffCenter, &aabbMatrix);
+
+
+			// AABBのローカル空間内での最も近い点の座標を計算
+			float closestPointX = UtilFunc::Transformation::Clamp(localCenter.x, -aabbHalfExtents.x, aabbHalfExtents.x);
+			float closestPointY = UtilFunc::Transformation::Clamp(localCenter.y, -aabbHalfExtents.y, aabbHalfExtents.y);
+			float closestPointZ = UtilFunc::Transformation::Clamp(localCenter.z, -aabbHalfExtents.z, aabbHalfExtents.z);
+
+			// 最も近い点と円の中心点の距離の2乗
+			float distanceSquared = 
+				powf(closestPointX - localCenter.x, 2) +
+				powf(closestPointY - localCenter.y, 2) +
+				powf(closestPointZ - localCenter.z, 2);
+
+			// 内積を計算
+			float dotProduct = 
+				(closestPointX - localCenter.x) * (aabb.vtxMax.x - aabb.vtxMin.x) +
+				(closestPointY - localCenter.y) * (aabb.vtxMax.y - aabb.vtxMin.y) +
+				(closestPointZ - localCenter.z) * (aabb.vtxMax.z - aabb.vtxMin.z);
+
+
+			// 円とAABBの衝突判定が発生した場合の処理
+			if (distanceSquared <= radius * radius)
+			{
+				// 最も近い点を押し戻しベクトルとして使用する
+				MyLib::Vector3 pushBackVector = { 0.0f, 0.0f, 0.0f };
+
+				// 最も近い点が円の外側にある場合、押し戻しベクトルは円の中心から最も近い点へ向かうベクトルになる
+				if (distanceSquared > 0.0f)
+				{
+					// 最も近い点を押し戻しベクトルとして使用する
+					MyLib::Vector3 pushBackVector = { 0.0f, 0.0f, 0.0f };
+
+					// 最も近い点がAABBの辺上にある場合は押し戻しを行わない
+					if (closestPointX != localCenter.x)
+					{
+						float distance = sqrt(distanceSquared);
+						pushBackVector.x = (localCenter.x - closestPointX) * (radius / distance);
+					}
+					if (closestPointY != localCenter.y)
+					{
+						float distance = sqrt(distanceSquared);
+						pushBackVector.y = (localCenter.y - closestPointY) * (radius / distance);
+					}
+					if (closestPointZ != localCenter.z)
+					{
+						float distance = sqrt(distanceSquared);
+						pushBackVector.z = (localCenter.z - closestPointZ) * (radius / distance);
+					}
+
+					// 押し戻しベクトルをAABBのローカル空間から元の座標系に変換
+					D3DXMATRIX inverseAABBMatrix;
+					D3DXMatrixInverse(&inverseAABBMatrix, nullptr, &aabbMatrix);
+					D3DXVec3TransformCoord(&pushBackVector, &pushBackVector, &inverseAABBMatrix);
+
+					// 円の中心を押し戻す
+					circleCenter.x += pushBackVector.x;
+					circleCenter.y += pushBackVector.y;
+					circleCenter.z += pushBackVector.z;
+				}
+
+				return true;
+			}
+
+			return false;
+		}
+
+
+		// 円とAABBの押し戻し判定
+		inline bool CircleAABBIntersect(const D3DXVECTOR3& circleCenter, float circleRadius, const D3DXMATRIX& aabbMatrix, MyLib::AABB aabb, D3DXVECTOR3& pushVector)
+		{
+			// AABBの位置と回転を取得
+			D3DXVECTOR3 aabbPosition(aabbMatrix._41, aabbMatrix._42, aabbMatrix._43);
+			D3DXVECTOR3 aabbAxisX(aabbMatrix._11, aabbMatrix._12, aabbMatrix._13);
+			D3DXVECTOR3 aabbAxisY(aabbMatrix._21, aabbMatrix._22, aabbMatrix._23);
+			D3DXVECTOR3 aabbAxisZ(aabbMatrix._31, aabbMatrix._32, aabbMatrix._33);\
+
+				// AABBの半幅
+				MyLib::Vector3 aabbExtents = {
+					(aabb.vtxMax.x - aabb.vtxMin.x) * 0.5f,
+					(aabb.vtxMax.y - aabb.vtxMin.y) * 0.5f,
+					(aabb.vtxMax.z - aabb.vtxMin.z) * 0.5f
+			};
+
+			// 円の中心とAABBの各面との距離を計算
+			float distX = max(std::abs(circleCenter.x - aabbPosition.x) - aabbExtents.x, 0.0f);
+			float distY = max(std::abs(circleCenter.y - aabbPosition.y) - aabbExtents.y, 0.0f);
+			float distZ = max(std::abs(circleCenter.z - aabbPosition.z) - aabbExtents.z, 0.0f);
+
+			// 円の中心がAABBの外側にあるかどうかを判定
+			float distanceSquared = distX * distX + distY * distY + distZ * distZ;
+			if (distanceSquared > circleRadius * circleRadius) {
+				// 円がAABBの外側にある場合、押し戻しベクトルを計算
+				D3DXVECTOR3 direction = circleCenter - aabbPosition;
+				float length = D3DXVec3Length(&direction);
+				if (length != 0) {
+					float penetrationDepth = circleRadius - length;
+					pushVector = direction * (penetrationDepth / length);
+					return true;
+				}
+			}
+
+			return false;
+		}
 
 	}
 
@@ -1704,6 +1912,29 @@ namespace UtilFunc	// 便利関数
 		}
 
 		/**
+		@brief	値の正規化処理
+		@param	Value		[inout]	補正したい値
+		@param	MinValue	[in]	最小値
+		@param	MaxValue	[in]	最大値
+		@return	void
+		*/
+		template<class T>inline const T& Clamp(T Value, T MinValue, T MaxValue)
+		{
+			T returnValue = Value;
+			if (returnValue >= MaxValue)
+			{
+				// 最大値に補正
+				returnValue = MaxValue;
+			}
+			else if (returnValue <= MinValue)
+			{
+				// 最小値に補正
+				returnValue = MinValue;
+			}
+			return returnValue;
+		}
+
+		/**
 		@brief	ワールドマトリックスをposに変換
 		@param	worldmtx	[in]	ワールドマトリックス
 		@return	位置
@@ -1711,6 +1942,15 @@ namespace UtilFunc	// 便利関数
 		inline MyLib::Vector3 WorldMtxChangeToPosition(D3DXMATRIX worldmtx)
 		{
 			return MyLib::Vector3(worldmtx._41, worldmtx._42, worldmtx._43);
+		}
+
+		inline MyLib::Vector3 MtxChangeToMatrix(const D3DXMATRIX& matrix)
+		{
+			MyLib::Vector3 scale;
+			scale.x = sqrt(matrix._11 * matrix._11 + matrix._12 * matrix._12 + matrix._13 * matrix._13);
+			scale.y = sqrt(matrix._21 * matrix._21 + matrix._22 * matrix._22 + matrix._23 * matrix._23);
+			scale.z = sqrt(matrix._31 * matrix._31 + matrix._32 * matrix._32 + matrix._33 * matrix._33);
+			return scale;
 		}
 
 		/**

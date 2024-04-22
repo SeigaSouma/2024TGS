@@ -41,7 +41,7 @@ MODEL_FILENAME = data/MODEL/tyuuni/MonnMonnsowd_Low.x			# [16]大剣
 # キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
-	VELOCITY = 0.50		
+	VELOCITY = 2.00
 	JUMP = 0.00		
 	RADIUS = 60.00		
 	HEIGHT = 0.00		

@@ -15,7 +15,8 @@
 //==========================================================================
 namespace
 {
-	const char* LOADTEXT = "data\\TEXT\\map\\info.txt";		// テクスチャのファイル
+	const char* LOADTEXT = "data\\TEXT\\map\\info.txt";		// マップのファイル
+	const char* SAVETEXT = "data\\TEXT\\map\\save_info.txt";
 	const char* TEXTURE_HANDLE[] =							// テクスチャのファイル
 	{
 		"data\\TEXTURE\\handle\\move.png",
@@ -36,6 +37,7 @@ CEdit_Map::CEdit_Map()
 	m_pObjX.clear();		// オブジェクトXのポインタ
 	m_bGrab = false;		// 掴み判定
 	m_bReGrab = false;		// 再掴み判定
+	m_pCopyObj = nullptr;	// コピーオブジェクト
 	m_pGrabObj = nullptr;	// 掴みオブジェクト
 	m_pHandle = nullptr;	// 移動ハンドル
 	m_HandleType = CHandle::HandleType::TYPE_MOVE;	// ハンドルの種類
@@ -129,6 +131,69 @@ void CEdit_Map::Uninit()
 //==========================================================================
 void CEdit_Map::Update()
 {
+	ImGui::Begin("Edit", NULL, ImGuiWindowFlags_MenuBar);
+
+	// 書き出し
+	ImGui::BeginMenuBar();
+	if (ImGui::BeginMenu("File"))
+	{
+		if (ImGui::MenuItem("Save"))
+		{
+			Save();
+		}
+
+		if (ImGui::MenuItem("Save_as"))
+		{
+			OPENFILENAMEA filename = {};
+			char sFilePass[1024] = {};
+			// ファイル選択ダイアログの設定
+			filename.lStructSize = sizeof(OPENFILENAMEA);
+			filename.hwndOwner = NULL;
+			filename.lpstrFilter = "テキストファイル\0*.txt\0画像ファイル\0*.bmp;.jpg\0すべてのファイル\0.*\0\0";
+			filename.lpstrFile = sFilePass;
+			filename.nMaxFile = MAX_PATH;
+			filename.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+
+
+			// カレントディレクトリを取得する
+			char szCurrentDir[MAX_PATH];
+			GetCurrentDirectoryA(MAX_PATH, szCurrentDir);
+
+			// "data"フォルダの絶対パスを求める
+			std::string strDataDir = szCurrentDir;
+			strDataDir += "\\data";
+
+			// 存在する場合は、lpstrInitialDirに指定する
+			if (GetFileAttributesA(strDataDir.c_str()) != INVALID_FILE_ATTRIBUTES)
+			{
+				filename.lpstrInitialDir = strDataDir.c_str();
+			}
+
+
+			// ファイル選択ダイアログを表示
+			if (GetOpenFileNameA(&filename))
+			{
+				// 選択されたファイルのパスを表示
+				printf("Selected file: %s\n", sFilePass);
+				int n = 0;
+			}
+			//セーブ
+			if (strcmp(&sFilePass[0], "") != 0) {
+				int n = 0;
+			}
+		}
+		ImGui::EndMenu();
+	}
+
+	/*if (ImGui::BeginMenu("Load"))
+	{
+
+		ImGui::EndMenu();
+	}*/
+
+	ImGui::EndMenuBar();
+
+
 	ImGuiDragDropFlags src_flags = 0;
 	src_flags |= ImGuiDragDropFlags_SourceNoDisableHover;     // Keep the source displayed as hovered
 	src_flags |= ImGuiDragDropFlags_SourceNoHoldToOpenOthers; // Because our dragging is local, we disable the feature of opening foreign treenodes/tabs while dragging
@@ -166,6 +231,9 @@ void CEdit_Map::Update()
 		ImGui::PopID();
 	}
 
+
+	ImGui::End();
+
 	// ウィンドウのマウスホバー判定
 	ImGuiHoveredFlags frag = 128;
 	bool bHoverWindow = ImGui::IsWindowHovered(frag);
@@ -189,6 +257,7 @@ void CEdit_Map::Update()
 
 		ImGui::Begin("Transform");
 		//ImGui::Begin("Transform", NULL, ImGuiWindowFlags_MenuBar);
+
 
 		// 移動ボタン
 		if (ImGui::ImageButton(reinterpret_cast<ImTextureID>(m_HandleTex[CHandle::HandleType::TYPE_MOVE]), imageSize))
@@ -421,15 +490,33 @@ void CEdit_Map::Update()
 
 
 
-	// 移動ハンドル判定
+	// オブジェクト選択中
 	if (!m_bGrab &&
 		m_pHandle != nullptr &&
 		!m_bReGrab)
 	{
+		if ((pKeyboard->GetPress(DIK_LCONTROL) || pKeyboard->GetPress(DIK_RCONTROL)) &&
+			pKeyboard->GetTrigger(DIK_C)) 
+		{// コピー
+			m_pCopyObj = m_pGrabObj;
+		}
+
+		if (m_pCopyObj != nullptr &&
+			(pKeyboard->GetPress(DIK_LCONTROL) || pKeyboard->GetPress(DIK_RCONTROL)) &&
+			pKeyboard->GetTrigger(DIK_V))
+		{// ペースト
+
+			// インデックス検索
+			int pasteIdx = m_pCopyObj->GetIdxXFile();
+			std::vector<int>::iterator idx = std::find(m_nModelIdx.begin(), m_nModelIdx.end(), pasteIdx);
+
+			Regist((*idx), 0.0f, 0.0f, true);
+		}
+
 		if (m_pHandle->IsHoverHandle() &&
 			!pKeyboard->GetPress(DIK_LALT) &&
 			ImGui::IsMouseClicked(0))
-		{// クリック
+		{// ホバー中クリック
 
 			m_bReGrab = true;
 
@@ -437,6 +524,17 @@ void CEdit_Map::Update()
 			m_moveAngle = m_pHandle->GetHoverAngle();
 			m_pHandle->SetState(CHandle::State::STATE_GRAB);
 			return;
+		}
+
+		if (pKeyboard->GetTrigger(DIK_DELETE))
+		{// 削除
+			Delete(m_pGrabObj);
+			m_pGrabObj = nullptr;
+
+			if (m_pHandle != nullptr) {
+				m_pHandle->Kill();
+				m_pHandle = nullptr;
+			}
 		}
 	}
 
@@ -494,6 +592,7 @@ void CEdit_Map::Update()
 
 		// リストコピー
 		std::vector<CObjectX*> pObjectSort;
+
 		while (m_List.ListLoop(&pObject))
 		{
 			// 要素を末尾に追加
@@ -572,7 +671,7 @@ void CEdit_Map::ChangeHandle()
 void CEdit_Map::Save()
 {
 	// ファイルを開く
-	FILE* pFile = fopen("data\\TEXT\\map\\save_info.txt", "w");
+	FILE* pFile = fopen(SAVETEXT, "w");
 	if (pFile == nullptr)
 	{// ファイルが開けなかった場合
 		return;
@@ -821,6 +920,10 @@ void CEdit_Map::Regist(int idx, MyLib::Vector3 pos, MyLib::Vector3 rot, bool bSh
 {
 
 	m_pObjX.emplace_back();
+
+	if (m_nModelIdx.size() <= idx) {
+		int n = 0;
+	}
 
 	// タイプの物を生成
 	m_pObjX.back() = CObjectX::Create(m_nModelIdx[idx], pos, rot, bShadow);
