@@ -24,20 +24,23 @@ class CNumberBillboard : public CNumber
 {
 public:
 
-	CNumberBillboard(int nPriority = 6);
+	CNumberBillboard(int nPriority = mylib_const::PRIORITY_ZSORT);
 	~CNumberBillboard();
 
 	// メンバ関数
-	HRESULT Init(int nPriority) override;
+	HRESULT Init() override;
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
-	void Release() override;	// 開放処理
 
-	void SetPosition(const MyLib::Vector3 pos) override;	// 位置設定
+	void Kill() override;	// 削除処理
+
+	void SetPosition(const MyLib::Vector3& pos) override;	// 位置設定
 	MyLib::Vector3 GetPosition() const override;		// 位置取得
-	void SetMove(const MyLib::Vector3 move) override;		// 移動量設定
+	void SetMove(const MyLib::Vector3& move) override;		// 移動量設定
 	MyLib::Vector3 GetMove() const override;			// 移動量取得
+	void SetRotation(const MyLib::Vector3& rot) override;	// 向き設定
+	MyLib::Vector3 GetRotation() const override;		// 向き取得
 
 	void SetColor(const D3DXCOLOR col) override;			// 色設定
 	D3DXCOLOR GetColor() const override;				// 色取得
@@ -51,7 +54,6 @@ public:
 	void SetVtx() override;
 	void BindTexture(int nIdx) override;
 	void SetType(const CObject::TYPE type) override;
-	CObjectBillboard *GetObjectBillboard() override;
 
 private:
 	CObjectBillboard *m_pObjBillboard;	// オブジェクトビルボードのオブジェクト

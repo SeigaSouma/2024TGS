@@ -19,7 +19,7 @@ class CObject2D;
 //==========================================================================
 // クラス定義
 //==========================================================================
-// 背景クラス定義
+// 数字(2D)クラス定義
 class CNumber2D : public CNumber
 {
 public:
@@ -28,17 +28,18 @@ public:
 	~CNumber2D();
 
 	// メンバ関数
-	HRESULT Init(int nPriority) override;
+	HRESULT Init() override;
 	void Uninit() override;
 	void Update() override;
 	void Draw() override;
-	void Release() override;	// 開放処理
 
-	void SetPosition(const MyLib::Vector3 pos) override;	// 位置設定
+	void Kill() override;	// 削除処理
+
+	void SetPosition(const MyLib::Vector3& pos) override;	// 位置設定
 	MyLib::Vector3 GetPosition() const override;		// 位置取得
-	void SetMove(const MyLib::Vector3 move) override;		// 移動量設定
+	void SetMove(const MyLib::Vector3& move) override;		// 移動量設定
 	MyLib::Vector3 GetMove() const override;			// 移動量取得
-	void SetRotation(const MyLib::Vector3 rot) override;	// 向き設定
+	void SetRotation(const MyLib::Vector3& rot) override;	// 向き設定
 	MyLib::Vector3 GetRotation() const override;		// 向き取得
 
 	void SetColor(const D3DXCOLOR col) override;			// 色設定

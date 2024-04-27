@@ -23,7 +23,7 @@ int CObjectHierarchy::m_nNumLoad = 0;	// 読み込んだ数
 CObjectHierarchy::CObjectHierarchy(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
-	D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
+	//D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
 	m_posOrigin = 0.0f;			// 最初の位置
 	m_posCenter = 0.0f;			// 中心位置
 	m_fRadius = 0.0f;			// 半径
@@ -201,13 +201,13 @@ void CObjectHierarchy::Update()
 	}
 
 	// 判定するパーツのマトリックス取得
-	D3DXMATRIX mtxTrans;
-	D3DXMATRIX mtxWepon = pModel->GetWorldMtx();
+	MyLib::Matrix mtxTrans;
+	MyLib::Matrix mtxWepon = pModel->GetWorldMtx();
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_CenterOffset.x, m_CenterOffset.y, m_CenterOffset.z);
-	D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
-	m_posCenter = UtilFunc::Transformation::WorldMtxChangeToPosition(mtxWepon);
+	mtxTrans.Translation(m_CenterOffset);
+	mtxWepon.Multiply(mtxTrans, mtxWepon);
+	m_posCenter = mtxWepon.GetWorldPosition();
 }
 
 //==========================================================================
@@ -461,25 +461,25 @@ void CObjectHierarchy::CalWorldMtx()
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス宣言
+	MyLib::Matrix mtxRot, mtxTrans;	// 計算用マトリックス宣言
 
 	// 情報取得
 	MyLib::Vector3 pos = GetPosition();
 	MyLib::Vector3 rot = GetRotation();
 
 	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	m_mtxWorld.Identity();
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	mtxRot.RotationYawPitchRoll(rot.y, rot.x, rot.z);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	mtxTrans.Translation(pos);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxTrans);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	//pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 }
 
 //==========================================================================
@@ -776,10 +776,14 @@ void CObjectHierarchy::LoadPartsData(FILE* pFile, const char* pComment, int *pCn
 		if (m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nParent >= 0)
 		{
 			m_apModel[nCntSetParts]->SetParent(m_apModel[m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nParent]);
+
+			int idx = m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nParent;
+			m_apModel[nCntSetParts]->SetMtxParent(m_apModel[idx]->GetPtrWorldMtx());
 		}
 		else
 		{
 			m_apModel[nCntSetParts]->SetParent(nullptr);
+			m_apModel[nCntSetParts]->SetMtxParent(&m_mtxWorld);
 		}
 
 		if (m_aLoadData[m_nNumLoad].LoadData[nCntSetParts].nStart != 1)
@@ -794,7 +798,7 @@ void CObjectHierarchy::LoadPartsData(FILE* pFile, const char* pComment, int *pCn
 //==========================================================================
 // マトリックス設定
 //==========================================================================
-void CObjectHierarchy::SetmtxWorld(const D3DXMATRIX mtx)
+void CObjectHierarchy::SetmtxWorld(const MyLib::Matrix mtx)
 {
 	m_mtxWorld = mtx;
 }
@@ -802,7 +806,7 @@ void CObjectHierarchy::SetmtxWorld(const D3DXMATRIX mtx)
 //==========================================================================
 // マトリックス取得
 //==========================================================================
-D3DXMATRIX CObjectHierarchy::GetmtxWorld() const
+MyLib::Matrix CObjectHierarchy::GetmtxWorld() const
 {
 	return m_mtxWorld;
 }

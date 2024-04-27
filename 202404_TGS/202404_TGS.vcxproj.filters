@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Imgui">
       <UniqueIdentifier>{d130ff42-1fb1-4aa7-ab20-cdd97731dbbb}</UniqueIdentifier>
     </Filter>
@@ -49,17 +45,29 @@
     <Filter Include="handle">
       <UniqueIdentifier>{00b034a6-ba43-4231-b582-279ce60fd58e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="number">
+      <UniqueIdentifier>{aacfa591-41fc-4721-9668-76abb9b77559}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="system">
+      <UniqueIdentifier>{f05d393f-41f5-4a23-89db-23a3a63a3509}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="effect">
+      <UniqueIdentifier>{0c230d62-f74e-4be5-8dfc-334c7639cc63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mode\ranking">
+      <UniqueIdentifier>{3ddc1dc7-e100-4f76-aeae-24d4a8e452e8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{3fbd0f1c-b35a-40db-9b90-06cace47db05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="pause">
+      <UniqueIdentifier>{fc5743ad-4684-466c-907f-8c561384ca6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="load">
+      <UniqueIdentifier>{48e287cf-d433-41b9-b663-ce7532f57c06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\Xload.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\2D_effect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\3D_effect.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\ballast.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -81,9 +89,6 @@
     <ClCompile Include="Source\collisionobject.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\debugproc.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\edit.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -93,28 +98,10 @@
     <ClCompile Include="Source\elevation.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\enemybase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\enemymanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\explosion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\fog.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\game.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\game_tutorial.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\gamemanager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\hp_gauge.cpp">
@@ -126,34 +113,10 @@
     <ClCompile Include="Source\hp_gauge_tip_billboard.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Imguimanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\impactwave.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\instantfade.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\limitarea.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\listmanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\loadmanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\loadscreen.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\main.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\manager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\map.cpp">
@@ -165,82 +128,16 @@
     <ClCompile Include="Source\motion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\multinumber.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\MyEffekseer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\mylib.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\number.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\number_2D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\number_3D.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\number_Billboard.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\particle.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\pause.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\pause_game.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\pause_tutorial.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\pickupguide.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\player.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\playercontrol.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\precompile.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\ranking.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\rankingmanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\rankingscore.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\renderer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\result.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\resultmanager.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\rockon_marker.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\scene.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\score.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\shadow.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\sound.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\stage.cpp">
@@ -252,19 +149,7 @@
     <ClCompile Include="Source\stagename.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Source\texture.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\timer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\title.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\title_pressenter.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\titlelogo.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\meshcylinder.cpp">
@@ -333,20 +218,8 @@
     <ClCompile Include="Source\objectX.cpp">
       <Filter>object</Filter>
     </ClCompile>
-    <ClCompile Include="Source\busket.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\pollen_gauge.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\resultscore.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Source\game_pressenter.cpp">
       <Filter>mode\game</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\rankingbg.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Source\tutorial.cpp">
       <Filter>mode\tutorial</Filter>
@@ -411,17 +284,146 @@
     <ClCompile Include="Source\handle_Scale.cpp">
       <Filter>handle</Filter>
     </ClCompile>
+    <ClCompile Include="Source\number.cpp">
+      <Filter>number</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\number_2D.cpp">
+      <Filter>number</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\number_3D.cpp">
+      <Filter>number</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\number_Billboard.cpp">
+      <Filter>number</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\multinumber.cpp">
+      <Filter>number</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\game.cpp">
+      <Filter>mode\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\game_tutorial.cpp">
+      <Filter>mode\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\gamemanager.cpp">
+      <Filter>mode\game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\damagepoint.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\2D_effect.cpp">
+      <Filter>effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\3D_effect.cpp">
+      <Filter>effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MyEffekseer.cpp">
+      <Filter>effect</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\precompile.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\sound.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\texture.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Xload.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\light.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\mylib.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ranking.cpp">
+      <Filter>mode\ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rankingmanager.cpp">
+      <Filter>mode\ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\rankingscore.cpp">
+      <Filter>mode\ranking</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\resultscore.cpp">
+      <Filter>mode\result</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\resultmanager.cpp">
+      <Filter>mode\result</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\result.cpp">
+      <Filter>mode\result</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\title.cpp">
+      <Filter>mode\title</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\title_pressenter.cpp">
+      <Filter>mode\title</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\titlelogo.cpp">
+      <Filter>mode\title</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\main.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\manager.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\renderer.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\listmanager.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\debugproc.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Imguimanager.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\impactwave.cpp">
+      <Filter>mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\enemybase.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\enemymanager.cpp">
+      <Filter>enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\fog.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\scene.cpp">
+      <Filter>mode</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\player.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\playercontrol.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\pause.cpp">
+      <Filter>pause</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\pause_game.cpp">
+      <Filter>pause</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\pause_tutorial.cpp">
+      <Filter>pause</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\loadmanager.cpp">
+      <Filter>load</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\loadscreen.cpp">
+      <Filter>load</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\particle.cpp">
+      <Filter>effect</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Source\Xload.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\2D_effect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\3D_effect.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\ballast.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -437,9 +439,6 @@
     <ClInclude Include="Source\blackframe.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\calculation.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\camera.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -447,9 +446,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\constans.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\debugproc.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\edit.h">
@@ -461,28 +457,10 @@
     <ClInclude Include="Source\elevation.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\enemybase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\enemymanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\explosion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\fog.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\game.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\game_tutorial.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\gamemanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\hp_gauge.h">
@@ -494,34 +472,10 @@
     <ClInclude Include="Source\hp_gauge_tip_billboard.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Imguimanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\impactwave.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\instantfade.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\limitarea.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\listmanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\loadmanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\loadscreen.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\main.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\manager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\map.h">
@@ -533,82 +487,13 @@
     <ClInclude Include="Source\motion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\multinumber.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\MyEffekseer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\mylib.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\number.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\number_2D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\number_3D.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\number_Billboard.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\particle.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\pause.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\pause_game.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\pause_tutorial.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\pickupguide.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\player.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\playercontrol.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\precompile.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ranking.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\rankingmanager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\rankingscore.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\renderer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\result.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\resultmanager.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\rockon_marker.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\scene.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\score.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\shadow.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\sound.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\stage.h">
@@ -620,19 +505,7 @@
     <ClInclude Include="Source\stagename.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Source\texture.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\timer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\title.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\title_pressenter.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\titlelogo.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\meshcylinder.h">
@@ -701,20 +574,8 @@
     <ClInclude Include="Source\objectX.h">
       <Filter>object</Filter>
     </ClInclude>
-    <ClInclude Include="Source\busket.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\pollen_gauge.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\resultscore.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Source\game_pressenter.h">
       <Filter>mode\game</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\rankingbg.h">
-      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Source\tutorial.h">
       <Filter>mode\tutorial</Filter>
@@ -781,6 +642,150 @@
     </ClInclude>
     <ClInclude Include="Source\handle_Scale.h">
       <Filter>handle</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\number.h">
+      <Filter>number</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\number_2D.h">
+      <Filter>number</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\number_3D.h">
+      <Filter>number</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\number_Billboard.h">
+      <Filter>number</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\multinumber.h">
+      <Filter>number</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\game.h">
+      <Filter>mode\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\game_tutorial.h">
+      <Filter>mode\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\gamemanager.h">
+      <Filter>mode\game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\damagepoint.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\2D_effect.h">
+      <Filter>effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\3D_effect.h">
+      <Filter>effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MyEffekseer.h">
+      <Filter>effect</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\precompile.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\sound.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\texture.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Xload.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\light.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\mylib.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ranking.h">
+      <Filter>mode\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rankingmanager.h">
+      <Filter>mode\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\rankingscore.h">
+      <Filter>mode\ranking</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\result.h">
+      <Filter>mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\resultmanager.h">
+      <Filter>mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\resultscore.h">
+      <Filter>mode\result</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\title.h">
+      <Filter>mode\title</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\title_pressenter.h">
+      <Filter>mode\title</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\titlelogo.h">
+      <Filter>mode\title</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\main.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\manager.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\renderer.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\listmanager.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\debugproc.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Imguimanager.h">
+      <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\impactwave.h">
+      <Filter>mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\enemybase.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\enemymanager.h">
+      <Filter>enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\fog.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\calculation.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\score.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\scene.h">
+      <Filter>mode</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\player.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\playercontrol.h">
+      <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\pause.h">
+      <Filter>pause</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\pause_game.h">
+      <Filter>pause</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\pause_tutorial.h">
+      <Filter>pause</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\loadmanager.h">
+      <Filter>load</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\loadscreen.h">
+      <Filter>load</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\particle.h">
+      <Filter>effect</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

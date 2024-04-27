@@ -40,10 +40,10 @@ CNumber2D::~CNumber2D()
 //==========================================================================
 // ‰Šú‰»ˆ—
 //==========================================================================
-HRESULT CNumber2D::Init(int nPriority)
+HRESULT CNumber2D::Init()
 {
 	// ¶¬ˆ—
-	m_aObject2D = CObject2D::Create(nPriority);
+	m_aObject2D = CObject2D::Create(GetPriority());
 
 	return S_OK;
 }
@@ -55,21 +55,25 @@ void CNumber2D::Uninit()
 {
 	// I—¹ˆ—
 	if (m_aObject2D != nullptr)
-	{// nullptr‚¶‚á‚È‚©‚Á‚½‚ç
+	{
 		m_aObject2D = nullptr;
 	}
+
+	CNumber::Uninit();
 }
 
 //==========================================================================
 // ‰ð•úˆ—
 //==========================================================================
-void CNumber2D::Release()
+void CNumber2D::Kill()
 {
 	if (m_aObject2D != nullptr)
-	{// nullptr‚¶‚á‚È‚©‚Á‚½‚ç
+	{
 		m_aObject2D->Uninit();
 		m_aObject2D = nullptr;
 	}
+
+	CNumber::Kill();
 }
 
 //==========================================================================
@@ -80,7 +84,7 @@ void CNumber2D::Update()
 	// XVˆ—
 	if (m_aObject2D != nullptr)
 	{
-		m_aObject2D->Update();
+		m_aObject2D->SetEnableDisp(IsDisp());
 	}
 }
 
@@ -89,11 +93,11 @@ void CNumber2D::Update()
 //==========================================================================
 void CNumber2D::Draw()
 {
-	// •`‰æˆ—
-	if (m_aObject2D != nullptr)
-	{
-		m_aObject2D->Draw();
-	}
+	//// •`‰æˆ—
+	//if (m_aObject2D != nullptr)
+	//{
+	//	m_aObject2D->Draw();
+	//}
 }
 
 //==========================================================================
@@ -109,7 +113,6 @@ void CNumber2D::SetVtx()
 //==========================================================================
 void CNumber2D::BindTexture(int nIdx)
 {
-	// Š„‚è“–‚Ä‚é
 	m_aObject2D->BindTexture(nIdx);
 }
 
@@ -119,14 +122,13 @@ void CNumber2D::BindTexture(int nIdx)
 void CNumber2D::SetType(const CObject::TYPE type)
 {
 	m_aObject2D->SetType(type);
+	CNumber::SetType(type);
 }
-
-
 
 //==========================================================================
 // ˆÊ’uÝ’è
 //==========================================================================
-void CNumber2D::SetPosition(const MyLib::Vector3 pos)
+void CNumber2D::SetPosition(const MyLib::Vector3& pos)
 {
 	m_aObject2D->SetPosition(pos);
 }
@@ -142,7 +144,7 @@ MyLib::Vector3 CNumber2D::GetPosition() const
 //==========================================================================
 // ˆÚ“®—ÊÝ’è
 //==========================================================================
-void CNumber2D::SetMove(const MyLib::Vector3 move)
+void CNumber2D::SetMove(const MyLib::Vector3& move)
 {
 	m_aObject2D->SetMove(move);
 }
@@ -158,7 +160,7 @@ MyLib::Vector3 CNumber2D::GetMove() const
 //==========================================================================
 // Œü‚«Ý’è
 //==========================================================================
-void CNumber2D::SetRotation(const MyLib::Vector3 rot)
+void CNumber2D::SetRotation(const MyLib::Vector3& rot)
 {
 	m_aObject2D->SetRotation(rot);
 }

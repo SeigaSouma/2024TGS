@@ -14,10 +14,6 @@
 #include "light.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-
-//==========================================================================
 // 静的メンバ変数宣言
 //==========================================================================
 int CModel::m_nNumAll = 0;	// 総数
@@ -27,7 +23,7 @@ int CModel::m_nNumAll = 0;	// 総数
 //==========================================================================
 CModel::CModel(int nPriority)
 {
-	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
+	m_mtxParent = nullptr;							// 親マトリックスのポインタ
 	m_pos = mylib_const::DEFAULT_VECTOR3;			// 位置
 	m_posOld = mylib_const::DEFAULT_VECTOR3;		// 前回の位置
 	m_posOrigin = mylib_const::DEFAULT_VECTOR3;		// 元の位置
@@ -91,6 +87,12 @@ void CModel::SetParent(CModel *pModel)
 	// 親のポインタを渡す
 	m_pParent = pModel;
 }
+
+void CModel::SetMtxParent(MyLib::Matrix* pMtx)
+{ 
+	m_mtxParent = pMtx;
+}
+
 
 //==========================================================================
 // 生成処理
@@ -168,11 +170,6 @@ HRESULT CModel::Init(const char *pFileName)
 //==========================================================================
 void CModel::Uninit()
 {
-	//// 親モデルのポインタ
-	//if (m_pParent != nullptr)
-	//{
-	//	m_pParent = nullptr;
-	//}
 	if (m_nIdxTexture != nullptr)
 	{
 		delete[] m_nIdxTexture;
@@ -202,67 +199,50 @@ void CModel::CalWorldMtx()
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans, mtxScale, mtxRotOrigin;	// 計算用マトリックス宣言
-	D3DXMATRIX mtxnParent;			// 親のマトリックス
+	MyLib::Matrix mtxRot, mtxTrans, mtxScale, mtxRotOrigin;	// 計算用マトリックス宣言
+	MyLib::Matrix mtxParent;			// 親のマトリックス
 
 	bool bScale = false;
 
 	// 親マトリックスの初期化
-	D3DXMatrixIdentity(&mtxRotOrigin);
-	D3DXMatrixIdentity(&mtxnParent);
+	mtxRotOrigin.Identity();
+	mtxParent.Identity();
 
 	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	m_mtxWorld.Identity();
 
 	// スケールを反映する
-	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
+	mtxScale.Scaling(m_scale);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxScale);
 
 	// 元の向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRotOrigin, m_rotOrigin.y, m_rotOrigin.x, m_rotOrigin.z);
+	mtxRotOrigin.RotationYawPitchRoll(m_rotOrigin.y, m_rotOrigin.x, m_rotOrigin.z);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRotOrigin);
+	mtxRot.RotationYawPitchRoll(m_rot.y, m_rot.x, m_rot.z);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRot);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRotOrigin);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	mtxTrans.Translation(m_pos);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxTrans);
 
 	// 親のマトリックスと掛け合わせる
-	if (m_pParent == nullptr)
-	{// 自分が親だった場合
+	mtxParent = *m_mtxParent;
 
-		// 最新のマトリックスを渡す(DirectXが覚えているもの)
-		pDevice->GetTransform(D3DTS_WORLD, &mtxnParent);
-	}
-	else
+	if (m_pParent != nullptr &&
+		mtxParent.GetScale() != MyLib::Vector3(1.0f, 1.0f, 1.0f))
 	{// 親がいる場合
 
-		// 親のマトリックスを渡す
-		mtxnParent = m_pParent->GetWorldMtx();
-
-		MyLib::Vector3 scaleVector = mylib_const::DEFAULT_VECTOR3;
-		MyLib::Vector3 vec1 = MyLib::Vector3(mtxnParent._11, mtxnParent._12, mtxnParent._13);
-		MyLib::Vector3 vec2 = MyLib::Vector3(mtxnParent._21, mtxnParent._22, mtxnParent._23);
-		MyLib::Vector3 vec3 = MyLib::Vector3(mtxnParent._31, mtxnParent._32, mtxnParent._33);
-
-		// マトリックスからスケール情報を抽出
-		scaleVector.x = D3DXVec3Length(&vec1);
-		scaleVector.y = D3DXVec3Length(&vec2);
-		scaleVector.z = D3DXVec3Length(&vec3);
-		if (scaleVector != MyLib::Vector3(1.0f, 1.0f, 1.0f))
-		{
-			bScale = true;
-		}
+		bScale = true;
 	}
 
 	// 自分に親のワールドマトリックスを掛ける
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxnParent);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxParent);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	D3DXMATRIX mtx = m_mtxWorld.ConvertD3DXMATRIX();
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
 
 	if (m_scale != MyLib::Vector3(1.0f, 1.0f, 1.0f))
 	{// 少しでも違う場合
@@ -316,9 +296,10 @@ void CModel::DrawShadowMtx()
 
 	// シャドウマトリックスの作成
 	D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
-	D3DXMatrixMultiply(&mtxShadow, &m_mtxWorld, &mtxShadow);
+	D3DXMATRIX mtx = m_mtxWorld.ConvertD3DXMATRIX();
+	D3DXMatrixMultiply(&mtxShadow, &mtx, &mtxShadow);
 
-	//シャドウマトリックスの設定
+	// シャドウマトリックスの設定
 	pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
 
 	// マテリアルデータへのポインタを取得
@@ -524,7 +505,7 @@ int CModel::GetIdxTexture(int nIdx)
 //==========================================================================
 // マトリックス設定
 //==========================================================================
-void CModel::SetWorldMtx(const D3DXMATRIX mtx)
+void CModel::SetWorldMtx(const MyLib::Matrix mtx)
 {
 	m_mtxWorld = mtx;
 }
@@ -532,7 +513,7 @@ void CModel::SetWorldMtx(const D3DXMATRIX mtx)
 //==========================================================================
 // マトリックス取得
 //==========================================================================
-D3DXMATRIX CModel::GetWorldMtx() 
+MyLib::Matrix CModel::GetWorldMtx()
 {
 	return m_mtxWorld;
 }
@@ -540,7 +521,7 @@ D3DXMATRIX CModel::GetWorldMtx()
 //==========================================================================
 // ポインタマトリックス取得
 //==========================================================================
-D3DXMATRIX *CModel::GetPtrWorldMtx()
+MyLib::Matrix *CModel::GetPtrWorldMtx()
 {
 	return &m_mtxWorld;
 }

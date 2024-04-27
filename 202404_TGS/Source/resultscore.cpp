@@ -109,7 +109,7 @@ void CResultScore::Kill()
 {
 	if (m_pScore != nullptr)
 	{
-		m_pScore->Release();
+		m_pScore->Kill();
 		m_pScore = nullptr;
 	}
 }

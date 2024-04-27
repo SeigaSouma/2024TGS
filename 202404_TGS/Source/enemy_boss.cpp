@@ -170,7 +170,7 @@ void CEnemyBoss::Update()
 
 	if (GetMotion()->GetType() == CEnemyBoss::MOTION_ROLLING)
 	{
-		MyLib::Vector3 pos = UtilFunc::Transformation::WorldMtxChangeToPosition(GetModel()[2]->GetWorldMtx());
+		MyLib::Vector3 pos = GetModel()[2]->GetWorldMtx().GetWorldPosition();
 
 		CMyEffekseer::GetInstance()->SetPosition(m_pWeaponHandle, pos);
 	}

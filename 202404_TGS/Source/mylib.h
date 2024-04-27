@@ -290,6 +290,410 @@ namespace MyLib
 	};
 
 	/**
+	@brief	マトリックス【行列情報】
+	*/
+	struct Matrix
+	{
+	public:
+
+		union 
+		{
+			struct 
+			{
+				float _11, _12, _13, _14;
+				float _21, _22, _23, _24;
+				float _31, _32, _33, _34;
+				float _41, _42, _43, _44;
+
+			};
+			float m[4][4];
+		};
+
+		// デフォルトコンストラクタ
+		Matrix() {}
+
+		// 引数付きコンストラクタ
+		Matrix(
+			float f11, float f12, float f13, float f14,
+			float f21, float f22, float f23, float f24,
+			float f31, float f32, float f33, float f34,
+			float f41, float f42, float f43, float f44)
+		{
+			_11 = f11;
+			_12 = f12;
+			_13 = f13;
+			_14 = f14;
+
+			_21 = f21;
+			_22 = f22;
+			_23 = f23;
+			_24 = f24;
+
+			_31 = f31;
+			_32 = f32;
+			_33 = f33;
+			_34 = f34;
+
+			_41 = f41;
+			_42 = f42;
+			_43 = f43;
+			_44 = f44;
+		}
+
+		Matrix(const D3DXMATRIX& mtx)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					m[i][j] = mtx.m[i][j];
+				}
+			}
+		}
+
+		//--------------------------
+		// 加算
+		//--------------------------
+		inline Matrix operator + (const Matrix& mtx) const
+		{
+			return Matrix(
+				_11 + mtx._11, _12 + mtx._12, _13 + mtx._13, _14 + mtx._14,
+				_21 + mtx._21, _22 + mtx._22, _23 + mtx._23, _24 + mtx._24,
+				_31 + mtx._31, _32 + mtx._32, _33 + mtx._33, _34 + mtx._34,
+				_41 + mtx._41, _42 + mtx._42, _43 + mtx._43, _44 + mtx._44);
+		}
+
+		inline Matrix operator + () const
+		{
+			return *this;
+		}
+		
+		inline Matrix& operator += (const Matrix& mtx)
+		{
+			for (int i = 0; i < 4; ++i) 
+			{
+				for (int j = 0; j < 4; ++j) 
+				{
+					m[i][j] += mtx.m[i][j];
+				}
+			}
+			return *this;
+		}
+
+		//--------------------------
+		// 減算
+		//--------------------------
+		inline Matrix operator - (const Matrix& mtx) const
+		{
+			return Matrix(
+				_11 - mtx._11, _12 - mtx._12, _13 - mtx._13, _14 - mtx._14,
+				_21 - mtx._21, _22 - mtx._22, _23 - mtx._23, _24 - mtx._24,
+				_31 - mtx._31, _32 - mtx._32, _33 - mtx._33, _34 - mtx._34,
+				_41 - mtx._41, _42 - mtx._42, _43 - mtx._43, _44 - mtx._44);
+		}
+
+		inline Matrix operator - () const
+		{
+			return Matrix(
+				-_11, -_12, -_13, -_14,
+				-_21, -_22, -_23, -_24,
+				-_31, -_32, -_33, -_34,
+				-_41, -_42, -_43, -_44);
+		}
+		
+		inline Matrix& operator -= (const Matrix& mtx)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					m[i][j] -= mtx.m[i][j];
+				}
+			}
+			return *this;
+		}
+
+		//--------------------------
+		// 乗算
+		//--------------------------
+		inline Matrix operator * (const Matrix& mtx) const
+		{
+			Matrix result;
+			result.Multiply(*this, mtx);
+			return result;
+		}
+		
+		inline Matrix operator * (float f) const
+		{
+			return Matrix(
+				_11 * f, _12 * f, _13 * f, _14 * f,
+				_21 * f, _22 * f, _23 * f, _24 * f,
+				_31 * f, _32 * f, _33 * f, _34 * f,
+				_41 * f, _42 * f, _43 * f, _44 * f);
+		}
+
+		inline Matrix& operator *= (const Matrix& mtx)
+		{
+			Multiply(*this, mtx);
+		}
+
+		inline Matrix& operator *= (float f)
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					m[i][j] *= f;
+				}
+			}
+			return *this;
+		}
+
+		//--------------------------
+		// 除算
+		//--------------------------
+		inline Matrix operator / (float f) const
+		{
+			float invert = 1.0f / f;
+			return Matrix(
+				_11 * invert, _12 * invert, _13 * invert, _14 * invert,
+				_21 * invert, _22 * invert, _23 * invert, _24 * invert,
+				_31 * invert, _32 * invert, _33 * invert, _34 * invert,
+				_41 * invert, _42 * invert, _43 * invert, _44 * invert);
+		}
+
+		inline Matrix& operator /= (float f)
+		{
+			float invert = 1.0f / f;
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					m[i][j] *= invert;
+				}
+			}
+			return *this;
+		}
+
+		//--------------------------
+		// 比較
+		//--------------------------
+		inline bool operator == (const Matrix& mtx) const
+		{
+			return 0 == memcmp(this, &mtx, sizeof(Matrix));
+		}
+
+		inline bool operator != (const Matrix& mtx) const
+		{
+			return 0 != memcmp(this, &mtx, sizeof(Matrix));
+		}
+
+
+		//--------------------------
+		// 計算関数
+		//--------------------------
+		/**
+		@brief	単位行列化
+		@return	void
+		*/
+		inline void Identity()
+		{
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; ++j)
+				{
+					this->m[i][j] = (i == j) ? 1.0f : 0.0f;
+				}
+			}
+		}
+
+		/**
+		@brief	マトリックス同士の掛け算
+		@param	mtx1	[in]	行列情報
+		@param	mtx2	[in]	行列情報
+		@return	void
+		*/
+		inline void Multiply(Matrix mtx1, Matrix mtx2)
+		{
+			for (int i = 0; i < 4; ++i) 
+			{
+				for (int j = 0; j < 4; ++j) 
+				{
+					m[i][j] = 0.0f;
+					for (int k = 0; k < 4; ++k) 
+					{
+						m[i][j] += mtx1.m[i][k] * mtx2.m[k][j];
+					}
+				}
+			}
+		}
+
+		/**
+		@brief	移動行列の作成
+		@param	pos		[in]	位置情報
+		@return	void
+		*/
+		inline void Translation(const Vector3& pos)
+		{
+			Identity();
+
+			_41 = pos.x;
+			_42 = pos.y;
+			_43 = pos.z;
+		}
+
+		/**
+		@brief	回転行列の作成(Yaw、Pitch、Roll（ヨー、ピッチ、ロール）順)
+		@param	yaw		[in]	ヨー
+		@param	pitch	[in]	ピッチ
+		@param	roll	[in]	ロール
+		@return	void
+		*/
+		inline void RotationYawPitchRoll(float yaw, float pitch, float roll)
+		{
+			Identity();
+
+			// ラジアン変換
+			float cosYaw = cosf(yaw);
+			float sinYaw = sinf(yaw);
+			float cosPitch = cosf(pitch);
+			float sinPitch = sinf(pitch);
+			float cosRoll = cosf(roll);
+			float sinRoll = sinf(roll);
+
+			// 行列計算
+			_11 = cosYaw * cosRoll + sinYaw * sinPitch * sinRoll;
+			_12 = sinRoll * cosPitch;
+			_13 = -sinYaw * cosRoll + cosYaw * sinPitch * sinRoll;
+			_14 = 0.0f;
+
+			_21 = -cosYaw * sinRoll + sinYaw * sinPitch * cosRoll;
+			_22 = cosRoll * cosPitch;
+			_23 = sinRoll * sinYaw + cosYaw * sinPitch * cosRoll;
+			_24 = 0.0f;
+
+			_31 = sinYaw * cosPitch;
+			_32 = -sinPitch;
+			_33 = cosYaw * cosPitch;
+			_34 = 0.0f;
+
+			_41 = 0.0f;
+			_42 = 0.0f;
+			_43 = 0.0f;
+			_44 = 1.0f;
+		}
+
+		/**
+		@brief	拡大情報を掛け合わせる
+		@param	scale	[in]	拡大情報
+		@return	void
+		*/
+		inline void Scaling(const Vector3& scale)
+		{
+			Identity();
+
+			_11 = scale.x;
+			_22 = scale.y;
+			_33 = scale.z;
+		}
+
+		/**
+		@brief	変換行列に応じて頂点変換
+		@param	pos		[in]	元にする頂点
+		@param	mtx		[in]	変換行列
+		@return	変換後の頂点
+		*/
+		inline Vector3 Coord(const Vector3& pos)
+		{
+			Vector3 result;
+
+			// ベクトルと掛け合わせる
+			result.x = pos.x * m[0][0] + pos.y * m[1][0] + pos.z * m[2][0] + m[3][0];
+			result.y = pos.x * m[0][1] + pos.y * m[1][1] + pos.z * m[2][1] + m[3][1];
+			result.z = pos.x * m[0][2] + pos.y * m[1][2] + pos.z * m[2][2] + m[3][2];
+			float w =  pos.x * m[0][3] + pos.y * m[1][3] + pos.z * m[2][3] + m[3][3];
+
+			if (w != 0.0f) {
+				result.x /= w;
+				result.y /= w;
+				result.z /= w;
+			}
+
+			return result;
+		}
+
+		///**
+		//@brief	行列式の計算
+		//@return	行列式
+		//*/
+		//float Determinant(const D3DXMATRIX& mat) 
+		//{
+		//	float determinant =
+		//		mat._11 * (mat._22 * mat._33 - mat._23 * mat._32) -
+		//		mat._12 * (mat._21 * mat._33 - mat._23 * mat._31) +
+		//		mat._13 * (mat._21 * mat._32 - mat._22 * mat._31);
+		//	return determinant;
+		//}
+
+
+		//--------------------------
+		// 変換関数
+		//--------------------------
+		/**
+		@brief	ワールド座標取得
+		@return	ワールド座標
+		*/
+		inline Vector3 GetWorldPosition()
+		{
+			return Vector3(_41, _42, _43);
+		}
+
+		/**
+		@brief	拡大情報取得
+		@return	拡大情報
+		*/
+		inline Vector3 GetScale()
+		{
+			Vector3 vec1 = MyLib::Vector3(_11, _12, _13);
+			Vector3 vec2 = MyLib::Vector3(_21, _22, _23);
+			Vector3 vec3 = MyLib::Vector3(_31, _32, _33);
+
+			// マトリックスからスケール情報を抽出
+			Vector3 scale;
+			scale.x = vec1.Length();
+			scale.y = vec2.Length();
+			scale.z = vec3.Length();
+			return scale;
+		}
+
+		/**
+		@brief	前方ベクトル取得
+		@return	前方ベクトル
+		*/
+		inline Vector3 GetForwardVector()
+		{
+			return Vector3(_13, _23, _33);
+		}
+
+		/**
+		@brief	D3DXMATRIX型に変換する
+		@return	D3DXMATRIX型の要素
+		*/
+		inline D3DXMATRIX ConvertD3DXMATRIX()
+		{
+			D3DXMATRIX mtx;
+			for (int i = 0; i < 4; ++i) 
+			{
+				for (int j = 0; j < 4; ++j) 
+				{
+					mtx.m[i][j] = m[i][j];
+				}
+			}
+			return mtx;
+		}
+	};
+
+	/**
 	@brief	HitResult【衝突情報】
 	*/
 	struct HitResult

@@ -156,13 +156,13 @@ void CObjectChara::Update()
 		CModel* pModel = GetModel()[collider.nParentPartsIdx];
 
 		// 判定するパーツのマトリックス取得
-		D3DXMATRIX mtxTrans;
-		D3DXMATRIX mtxWepon = pModel->GetWorldMtx();
+		MyLib::Matrix mtxTrans;
+		MyLib::Matrix mtxWepon = pModel->GetWorldMtx();
 
 		// 位置を反映する
-		D3DXMatrixTranslation(&mtxTrans, collider.offset.x, collider.offset.y, collider.offset.z);
-		D3DXMatrixMultiply(&mtxWepon, &mtxTrans, &mtxWepon);
-		collider.center = UtilFunc::Transformation::WorldMtxChangeToPosition(mtxWepon);
+		mtxTrans.Translation(collider.offset);
+		mtxWepon.Multiply(mtxTrans, mtxWepon);
+		collider.center = mtxWepon.GetWorldPosition();
 	}
 
 	// モーション中の行動処理

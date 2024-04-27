@@ -19,8 +19,6 @@ class CShadow;
 class CHP_GaugePlayer;
 class CEnemy;
 
-class CBusket;
-
 class CPlayerControlAttack;	// 攻撃
 class CPlayerControlDefence;// 防御
 class CPlayerControlAvoid;	// 回避
@@ -275,11 +273,9 @@ private:
 	bool m_bMotionAutoSet;			// モーションの自動設定
 	Effekseer::Handle m_WeaponHandle;
 
-	CBusket* m_pBusket;
-
 	sPlayerStatus m_PlayerStatus;	// プレイヤーステータス
 	sDamageInfo m_sDamageInfo;		// ダメージ情報
-	CHP_GaugePlayer* m_pHPGauge;		// HPゲージのポインタ
+	CHP_GaugePlayer* m_pHPGauge;	// HPゲージのポインタ
 	
 	// パターン用インスタンス
 	CPlayerControlAttack* m_pControlAtk;		// 攻撃操作

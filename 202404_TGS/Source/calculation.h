@@ -1556,12 +1556,12 @@ namespace UtilFunc	// 便利関数
 		@param	t		[in]	衝突間隔（出力）
 		@return		衝突判定
 		*/
-		inline bool CollisionRayAABB(MyLib::Vector3* pos, MyLib::Vector3* dir_w, MyLib::AABB* aabb, D3DXMATRIX* mat, float& t, MyLib::Vector3* colPos = 0)
+		inline bool CollisionRayAABB(MyLib::Vector3* pos, MyLib::Vector3* dir_w, MyLib::AABB* aabb, MyLib::Matrix* mtx, float& t, MyLib::Vector3* colPos = 0)
 		{
 
 			// レイを境界ボックスの位置へ移動
-			D3DXMATRIX invMat;
-			D3DXMatrixInverse(&invMat, 0, mat);
+			D3DXMATRIX invMat, trans = mtx->ConvertD3DXMATRIX();
+			D3DXMatrixInverse(&invMat, 0, &trans);
 
 			MyLib::Vector3 p_l, dir_l;
 			D3DXVec3TransformCoord(&p_l, pos, &invMat);
@@ -1687,7 +1687,7 @@ namespace UtilFunc	// 便利関数
 		@param	aabbMatrix		[in]	AABBのワールドマトリックス
 		@return	void
 		*/
-		inline bool CollisionCircleToAABB(MyLib::Vector3& circleCenter, const float radius, MyLib::AABB aabb, D3DXMATRIX aabbMatrix)
+		inline bool CollisionCircleToAABB(MyLib::Vector3& circleCenter, const float radius, MyLib::AABB aabb, MyLib::Matrix aabbMatrix)
 		{
 			// AABBの中心
 			MyLib::Vector3 aabbCenter = {
@@ -1695,12 +1695,12 @@ namespace UtilFunc	// 便利関数
 				(aabb.vtxMin.y + aabb.vtxMax.y) * 0.5f,
 				(aabb.vtxMin.z + aabb.vtxMax.z) * 0.5f
 			};
-			aabbCenter += UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix);
+			aabbCenter += aabbMatrix.GetWorldPosition();
 
 			// AABBのスケーリングを考慮して中心を計算
-			aabbCenter.x = UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix).x + aabbCenter.x * UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix).x;
-			aabbCenter.y = UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix).y + aabbCenter.y * UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix).y;
-			aabbCenter.z = UtilFunc::Transformation::WorldMtxChangeToPosition(aabbMatrix).z + aabbCenter.z * UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix).z;
+			aabbCenter.x = aabbMatrix.GetWorldPosition().x + aabbCenter.x * aabbMatrix.GetWorldPosition().x;
+			aabbCenter.y = aabbMatrix.GetWorldPosition().y + aabbCenter.y * aabbMatrix.GetWorldPosition().y;
+			aabbCenter.z = aabbMatrix.GetWorldPosition().z + aabbCenter.z * aabbMatrix.GetWorldPosition().z;
 
 			// AABBの半幅
 			MyLib::Vector3 aabbHalfExtents = {
@@ -1710,15 +1710,14 @@ namespace UtilFunc	// 便利関数
 			};
 
 			// AABBのスケーリングを考慮して半幅を計算
-			D3DXVECTOR3 scale = UtilFunc::Transformation::MtxChangeToMatrix(aabbMatrix);
+			D3DXVECTOR3 scale = aabbMatrix.GetScale();
 			aabbHalfExtents.x *= scale.x;
 			aabbHalfExtents.y *= scale.y;
 			aabbHalfExtents.z *= scale.z;
 
 			// AABBのローカル空間に円の位置を変換
 			MyLib::Vector3 localCenter, diffCenter = { circleCenter.x - aabbCenter.x, circleCenter.y - aabbCenter.y, circleCenter.z - aabbCenter.z };
-			D3DXVec3TransformCoord(&localCenter, &diffCenter, &aabbMatrix);
-
+			localCenter = aabbMatrix.Coord(diffCenter);
 
 			// AABBのローカル空間内での最も近い点の座標を計算
 			float closestPointX = UtilFunc::Transformation::Clamp(localCenter.x, -aabbHalfExtents.x, aabbHalfExtents.x);
@@ -1768,8 +1767,8 @@ namespace UtilFunc	// 便利関数
 					}
 
 					// 押し戻しベクトルをAABBのローカル空間から元の座標系に変換
-					D3DXMATRIX inverseAABBMatrix;
-					D3DXMatrixInverse(&inverseAABBMatrix, nullptr, &aabbMatrix);
+					D3DXMATRIX inverseAABBMatrix, invAABBMTX = aabbMatrix.ConvertD3DXMATRIX();
+					D3DXMatrixInverse(&inverseAABBMatrix, nullptr, &invAABBMTX);
 					D3DXVec3TransformCoord(&pushBackVector, &pushBackVector, &inverseAABBMatrix);
 
 					// 円の中心を押し戻す

@@ -611,11 +611,11 @@ void CEdit_Map::Update()
 				aabb.vtxMin = obj->GetVtxMin();
 				aabb.vtxMax = obj->GetVtxMax();
 
-				D3DXMATRIX mat = obj->GetWorldMtx();
+				MyLib::Matrix mtx = obj->GetWorldMtx();
 				float time = 0.0f;
 				MyLib::Vector3 OBpos;
 
-				bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mat, time, &OBpos);
+				bHit = UtilFunc::Collision::CollisionRayAABB(&mousePos, &mouseRay, &aabb, &mtx, time, &OBpos);
 
 				if (bHit)
 				{// ”í‚Á‚Ä‚é

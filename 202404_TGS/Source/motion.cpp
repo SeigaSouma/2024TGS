@@ -983,7 +983,7 @@ MyLib::Vector3 CMotion::GetAttackPosition(CModel **ppModel, AttackInfo attackInf
 	}
 
 	// 判定するパーツのマトリックス取得
-	D3DXMATRIX mtxWepon = ppModel[attackInfo.nCollisionNum]->GetWorldMtx();
+	D3DXMATRIX mtxWepon = ppModel[attackInfo.nCollisionNum]->GetWorldMtx().ConvertD3DXMATRIX();
 
 	// 位置を反映する
 	D3DXMatrixTranslation(&mtxTrans, attackInfo.Offset.x, attackInfo.Offset.y, attackInfo.Offset.z);
@@ -1005,7 +1005,7 @@ MyLib::Vector3 CMotion::GetAttackPosition(CModel *pModel, AttackInfo attackInfo)
 	}
 
 	// 判定するパーツのマトリックス取得
-	D3DXMATRIX mtxWepon = pModel->GetWorldMtx();
+	D3DXMATRIX mtxWepon = pModel->GetWorldMtx().ConvertD3DXMATRIX();
 
 	// 位置を反映する
 	D3DXMatrixTranslation(&mtxTrans, attackInfo.Offset.x, attackInfo.Offset.y, attackInfo.Offset.z);

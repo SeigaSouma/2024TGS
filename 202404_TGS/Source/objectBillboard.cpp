@@ -20,7 +20,7 @@ namespace
 //==========================================================================
 CObjectBillboard::CObjectBillboard(int nPriority) : CObject(nPriority)
 {
-	D3DXMatrixIdentity(&m_mtxWorld);			// ワールドマトリックス
+	m_mtxWorld.Identity();			// ワールドマトリックス
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
 	m_fSize = D3DXVECTOR2(0.0f, 0.0f);			// サイズ
 	m_sizeOrigin = D3DXVECTOR2(0.0f, 0.0f);		// 元のサイズ
@@ -168,22 +168,23 @@ void CObjectBillboard::Draw()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	// 計算用マトリックス宣言
-	D3DXMATRIX mtxRot, mtxTrans;
+	MyLib::Matrix mtxRot, mtxTrans;
 
 	// 情報取得
 	MyLib::Vector3 pos = GetPosition();
 
-	// ビューマトリックス取得用
-	D3DXMATRIX mtxView;
-
 	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	m_mtxWorld.Identity();
 
 	// ビューマトリックスを取得
+	D3DXMATRIX mtxView;
 	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
 
 	// ポリゴンをカメラに対して正面に向ける
-	D3DXMatrixInverse(&m_mtxWorld, nullptr, &mtxView);	// 逆配列を求める
+	D3DXMATRIX mtxInvert;
+	D3DXMatrixInverse(&mtxInvert, nullptr, &mtxView);	// 逆配列を求める
+
+	m_mtxWorld = mtxInvert;
 
 #if 0
 
@@ -207,11 +208,12 @@ void CObjectBillboard::Draw()
 	m_mtxWorld._43 = 0.0f;
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	mtxTrans.Translation(pos);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxTrans);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	D3DXMATRIX mtx = m_mtxWorld.ConvertD3DXMATRIX();
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
@@ -297,7 +299,7 @@ void CObjectBillboard::SetRotation(const MyLib::Vector3& rot)
 //==========================================================================
 // マトリックス設定
 //==========================================================================
-void CObjectBillboard::SetWorldMtx(const D3DXMATRIX mtx)
+void CObjectBillboard::SetWorldMtx(const MyLib::Matrix mtx)
 {
 	m_mtxWorld = mtx;
 }
@@ -305,7 +307,7 @@ void CObjectBillboard::SetWorldMtx(const D3DXMATRIX mtx)
 //==========================================================================
 // マトリックス取得
 //==========================================================================
-D3DXMATRIX CObjectBillboard::GetWorldMtx() const
+MyLib::Matrix CObjectBillboard::GetWorldMtx() const
 {
 	return m_mtxWorld;
 }

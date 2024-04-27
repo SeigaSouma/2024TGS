@@ -9,17 +9,6 @@
 #include "renderer.h"
 
 //==========================================================================
-// マクロ定義
-//==========================================================================
-#define WIDTH			(640.0f)					// 横幅
-#define HEIGHT			(360.0f)					// 縦幅
-#define SCROLL_SPEED	(-0.005f)					// スクロール速度
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
-
-//==========================================================================
 // コンストラクタ
 //==========================================================================
 CNumberBillboard::CNumberBillboard(int nPriority) : CNumber(nPriority)
@@ -39,10 +28,10 @@ CNumberBillboard::~CNumberBillboard()
 //==========================================================================
 // 初期化処理
 //==========================================================================
-HRESULT CNumberBillboard::Init(int nPriority)
+HRESULT CNumberBillboard::Init()
 {
 	// 生成処理
-	m_pObjBillboard = CObjectBillboard::Create();
+	m_pObjBillboard = CObjectBillboard::Create(GetPriority());
 
 	return S_OK;
 }
@@ -54,21 +43,25 @@ void CNumberBillboard::Uninit()
 {
 	// 終了処理
 	if (m_pObjBillboard != nullptr)
-	{// nullptrじゃなかったら
+	{
 		m_pObjBillboard = nullptr;
 	}
+
+	CNumber::Uninit();
 }
 
 //==========================================================================
-// 解放処理
+// 削除処理
 //==========================================================================
-void CNumberBillboard::Release()
+void CNumberBillboard::Kill()
 {
 	if (m_pObjBillboard != nullptr)
-	{// nullptrじゃなかったら
+	{
 		m_pObjBillboard->Uninit();
 		m_pObjBillboard = nullptr;
 	}
+
+	CNumber::Kill();
 }
 
 //==========================================================================
@@ -79,7 +72,7 @@ void CNumberBillboard::Update()
 	// 更新処理
 	if (m_pObjBillboard != nullptr)
 	{
-		m_pObjBillboard->Update();
+		m_pObjBillboard->SetEnableDisp(IsDisp());
 	}
 }
 
@@ -88,30 +81,30 @@ void CNumberBillboard::Update()
 //==========================================================================
 void CNumberBillboard::Draw()
 {
-	// デバイスの取得
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+	//// デバイスの取得
+	//LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	// ライティングを無効にする
-	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	//// ライティングを無効にする
+	//pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
-	// アルファテストを有効にする
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	//// アルファテストを有効にする
+	//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	//pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-	// 描画処理
-	if (m_pObjBillboard != nullptr)
-	{// nullptrじゃなかったら
-		m_pObjBillboard->Draw();
-	}
+	//// 描画処理
+	//if (m_pObjBillboard != nullptr)
+	//{// nullptrじゃなかったら
+	//	m_pObjBillboard->Draw();
+	//}
 
-	// アルファテストを無効にする
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	//// アルファテストを無効にする
+	//pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	//pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+	//pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
-	// ライティングを有効にする
-	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	//// ライティングを有効にする
+	//pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 
 //==========================================================================
@@ -137,13 +130,14 @@ void CNumberBillboard::BindTexture(int nIdx)
 void CNumberBillboard::SetType(const CObject::TYPE type)
 {
 	m_pObjBillboard->SetType(type);
+	CNumber::SetType(type);
 }
 
 
 //==========================================================================
 // 位置設定
 //==========================================================================
-void CNumberBillboard::SetPosition(const MyLib::Vector3 pos)
+void CNumberBillboard::SetPosition(const MyLib::Vector3& pos)
 {
 	m_pObjBillboard->SetPosition(pos);
 }
@@ -159,7 +153,7 @@ MyLib::Vector3 CNumberBillboard::GetPosition() const
 //==========================================================================
 // 移動量設定
 //==========================================================================
-void CNumberBillboard::SetMove(const MyLib::Vector3 move)
+void CNumberBillboard::SetMove(const MyLib::Vector3& move)
 {
 	m_pObjBillboard->SetMove(move);
 }
@@ -170,6 +164,22 @@ void CNumberBillboard::SetMove(const MyLib::Vector3 move)
 MyLib::Vector3 CNumberBillboard::GetMove() const
 {
 	return m_pObjBillboard->GetMove();
+}
+
+//==========================================================================
+// 向き設定
+//==========================================================================
+void CNumberBillboard::SetRotation(const MyLib::Vector3& rot)
+{
+	m_pObjBillboard->SetRotation(rot);
+}
+
+//==========================================================================
+// 向き取得
+//==========================================================================
+MyLib::Vector3 CNumberBillboard::GetRotation() const
+{
+	return m_pObjBillboard->GetRotation();
 }
 
 //==========================================================================
@@ -234,12 +244,4 @@ void CNumberBillboard::SetTex(D3DXVECTOR2 *tex)
 D3DXVECTOR2 *CNumberBillboard::GetTex()
 {
 	return m_pObjBillboard->GetTex();
-}
-
-//==========================================================================
-// オブジェクトビルボードオブジェクトの取得
-//==========================================================================
-CObjectBillboard *CNumberBillboard::GetObjectBillboard()
-{
-	return m_pObjBillboard;
 }

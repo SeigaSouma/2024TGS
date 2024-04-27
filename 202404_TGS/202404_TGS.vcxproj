@@ -172,10 +172,10 @@
     <ClCompile Include="Source\battlestart_effect.cpp" />
     <ClCompile Include="Source\beforebattle.cpp" />
     <ClCompile Include="Source\blackframe.cpp" />
-    <ClCompile Include="Source\busket.cpp" />
     <ClCompile Include="Source\camera.cpp" />
     <ClCompile Include="Source\collisionLine_Box.cpp" />
     <ClCompile Include="Source\collisionobject.cpp" />
+    <ClCompile Include="Source\damagepoint.cpp" />
     <ClCompile Include="Source\debugproc.cpp" />
     <ClCompile Include="Source\edit.cpp" />
     <ClCompile Include="Source\edithandle.cpp" />
@@ -249,7 +249,6 @@
     <ClCompile Include="Source\pickupguide.cpp" />
     <ClCompile Include="Source\player.cpp" />
     <ClCompile Include="Source\playercontrol.cpp" />
-    <ClCompile Include="Source\pollen_gauge.cpp" />
     <ClCompile Include="Source\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">precompile.h</PrecompiledHeaderFile>
@@ -257,7 +256,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\ranking.cpp" />
-    <ClCompile Include="Source\rankingbg.cpp" />
     <ClCompile Include="Source\rankingmanager.cpp" />
     <ClCompile Include="Source\rankingscore.cpp" />
     <ClCompile Include="Source\renderer.cpp" />
@@ -300,12 +298,12 @@
     <ClInclude Include="Source\battlestart_effect.h" />
     <ClInclude Include="Source\beforebattle.h" />
     <ClInclude Include="Source\blackframe.h" />
-    <ClInclude Include="Source\busket.h" />
     <ClInclude Include="Source\calculation.h" />
     <ClInclude Include="Source\camera.h" />
     <ClInclude Include="Source\collisionLine_Box.h" />
     <ClInclude Include="Source\collisionobject.h" />
     <ClInclude Include="Source\constans.h" />
+    <ClInclude Include="Source\damagepoint.h" />
     <ClInclude Include="Source\debugproc.h" />
     <ClInclude Include="Source\edit.h" />
     <ClInclude Include="Source\edithandle.h" />
@@ -379,10 +377,8 @@
     <ClInclude Include="Source\pickupguide.h" />
     <ClInclude Include="Source\player.h" />
     <ClInclude Include="Source\playercontrol.h" />
-    <ClInclude Include="Source\pollen_gauge.h" />
     <ClInclude Include="Source\precompile.h" />
     <ClInclude Include="Source\ranking.h" />
-    <ClInclude Include="Source\rankingbg.h" />
     <ClInclude Include="Source\rankingmanager.h" />
     <ClInclude Include="Source\rankingscore.h" />
     <ClInclude Include="Source\renderer.h" />

@@ -241,7 +241,7 @@ void CHandle::CollisionHandle()
 		m_pArrow[i]->SetColor(mylib_const::DEFAULT_COLOR);
 
 		MyLib::AABB aabb = m_pArrow[i]->GetAABB();
-		D3DXMATRIX mtx = m_pArrow[i]->GetWorldMtx();
+		MyLib::Matrix mtx = m_pArrow[i]->GetWorldMtx();
 		float time = 0.0f;
 
 		if (!m_bHoverHandle) {
@@ -264,7 +264,7 @@ void CHandle::CollisionHandle()
 		m_pCenterSphere->SetColor(mylib_const::DEFAULT_COLOR);
 
 		MyLib::AABB aabb = m_pCenterSphere->GetAABB();
-		D3DXMATRIX mtx = m_pCenterSphere->GetWorldMtx();
+		MyLib::Matrix mtx = m_pCenterSphere->GetWorldMtx();
 		float time = 0.0f;
 
 		if (!m_bHoverHandle) {

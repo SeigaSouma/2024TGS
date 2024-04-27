@@ -32,8 +32,8 @@ public:
 	void BindTexture(int nIdx);
 	virtual void SetRotation(const MyLib::Vector3& rot) override;		// 向き設定
 
-	virtual void SetWorldMtx(const D3DXMATRIX mtx);		// マトリックス設定
-	virtual D3DXMATRIX GetWorldMtx() const;				// マトリックス取得
+	virtual void SetWorldMtx(const MyLib::Matrix mtx);	// マトリックス設定
+	virtual MyLib::Matrix GetWorldMtx() const;			// マトリックス取得
 	virtual void SetColor(const D3DXCOLOR col);			// 色設定
 	virtual D3DXCOLOR GetColor() const;					// 色取得
 	virtual void SetAlpha(const float col);				// 不透明度設定
@@ -57,9 +57,9 @@ protected:
 	float m_fAngle;				// 対角線の向き
 
 private:
-	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
-	D3DXCOLOR m_col;		// 色
-	D3DXVECTOR2 m_fSize;	// サイズ
+	MyLib::Matrix m_mtxWorld;	// ワールドマトリックス
+	D3DXCOLOR m_col;			// 色
+	D3DXVECTOR2 m_fSize;		// サイズ
 	D3DXVECTOR2 m_sizeOrigin;	// 元のサイズ
 	D3DXVECTOR2 m_fTex[32];	// テクスチャ座標
 	int m_nTexIdx;			// テクスチャのインデックス番号

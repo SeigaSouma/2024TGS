@@ -17,17 +17,16 @@
 //==========================================================================
 // マクロ定義
 //==========================================================================
-#define TEXTURE			"data\\TEXTURE\\number_blackclover_01.png"	// テクスチャのファイル
-#define TEX_U			(0.1f)							// Uの分割
-
-//==========================================================================
-// 静的メンバ変数宣言
-//==========================================================================
+namespace
+{
+	const char* DEFAULT_TEXTURE = "data\\TEXTURE\\number_blackclover_01.png";	// テクスチャのファイル
+	const float TEX_U = 0.1f;	// 横分割
+}
 
 //==========================================================================
 // コンストラクタ
 //==========================================================================
-CMultiNumber::CMultiNumber(int nPriority)
+CMultiNumber::CMultiNumber(int nPriority) : CObject(nPriority)
 {
 	// 値のクリア
 	m_nNum = 0;				// 数字
@@ -35,8 +34,6 @@ CMultiNumber::CMultiNumber(int nPriority)
 	m_nTexIdx = 0;			// テクスチャのインデックス番号
 	m_nPriority = 0;		// 優先順位
 	m_ppMultiNumber = nullptr;	// 数字のオブジェクト
-	m_pos = MyLib::Vector3(0.0f, 0.0f, 0.0f);	// 位置
-	m_rot = MyLib::Vector3(0.0f, 0.0f, 0.0f);	// 位置
 	m_col = mylib_const::DEFAULT_COLOR;		// 色
 	m_size = D3DXVECTOR2(0.0f, 0.0f);	// 数字のサイズ
 	m_objType = CNumber::OBJECTTYPE_2D;	// オブジェクトの種類
@@ -77,7 +74,7 @@ CMultiNumber *CMultiNumber::Create(MyLib::Vector3 pos, D3DXVECTOR2 size, int nNu
 			pNumber->m_size = size;
 
 			// 位置
-			pNumber->m_pos = pos;
+			pNumber->SetPosition(pos);
 
 			// 数字の数
 			pNumber->m_nNumNumber = nNum;
@@ -128,7 +125,7 @@ CMultiNumber *CMultiNumber::Create(MyLib::Vector3 pos, D3DXVECTOR2 size, int nNu
 			pNumber->m_size = size;
 
 			// 位置
-			pNumber->m_pos = pos;
+			pNumber->SetPosition(pos);
 			pNumber->SetPosition(pos);
 
 			// 数字の数
@@ -169,8 +166,11 @@ HRESULT CMultiNumber::Init()
 	// 生成処理
 	if (m_nTexIdx == 0)
 	{
-		m_nTexIdx = CTexture::GetInstance()->Regist(TEXTURE);
+		m_nTexIdx = CTexture::GetInstance()->Regist(DEFAULT_TEXTURE);
 	}
+
+	MyLib::Vector3 m_pos = GetPosition();
+	MyLib::Vector3 m_rot = GetRotation();
 
 	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 	{
@@ -180,18 +180,8 @@ HRESULT CMultiNumber::Init()
 		// 各種変数の初期化
 		m_ppMultiNumber[nCntNum]->SetSize(m_size);	// サイズ
 		m_ppMultiNumber[nCntNum]->SetPosition(MyLib::Vector3(m_pos.x + m_size.y * nCntNum, m_pos.y, m_pos.z));	// 位置
-
-																											// 種類の設定
-		if (m_objType == CNumber::OBJECTTYPE_3D)
-		{
-			m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT3D);
-			m_ppMultiNumber[nCntNum]->SetSize3D(MyLib::Vector3(m_size.x, m_size.y, 0.0f));
-			m_ppMultiNumber[nCntNum]->SetRotation(m_rot);
-		}
-		else
-		{
-			m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE_OBJECT2D);
-		}
+		m_ppMultiNumber[nCntNum]->SetRotation(m_rot);
+		m_ppMultiNumber[nCntNum]->SetType(CObject::TYPE::TYPE_NUMBER);
 
 		// テクスチャの割り当て
 		m_ppMultiNumber[nCntNum]->BindTexture(m_nTexIdx);
@@ -225,47 +215,42 @@ void CMultiNumber::Uninit()
 	// 終了処理
 	if (m_ppMultiNumber != nullptr)
 	{
-
-	 // 各数字オブジェクトの破棄
+		// 各数字オブジェクトの破棄
 		for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 		{
 			if (m_ppMultiNumber[nCntNum] != nullptr)
 			{
 				m_ppMultiNumber[nCntNum]->Uninit();
-				delete m_ppMultiNumber[nCntNum];
 				m_ppMultiNumber[nCntNum] = nullptr;
 			}
 		}
-		delete[] m_ppMultiNumber;
 		m_ppMultiNumber = nullptr;
 	}
 
-	delete this;
+	Release();
 }
 
 //==========================================================================
-// 解放処理
+// 削除処理
 //==========================================================================
-void CMultiNumber::Release()
+void CMultiNumber::Kill()
 {
 	// 終了処理
 	if (m_ppMultiNumber != nullptr)
 	{
-
-	 // 各数字オブジェクトの破棄
+		// 各数字オブジェクトの破棄
 		for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 		{
 			if (m_ppMultiNumber[nCntNum] != nullptr)
 			{
-				m_ppMultiNumber[nCntNum]->Release();
-				delete m_ppMultiNumber[nCntNum];
+				m_ppMultiNumber[nCntNum]->Kill();
 				m_ppMultiNumber[nCntNum] = nullptr;
 			}
 		}
-		delete m_ppMultiNumber;
 		m_ppMultiNumber = nullptr;
 	}
-	delete this;
+
+	Release();
 }
 
 //==========================================================================
@@ -308,33 +293,33 @@ void CMultiNumber::SettingDisp()
 		case CNumber::OBJECTTYPE_2D:
 			if (m_nNumNumber - nNumberDigit <= nCntNum)
 			{// 桁数
-				m_ppMultiNumber[nCntNum]->GetObject2D()->SetEnableDisp(true);
+				m_ppMultiNumber[nCntNum]->SetEnableDisp(true);
 			}
 			else
 			{
-				m_ppMultiNumber[nCntNum]->GetObject2D()->SetEnableDisp(false);
+				m_ppMultiNumber[nCntNum]->SetEnableDisp(false);
 			}
 			break;
 
 		case CNumber::OBJECTTYPE_3D:
 			if (m_nNumNumber - nNumberDigit <= nCntNum)
 			{// 桁数
-				m_ppMultiNumber[nCntNum]->GetObject3D()->SetEnableDisp(true);
+				m_ppMultiNumber[nCntNum]->SetEnableDisp(true);
 			}
 			else
 			{
-				m_ppMultiNumber[nCntNum]->GetObject3D()->SetEnableDisp(false);
+				m_ppMultiNumber[nCntNum]->SetEnableDisp(false);
 			}
 			break;
 
 		case CNumber::OBJECTTYPE_BILLBOARD:
 			if (m_nNumNumber - nNumberDigit <= nCntNum)
 			{// 桁数
-				m_ppMultiNumber[nCntNum]->GetObjectBillboard()->SetEnableDisp(true);
+				m_ppMultiNumber[nCntNum]->SetEnableDisp(true);
 			}
 			else
 			{
-				m_ppMultiNumber[nCntNum]->GetObjectBillboard()->SetEnableDisp(false);
+				m_ppMultiNumber[nCntNum]->SetEnableDisp(false);
 			}
 			break;
 		}
@@ -419,10 +404,12 @@ void CMultiNumber::SetValue()
 //==========================================================================
 // 位置設定
 //==========================================================================
-void CMultiNumber::SetPosition(const MyLib::Vector3 pos)
+void CMultiNumber::SetPosition(const MyLib::Vector3& pos)
 {
 	// 位置設定
-	m_pos = pos;
+	CObject::SetPosition(pos);
+	MyLib::Vector3 m_pos = pos;
+	MyLib::Vector3 m_rot = GetRotation();
 
 	int nNumberDigit = UtilFunc::Calculation::GetDigit(m_nNum);
 	if (m_Alignment == AlignmentType::ALIGNMENT_LEFT)
@@ -478,35 +465,11 @@ void CMultiNumber::SetPosition(const MyLib::Vector3 pos)
 }
 
 //==========================================================================
-// 位置取得
-//==========================================================================
-MyLib::Vector3 CMultiNumber::GetPosition() const
-{
-	return m_pos;
-}
-
-//==========================================================================
-// 位置設定
-//==========================================================================
-void CMultiNumber::SetOriginPosition(const MyLib::Vector3 pos)
-{
-	m_posOrigin = pos;
-}
-
-//==========================================================================
-// 位置取得
-//==========================================================================
-MyLib::Vector3 CMultiNumber::GetOriginPosition() const
-{
-	return m_posOrigin;
-}
-
-//==========================================================================
 // 向き設定
 //==========================================================================
-void CMultiNumber::SetRotation(const MyLib::Vector3 rot)
+void CMultiNumber::SetRotation(const MyLib::Vector3& rot)
 {
-	m_rot = rot;
+	CObject::SetRotation(rot);
 	for (int nCntNum = 0; nCntNum < m_nNumNumber; nCntNum++)
 	{
 		if (m_ppMultiNumber[nCntNum] != nullptr)
@@ -514,14 +477,6 @@ void CMultiNumber::SetRotation(const MyLib::Vector3 rot)
 			m_ppMultiNumber[nCntNum]->SetRotation(rot);	// 位置
 		}
 	}
-}
-
-//==========================================================================
-// 向き取得
-//==========================================================================
-MyLib::Vector3 CMultiNumber::GetRotation() const
-{
-	return m_rot;
 }
 
 //==========================================================================

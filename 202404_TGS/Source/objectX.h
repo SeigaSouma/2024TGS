@@ -55,22 +55,22 @@ public:
 	void BindTexture(int *nIdx);
 	void BindXData(int nIdxXFile);
 
-	void SetWorldMtx(const D3DXMATRIX mtx);		// マトリックス設定
-	D3DXMATRIX GetWorldMtx() const;			// マトリックス取得
-	void SetScale(const MyLib::Vector3 scale);		// スケール設定
+	void SetWorldMtx(const MyLib::Matrix mtx);	// マトリックス設定
+	MyLib::Matrix GetWorldMtx() const;			// マトリックス取得
+	void SetScale(const MyLib::Vector3 scale);	// スケール設定
 	MyLib::Vector3 GetScale() const;			// スケール取得
 	void SetColor(const D3DXCOLOR col);			// 色設定
-	D3DXCOLOR GetColor() const;				// 色取得
-	void SetSize(const MyLib::Vector3 size);		// サイズの設定
-	MyLib::Vector3 GetSize() const;			// サイズの取得
+	D3DXCOLOR GetColor() const;					// 色取得
+	void SetSize(const MyLib::Vector3 size);	// サイズの設定
+	MyLib::Vector3 GetSize() const;				// サイズの取得
 	MyLib::Vector3 GetVtxMax() const;			// 頂点の最大値取得
 	MyLib::Vector3 GetVtxMin() const;			// 頂点の最小値取得
 	MyLib::AABB GetAABB() const;				// AABB情報取得
-	int GetIdxXFile() const;				// Xファイルのインデックス取得
-	bool GetUseShadow() const;				// 影を使っているかどうか
+	int GetIdxXFile() const;					// Xファイルのインデックス取得
+	bool GetUseShadow() const;					// 影を使っているかどうか
 
-	void SetState(STATE state) { m_state = state; }	// 状態設定
-	STATE GetState() { return m_state; }			// 状態取得
+	void SetState(STATE state) { m_state = state; }		// 状態設定
+	STATE GetState() { return m_state; }				// 状態取得
 
 	float GetHeight(MyLib::Vector3 pos, bool &bLand);	// 高さ取得
 
@@ -109,27 +109,29 @@ private:
 	void StateEdit();	// エディット
 
 	// その他
-	void SetCollisionBoxData();
+	void CalWorldMtx();			// ワールドマトリックスの計算処理
+	void SetCollisionBoxData();	// 当たり判定ボックスデータ設定
+	
 
 	//=============================
 	// メンバ変数
 	//=============================
-	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
-	MyLib::Vector3 m_scale;	// スケール
-	D3DXCOLOR m_col;		// 色
-	MyLib::Vector3 m_fSize;	// サイズ
-	MyLib::AABB m_AABB;		// AABB情報
-	MyLib::AABB m_OriginAABB;		// 元のAABB情報
-	STATE m_state;			// 状態
-	bool m_bShadow;			// 影を使うかどうか
-	int m_nIdxTexure;		// テクスチャのインデックス番号
-	int m_nIdxXFile;		// Xファイルのインデックス番号
-	static int m_nNumAll;	// 総数
-	CShadow *m_pShadow;		// 影の情報
+	MyLib::Matrix m_mtxWorld;	// ワールドマトリックス
+	MyLib::Vector3 m_scale;		// スケール
+	D3DXCOLOR m_col;			// 色
+	MyLib::Vector3 m_fSize;		// サイズ
+	MyLib::AABB m_AABB;			// AABB情報
+	MyLib::AABB m_OriginAABB;	// 元のAABB情報
+	STATE m_state;				// 状態
+	bool m_bShadow;				// 影を使うかどうか
+	int m_nIdxTexure;			// テクスチャのインデックス番号
+	int m_nIdxXFile;			// Xファイルのインデックス番号
+	static int m_nNumAll;		// 総数
+	CShadow *m_pShadow;			// 影の情報
 	CCollisionLine_Box* m_pCollisionLineBox;	// 当たり判定ボックス
 
 
-	LPD3DXMESH m_pMesh;						// メッシュ(頂点情報)へのポインタ
+	LPD3DXMESH m_pMesh;			// メッシュ(頂点情報)へのポインタ
 
 };
 

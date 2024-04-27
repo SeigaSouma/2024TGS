@@ -67,9 +67,9 @@ public:
 	virtual void Draw(D3DXCOLOR col);
 	virtual void Draw(float fAlpha);
 
-	void SetmtxWorld(const D3DXMATRIX mtxWorld);
-	D3DXMATRIX GetWorldMtx() const { return m_mtxWorld; }			// マトリックス取得
-	D3DXMATRIX GetmtxWorld() const;			// ワールドマトリックス取得
+	void SetmtxWorld(const MyLib::Matrix mtxWorld);
+	MyLib::Matrix GetWorldMtx() const { return m_mtxWorld; }			// マトリックス取得
+	MyLib::Matrix GetmtxWorld() const;			// ワールドマトリックス取得
 	MyLib::Vector3 GetCenterPosition() const;		// 中心の位置取得
 	void SetOriginPosition(const MyLib::Vector3 pos);	// 最初の位置設定
 	MyLib::Vector3 GetOriginPosition() const;		// 最初の位置取得
@@ -107,7 +107,7 @@ private:
 	void CalWorldMtx();		// ワールドマトリックスの計算処理
 
 	// メンバ変数
-	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
+	MyLib::Matrix m_mtxWorld;	// ワールドマトリックス
 	MyLib::Vector3 m_posOrigin;	// 最初の位置
 	MyLib::Vector3 m_posCenter;	// 中心位置
 

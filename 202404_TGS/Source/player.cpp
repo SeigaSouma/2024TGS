@@ -30,10 +30,10 @@
 #include "collisionobject.h"
 #include "limitarea.h"
 #include "MyEffekseer.h"
-#include "busket.h"
 #include "map.h"
 #include "rankingmanager.h"
 #include "edit_map.h"
+#include "damagepoint.h"
 
 // 使用クラス
 #include "playercontrol.h"
@@ -217,9 +217,6 @@ HRESULT CPlayer::Init()
 	ChangeDefenceControl(DEBUG_NEW CPlayerControlDefence());
 	ChangeAvoidControl(DEBUG_NEW CPlayerControlAvoid());
 	ChangeGuardGrade(DEBUG_NEW CPlayerGuard());
-
-	// かご生成
-	m_pBusket = CBusket::Create(10000);
 
 	//// スキルポイント生成
 	//m_pSkillPoint = CSkillPoint::Create();
@@ -931,6 +928,17 @@ void CPlayer::Controll()
 	{
 		fff -= 0.1f;
 		CManager::GetInstance()->GetSound()->SetFrequency(CSound::LABEL_BGM_GAME, fff);
+	}
+
+	D3DXMATRIX adasf;
+	D3DXMATRIX adaaaaasf(adasf);
+
+	MyLib::Matrix mmmmmmm;
+	MyLib::Matrix mmmmmmfafm(mmmmmmm);
+
+	if (pInputKeyboard->GetPress(DIK_J) == true)
+	{
+		CDamagePoint::Create(GetPosition(), UtilFunc::Transformation::Random(1, 99));
 	}
 #endif
 }
@@ -1725,7 +1733,6 @@ MyLib::HitResult_Character CPlayer::ProcessHit(const int nValue, const MyLib::Ve
 
 		// ダッシュ判定OFF
 		m_bDash = false;
-		m_pBusket->Lost();
 
 		//花粉ばさぁ処理
 		my_particle::Create(GetPosition() + MyLib::Vector3(0.0f, 100.0f, 0.0f), my_particle::TYPE_POLLENLOST);

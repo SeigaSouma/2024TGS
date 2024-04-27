@@ -12,7 +12,6 @@
 #include "debugproc.h"
 #include "rankingscore.h"
 #include "enemymanager.h"
-#include "rankingbg.h"
 
 //==========================================================================
 // 静的メンバ変数宣言
@@ -52,9 +51,6 @@ HRESULT CRanking::Init()
 
 	// ランキングのスコア生成
 	m_pRankingScore = CRankingScore::Create();
-
-	//ランキング背景追加
-	CRankingBG::Create(0.001f);
 
 	// 成功
 	return S_OK;

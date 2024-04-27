@@ -630,36 +630,37 @@ void CObject3DMesh::UPVtxField(MyLib::Vector3 pos)
 //==========================================================================
 void CObject3DMesh::CalWorldMtx()
 {
-	D3DXMATRIX m_mtxWorld = GetWorldMtx();			// マトリックス取得
-	MyLib::Vector3 m_rot = GetRotation();				// 向き取得
-	MyLib::Vector3 m_rotOrigin = GetOriginRotation();	// 元の向き取得
-	MyLib::Vector3 m_pos = GetPosition();				// 位置取得
+	MyLib::Matrix mtxWorld = GetWorldMtx();			// マトリックス取得
+	MyLib::Vector3 rot = GetRotation();				// 向き取得
+	MyLib::Vector3 rotOrigin = GetOriginRotation();	// 元の向き取得
+	MyLib::Vector3 pos = GetPosition();				// 位置取得
 
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	// 計算用マトリックス宣言
-	D3DXMATRIX mtxRot, mtxTrans, mtxRotOrigin;
-	D3DXMatrixIdentity(&mtxRotOrigin);
+	MyLib::Matrix mtxRot, mtxTrans, mtxRotOrigin;
+	mtxRotOrigin.Identity();
 
 	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	mtxWorld.Identity();
 
 	// 元の向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRotOrigin, m_rotOrigin.y, m_rotOrigin.x, m_rotOrigin.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRotOrigin);
+	mtxRotOrigin.RotationYawPitchRoll(rotOrigin.y, rotOrigin.x, rotOrigin.z);
+	mtxWorld.Multiply(mtxWorld, mtxRotOrigin);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	mtxRot.RotationYawPitchRoll(rot.y, rot.x, rot.z);
+	mtxWorld.Multiply(mtxWorld, mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	mtxTrans.Translation(pos);
+	mtxWorld.Multiply(mtxWorld, mtxTrans);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
-	SetWorldMtx(m_mtxWorld);
+	D3DXMATRIX mtx = mtxWorld.ConvertD3DXMATRIX();
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
+	SetWorldMtx(mtxWorld);
 }
 
 //==========================================================================

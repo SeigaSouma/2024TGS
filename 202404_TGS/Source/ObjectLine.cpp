@@ -142,21 +142,22 @@ void CObjectLine::Draw()
 	MyLib::Vector3 rot = GetRotation();
 
 	// 計算用マトリックス宣言
-	D3DXMATRIX mtxRot, mtxTrans;
+	MyLib::Matrix mtxRot, mtxTrans;
 
 	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	m_mtxWorld.Identity();
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	mtxRot.RotationYawPitchRoll(rot.y, rot.x, rot.z);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	mtxTrans.Translation(pos);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxTrans);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	D3DXMATRIX mtx = m_mtxWorld.ConvertD3DXMATRIX();
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));

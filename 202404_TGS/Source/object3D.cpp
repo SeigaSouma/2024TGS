@@ -21,7 +21,7 @@ namespace
 //==========================================================================
 CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 {
-	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
+	m_mtxWorld.Identity();				// ワールドマトリックス
 	m_posOrigin = MyLib::Vector3(0.0f, 0.0f, 0.0f);	// 元の位置
 	m_rotOrigin = MyLib::Vector3(0.0f, 0.0f, 0.0f);	// 元の向き
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);		// 色
@@ -172,26 +172,27 @@ void CObject3D::Draw()
 	MyLib::Vector3 rot = GetRotation();
 
 	// 計算用マトリックス宣言
-	D3DXMATRIX mtxRot, mtxTrans, mtxRotOrigin;
-	D3DXMatrixIdentity(&mtxRotOrigin);
+	MyLib::Matrix mtxRot, mtxTrans, mtxRotOrigin;
+	mtxRotOrigin.Identity();
 
 	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
+	m_mtxWorld.Identity();
 
 	// 元の向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRotOrigin, m_rotOrigin.y, m_rotOrigin.x, m_rotOrigin.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRotOrigin);
+	mtxRotOrigin.RotationYawPitchRoll(m_rotOrigin.y, m_rotOrigin.x, m_rotOrigin.z);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRotOrigin);
 
 	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+	mtxRot.RotationYawPitchRoll(rot.y, rot.x, rot.z);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRot);
 
 	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+	mtxTrans.Translation(pos);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxTrans);
 
 	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	D3DXMATRIX mtx = m_mtxWorld.ConvertD3DXMATRIX();
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
 
 	// 頂点バッファをデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
@@ -293,7 +294,7 @@ void CObject3D::SetVtx()
 //==========================================================================
 // マトリックス設定
 //==========================================================================
-void CObject3D::SetWorldMtx(const D3DXMATRIX mtx)
+void CObject3D::SetWorldMtx(const MyLib::Matrix mtx)
 {
 	m_mtxWorld = mtx;
 }
@@ -301,7 +302,7 @@ void CObject3D::SetWorldMtx(const D3DXMATRIX mtx)
 //==========================================================================
 // マトリックス取得
 //==========================================================================
-D3DXMATRIX CObject3D::GetWorldMtx() const
+MyLib::Matrix CObject3D::GetWorldMtx() const
 {
 	return m_mtxWorld;
 }
@@ -309,7 +310,7 @@ D3DXMATRIX CObject3D::GetWorldMtx() const
 //==========================================================================
 //	元の位置設定
 //==========================================================================
-void CObject3D::SetOriginPosition(const MyLib::Vector3 pos)
+void CObject3D::SetOriginPosition(const MyLib::Vector3& pos)
 {
 	m_posOrigin = pos;
 }
@@ -325,7 +326,7 @@ MyLib::Vector3 CObject3D::GetOriginPosition() const
 //==========================================================================
 // 元の向き設定
 //==========================================================================
-void CObject3D::SetOriginRotation(const MyLib::Vector3 rot)
+void CObject3D::SetOriginRotation(const MyLib::Vector3& rot)
 {
 	m_rotOrigin = rot;
 }
@@ -357,7 +358,7 @@ D3DXCOLOR CObject3D::GetColor() const
 //==========================================================================
 // サイズ設定
 //==========================================================================
-void CObject3D::SetSize(const MyLib::Vector3 size)
+void CObject3D::SetSize(const MyLib::Vector3& size)
 {
 	m_fSize = size;
 }
@@ -366,6 +367,22 @@ void CObject3D::SetSize(const MyLib::Vector3 size)
 // サイズ取得
 //==========================================================================
 MyLib::Vector3 CObject3D::GetSize() const
+{
+	return m_fSize;
+}
+
+//==========================================================================
+// 元のサイズ設定
+//==========================================================================
+void CObject3D::SetSizeOrigin(const MyLib::Vector3& size)
+{
+	m_fSize = size;
+}
+
+//==========================================================================
+// 元のサイズ取得
+//==========================================================================
+MyLib::Vector3 CObject3D::GetSizeOrigin() const
 {
 	return m_fSize;
 }

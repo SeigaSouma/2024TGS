@@ -43,8 +43,8 @@ public:
 	void SetLeftPosition(const MyLib::Vector3& pos) { m_Info.left = pos; }
 	void SetRightPosition(const MyLib::Vector3& pos) { m_Info.right = pos; }
 	void SetColor(const D3DXCOLOR& col) { m_Info.col = col; }			// 色設定
-	void SetWorldMtx(const D3DXMATRIX mtx) { m_mtxWorld = mtx; }	// マトリックス設定
-	D3DXMATRIX GetWorldMtx() const { return m_mtxWorld; }			// マトリックス取得
+	void SetWorldMtx(const MyLib::Matrix mtx) { m_mtxWorld = mtx; }		// マトリックス設定
+	MyLib::Matrix GetWorldMtx() const { return m_mtxWorld; }			// マトリックス取得
 
 	void SetEnableZSort(bool bSort) { m_bZSort = bSort; }
 
@@ -53,7 +53,7 @@ public:
 private:
 
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファ
-	D3DXMATRIX	m_mtxWorld;		// ワールドマトリックス
+	MyLib::Matrix m_mtxWorld;			// ワールドマトリックス
 	SLineInfo m_Info;
 	bool m_bZSort;				// Zソートのフラグ
 };

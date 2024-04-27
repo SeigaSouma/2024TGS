@@ -14,7 +14,6 @@
 #include "collisionLine_Box.h"
 #include "handle_Move.h"
 
-
 //==========================================================================
 // 関数ポインタ
 //==========================================================================
@@ -34,7 +33,7 @@ int CObjectX::m_nNumAll = 0;	// 総数
 //==========================================================================
 CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 {
-	D3DXMatrixIdentity(&m_mtxWorld);				// ワールドマトリックス
+	m_mtxWorld.Identity();							// ワールドマトリックス
 	m_scale = MyLib::Vector3(1.0f, 1.0f, 1.0f);		// スケール
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);		// 色
 	m_fSize = MyLib::Vector3();						// サイズ
@@ -501,6 +500,39 @@ float CObjectX::GetHeight(MyLib::Vector3 pos, bool &bLand)
 }
 
 //==========================================================================
+// ワールドマトリックスの計算処理
+//==========================================================================
+void CObjectX::CalWorldMtx()
+{
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+	// 情報取得
+	MyLib::Vector3 pos = GetPosition();
+	MyLib::Vector3 rot = GetRotation();
+	MyLib::Matrix mtxRot, mtxTrans, mtxScale;	// 計算用マトリックス宣言
+
+	// ワールドマトリックスの初期化
+	m_mtxWorld.Identity();
+
+	// スケールを反映する
+	mtxScale.Scaling(m_scale);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxScale);
+
+	// 向きを反映する
+	mtxRot.RotationYawPitchRoll(rot.y, rot.x, rot.z);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxRot);
+
+	// 位置を反映する
+	mtxTrans.Translation(pos);
+	m_mtxWorld.Multiply(m_mtxWorld, mtxTrans);
+
+	// ワールドマトリックスの設定
+	D3DXMATRIX mtx = m_mtxWorld.ConvertD3DXMATRIX();
+	pDevice->SetTransform(D3DTS_WORLD, &mtx);
+}
+
+//==========================================================================
 // 描画処理
 //==========================================================================
 void CObjectX::Draw()
@@ -508,31 +540,11 @@ void CObjectX::Draw()
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans, mtxScale;	// 計算用マトリックス宣言
 	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
 	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
 
-	// 情報取得
-	MyLib::Vector3 pos = GetPosition();
-	MyLib::Vector3 rot = GetRotation();
-
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	// スケールを反映する
-	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
-
-	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	// ワールドマトリックスの計算処理
+	CalWorldMtx();
 
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
@@ -583,38 +595,18 @@ void CObjectX::Draw(D3DXCOLOR col)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans, mtxScale;	// 計算用マトリックス宣言
-	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
-	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
+	D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
+	D3DXMATERIAL *pMat;		// マテリアルデータへのポインタ
 
-	// 情報取得
-	MyLib::Vector3 pos = GetPosition();
-	MyLib::Vector3 rot = GetRotation();
-
-	D3DXMATERIAL matNow;			// 今回のマテリアル
+	D3DXMATERIAL matNow;	// 今回のマテリアル
 
 	// 他の情報クリア
 	ZeroMemory(&matNow, sizeof(D3DXMATERIAL));
 	matNow.MatD3D.Diffuse = col;
 	matNow.MatD3D.Ambient = col;
 
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	// スケールを反映する
-	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
-
-	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	// ワールドマトリックスの計算処理
+	CalWorldMtx();
 
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
@@ -665,36 +657,15 @@ void CObjectX::Draw(float fAlpha)
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	D3DXMATRIX mtxRot, mtxTrans, mtxScale;	// 計算用マトリックス宣言
 	D3DMATERIAL9 matDef;			// 現在のマテリアル保存用
 	D3DXMATERIAL *pMat;				// マテリアルデータへのポインタ
-
-	// 情報取得
-	MyLib::Vector3 pos = GetPosition();
-	MyLib::Vector3 rot = GetRotation();
-
 	D3DXMATERIAL matNow;			// 今回のマテリアル
 
 	// 他の情報クリア
 	ZeroMemory(&matNow, sizeof(D3DXMATERIAL));
 
-	// ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	// スケールを反映する
-	D3DXMatrixScaling(&mtxScale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScale);
-
-	// 向きを反映する
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	// 位置を反映する
-	D3DXMatrixTranslation(&mtxTrans, pos.x, pos.y, pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	// ワールドマトリックスの設定
-	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	// ワールドマトリックスの計算処理
+	CalWorldMtx();
 
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
@@ -746,7 +717,7 @@ void CObjectX::Draw(float fAlpha)
 //==========================================================================
 // マトリックス設定
 //==========================================================================
-void CObjectX::SetWorldMtx(const D3DXMATRIX mtx)
+void CObjectX::SetWorldMtx(const MyLib::Matrix mtx)
 {
 	m_mtxWorld = mtx;
 }
@@ -754,7 +725,7 @@ void CObjectX::SetWorldMtx(const D3DXMATRIX mtx)
 //==========================================================================
 // マトリックス取得
 //==========================================================================
-D3DXMATRIX CObjectX::GetWorldMtx() const
+MyLib::Matrix CObjectX::GetWorldMtx() const
 {
 	return m_mtxWorld;
 }

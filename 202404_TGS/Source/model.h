@@ -36,9 +36,9 @@ public:
 	int GetIdxTexture(int nIdx);	// テクスチャインデックス番号取得
 	void SetIdxTexture(int i, int nIdx);	// テクスチャのインデックス割り当て
 	int GetIdxXFile() const { return m_nIdxXFile; }
-	void SetWorldMtx(const D3DXMATRIX mtx);		// マトリックス設定
-	D3DXMATRIX GetWorldMtx() ;			// マトリックス取得
-	D3DXMATRIX *GetPtrWorldMtx();			// ポインタマトリックス取得
+	void SetWorldMtx(const MyLib::Matrix mtx);		// マトリックス設定
+	MyLib::Matrix GetWorldMtx() ;			// マトリックス取得
+	MyLib::Matrix*GetPtrWorldMtx();			// ポインタマトリックス取得
 	void SetPosition(const MyLib::Vector3 pos);	// 位置設定
 	MyLib::Vector3 GetPosition() const;		// 位置取得
 	void SetOldPosition(const MyLib::Vector3 posOld);	// 前回の位置設定
@@ -56,6 +56,8 @@ public:
 	void SetParent(CModel *pModel);				// 親のポインタ設定
 	CModel* GetParent(){ return m_pParent; }		// 親のポインタ取得
 
+	void SetMtxParent(MyLib::Matrix* pMtx);
+
 	static CModel *Create(const char *pFileName, MyLib::Vector3 pos = MyLib::Vector3(0.0f, 0.0f, 0.0f), MyLib::Vector3 rot = MyLib::Vector3(0.0f, 0.0f, 0.0f));
 
 	CModel *GetModel();
@@ -68,7 +70,8 @@ private:
 	void CalWorldMtx();	// ワールドマトリックスの計算処理
 	void DrawShadowMtx();
 
-	D3DXMATRIX	m_mtxWorld;	// ワールドマトリックス
+	MyLib::Matrix m_mtxWorld;	// ワールドマトリックス
+	MyLib::Matrix *m_mtxParent;	// 親マトリックスのポインタ
 	MyLib::Vector3 m_pos;		// 位置
 	MyLib::Vector3 m_posOld;	// 前回の位置
 	MyLib::Vector3 m_posOrigin;	// 元の位置
