@@ -169,14 +169,14 @@ void CEdit::Update()
 	// 掴み移動
 	GrabModel();
 
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
+	if (pInputKeyboard->GetTrigger(DIK_RETURN))
 	{// ENTERで配置
 
 		// タイプの物を生成
 		MyMap::Regist(m_nType, pos, rot, m_bShadow);
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_F9) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F9))
 	{// セーブ
 
 		// テキストにセーブ
@@ -220,16 +220,16 @@ void CEdit::Control(CObjectX *pObjX)
 	// 向き取得
 	MyLib::Vector3 rot = pObjX->GetRotation();
 
-	if (pInputKeyboard->GetPress(DIK_LEFT) == true)
+	if (pInputKeyboard->GetPress(DIK_LEFT))
 	{// ←キーが押された,左移動
 
-		if (pInputKeyboard->GetPress(DIK_UP) == true)
+		if (pInputKeyboard->GetPress(DIK_UP))
 		{// A+W,左上移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 			pos.z += cosf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 		}
-		else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+		else if (pInputKeyboard->GetPress(DIK_DOWN))
 		{// A+S,左下移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE;
@@ -242,16 +242,16 @@ void CEdit::Control(CObjectX *pObjX)
 			pos.z += cosf(-D3DX_PI * MOVE_LR + Camerarot.y) * MOVE;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_RIGHT) == true)
+	else if (pInputKeyboard->GetPress(DIK_RIGHT))
 	{// Dキーが押された,右移動
 
-		if (pInputKeyboard->GetPress(DIK_UP) == true)
+		if (pInputKeyboard->GetPress(DIK_UP))
 		{// D+W,右上移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 			pos.z += cosf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 		}
-		else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+		else if (pInputKeyboard->GetPress(DIK_DOWN))
 		{// D+S,右下移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE;
@@ -264,29 +264,29 @@ void CEdit::Control(CObjectX *pObjX)
 			pos.z += cosf(D3DX_PI * MOVE_LR + Camerarot.y) * MOVE;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_UP) == true)
+	else if (pInputKeyboard->GetPress(DIK_UP))
 	{// Wが押された、奥移動
 
 		pos.x += sinf(Camerarot.y) * MOVE;
 		pos.z += cosf(Camerarot.y) * MOVE;
 	}
-	else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+	else if (pInputKeyboard->GetPress(DIK_DOWN))
 	{// Sが押された、手前移動
 
 		pos.x += sinf(D3DX_PI + Camerarot.y) * MOVE;
 		pos.z += cosf(D3DX_PI + Camerarot.y) * MOVE;
 	}
 
-	if (pInputKeyboard->GetPress(DIK_A) == true)
+	if (pInputKeyboard->GetPress(DIK_A))
 	{// ←キーが押された,左移動
 
-		if (pInputKeyboard->GetPress(DIK_W) == true)
+		if (pInputKeyboard->GetPress(DIK_W))
 		{// A+W,左上移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 			pos.z += cosf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 		}
-		else if (pInputKeyboard->GetPress(DIK_S) == true)
+		else if (pInputKeyboard->GetPress(DIK_S))
 		{// A+S,左下移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE_SLOW;
@@ -299,16 +299,16 @@ void CEdit::Control(CObjectX *pObjX)
 			pos.z += cosf(-D3DX_PI * MOVE_LR + Camerarot.y) * MOVE_SLOW;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_D) == true)
+	else if (pInputKeyboard->GetPress(DIK_D))
 	{// Dキーが押された,右移動
 
-		if (pInputKeyboard->GetPress(DIK_W) == true)
+		if (pInputKeyboard->GetPress(DIK_W))
 		{// D+W,右上移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 			pos.z += cosf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 		}
-		else if (pInputKeyboard->GetPress(DIK_S) == true)
+		else if (pInputKeyboard->GetPress(DIK_S))
 		{// D+S,右下移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE_SLOW;
@@ -321,38 +321,38 @@ void CEdit::Control(CObjectX *pObjX)
 			pos.z += cosf(D3DX_PI * MOVE_LR + Camerarot.y) * MOVE_SLOW;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_W) == true)
+	else if (pInputKeyboard->GetPress(DIK_W))
 	{// Wが押された、奥移動
 
 		pos.x += sinf(Camerarot.y) * MOVE_SLOW;
 		pos.z += cosf(Camerarot.y) * MOVE_SLOW;
 	}
-	else if (pInputKeyboard->GetPress(DIK_S) == true)
+	else if (pInputKeyboard->GetPress(DIK_S))
 	{// Sが押された、手前移動
 
 		pos.x += sinf(D3DX_PI + Camerarot.y) * MOVE_SLOW;
 		pos.z += cosf(D3DX_PI + Camerarot.y) * MOVE_SLOW;
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_LSHIFT) == true)
+	if (pInputKeyboard->GetTrigger(DIK_LSHIFT))
 	{//回転
 
 		//rot.y += D3DX_PI * 0.05f;
 		rot.y += D3DXToRadian(5);
 	}
-	if (pInputKeyboard->GetTrigger(DIK_RSHIFT) == true)
+	if (pInputKeyboard->GetTrigger(DIK_RSHIFT))
 	{// 回転
 
 		//rot.y -= D3DX_PI * 0.05f;
 		rot.y -= D3DXToRadian(5);
 	}
 
-	if (pInputKeyboard->GetPress(DIK_I) == true)
+	if (pInputKeyboard->GetPress(DIK_I))
 	{// Iキーが押された,上昇
 
 		pos.y += MOVE;
 	}
-	else if (pInputKeyboard->GetPress(DIK_K) == true)
+	else if (pInputKeyboard->GetPress(DIK_K))
 	{// Kキーが押された,下降
 
 		pos.y -= MOVE;
@@ -368,7 +368,7 @@ void CEdit::Control(CObjectX *pObjX)
 	//// 高さ取得
 	//float fHeight = CGame::GetInstance()->GetElevation()->GetHeight(pos, bLand);
 
-	//if (bLand == true)
+	//if (bLand)
 	//{
 	//	// 高さ代入
 	//	pos.y = fHeight;
@@ -396,7 +396,7 @@ void CEdit::ChangeType()
 	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 	// 配置するオブジェクト変更
-	if (pInputKeyboard->GetTrigger(DIK_1) == true)
+	if (pInputKeyboard->GetTrigger(DIK_1))
 	{// 1が押された
 
 		// 色の種類更新
@@ -407,7 +407,7 @@ void CEdit::ChangeType()
 		// オブジェクト割り当て
 		m_pObjX->BindXData(nIdx);
 	}
-	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
+	else if (pInputKeyboard->GetTrigger(DIK_2))
 	{// 2が押された
 
 		// 色の種類更新
@@ -418,7 +418,7 @@ void CEdit::ChangeType()
 		m_pObjX->BindXData(nIdx);
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_3) == true)
+	if (pInputKeyboard->GetTrigger(DIK_3))
 	{// 3が押された
 
 		// 影の使用状況切り替え

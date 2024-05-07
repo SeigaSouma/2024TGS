@@ -341,7 +341,7 @@ void CInputGamepad::UpdateTriggerState(int nCntPlayer, XINPUT_STATE inputstate)
 //==========================================================================
 void CInputGamepad::SetVibration(VIBRATION_STATE VibState, int nCntPlayer)
 {
-	if (m_bVibrationUse == true)
+	if (m_bVibrationUse)
 	{
 
 		// ó‘Ô‚ğ‘ã“ü

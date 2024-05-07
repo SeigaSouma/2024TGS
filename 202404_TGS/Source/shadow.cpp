@@ -163,7 +163,7 @@ void CShadow::Uninit()
 void CShadow::Update()
 {
 	// Ž€–S‚Ì”»’è
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// Ž€–Sƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚ç
 		return;
 	}

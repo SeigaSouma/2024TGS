@@ -109,7 +109,7 @@ void CNumber3D::Draw()
 	//	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 
 	//	// αブレンディングを加算合成に設定
-	//	if (m_bAddAlpha == true)
+	//	if (m_bAddAlpha)
 	//	{
 	//		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 	//		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);

@@ -170,15 +170,15 @@ void CTargetPoint::Control()
 	// ゲームパッド情報取得
 	CInputGamepad *pInputGamepad = CInputGamepad::GetInstance();
 
-	if (pInputKeyboard->GetPress(DIK_A) == true || pInputGamepad->GetStickMoveL(0).x < 0)
+	if (pInputKeyboard->GetPress(DIK_A) || pInputGamepad->GetStickMoveL(0).x < 0)
 	{//←キーが押された,左移動
 
-		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(0).y > 0)
+		if (pInputKeyboard->GetPress(DIK_W) || pInputGamepad->GetStickMoveL(0).y > 0)
 		{//A+W,左上移動
 			move.x += sinf(-D3DX_PI * 0.25f + rot.z + Camerarot.y) * MOVE_SPEED;
 			move.z += cosf(-D3DX_PI * 0.25f + rot.z + Camerarot.y) * MOVE_SPEED;
 		}
-		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(0).y < 0)
+		else if (pInputKeyboard->GetPress(DIK_S) || pInputGamepad->GetStickMoveL(0).y < 0)
 		{//A+S,左下移動
 			move.x += sinf(-D3DX_PI * 0.75f + rot.z + Camerarot.y) * MOVE_SPEED;
 			move.z += cosf(-D3DX_PI * 0.75f + rot.z + Camerarot.y) * MOVE_SPEED;
@@ -189,15 +189,15 @@ void CTargetPoint::Control()
 			move.z += cosf(-D3DX_PI * 0.5f + rot.z + Camerarot.y) * MOVE_SPEED;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_D) == true || pInputGamepad->GetStickMoveL(0).x > 0)
+	else if (pInputKeyboard->GetPress(DIK_D) || pInputGamepad->GetStickMoveL(0).x > 0)
 	{//Dキーが押された,右移動
 
-		if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(0).y > 0)
+		if (pInputKeyboard->GetPress(DIK_W) || pInputGamepad->GetStickMoveL(0).y > 0)
 		{//D+W,右上移動
 			move.x += sinf(D3DX_PI * 0.25f + rot.z + Camerarot.y) * MOVE_SPEED;
 			move.z += cosf(D3DX_PI * 0.25f + rot.z + Camerarot.y) * MOVE_SPEED;
 		}
-		else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(0).y < 0)
+		else if (pInputKeyboard->GetPress(DIK_S) || pInputGamepad->GetStickMoveL(0).y < 0)
 		{//D+S,右下移動
 			move.x += sinf(D3DX_PI * 0.75f + rot.z + Camerarot.y) * MOVE_SPEED;
 			move.z += cosf(D3DX_PI * 0.75f + rot.z + Camerarot.y) * MOVE_SPEED;
@@ -208,12 +208,12 @@ void CTargetPoint::Control()
 			move.z += cosf(D3DX_PI * 0.5f + rot.z + Camerarot.y) * MOVE_SPEED;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_W) == true || pInputGamepad->GetStickMoveL(0).y > 0)
+	else if (pInputKeyboard->GetPress(DIK_W) || pInputGamepad->GetStickMoveL(0).y > 0)
 	{//Wが押された、上移動
 		move.x += sinf(D3DX_PI * 0.0f + rot.z + Camerarot.y) * MOVE_SPEED;
 		move.z += cosf(D3DX_PI * 0.0f + rot.z + Camerarot.y) * MOVE_SPEED;
 	}
-	else if (pInputKeyboard->GetPress(DIK_S) == true || pInputGamepad->GetStickMoveL(0).y < 0)
+	else if (pInputKeyboard->GetPress(DIK_S) || pInputGamepad->GetStickMoveL(0).y < 0)
 	{//Sが押された、下移動
 		move.x += sinf(D3DX_PI * 1.0f + rot.z + Camerarot.y) * MOVE_SPEED;
 		move.z += cosf(D3DX_PI * 1.0f + rot.z + Camerarot.y) * MOVE_SPEED;

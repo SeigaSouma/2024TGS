@@ -672,7 +672,7 @@ bool ImGui::ButtonBehavior(const ImRect& bb, ImGuiID id, bool* out_hovered, bool
         {
             // When activated using Nav, we hold on the ActiveID until activation button is released
             if (g.NavActivateDownId == id)
-                held = true; // hovered == true not true as we are already likely hovered on direct activation.
+                held = true; // hovered not true as we are already likely hovered on direct activation.
             else
                 ClearActiveID();
         }
@@ -6474,7 +6474,7 @@ bool ImGui::CollapsingHeader(const char* label, ImGuiTreeNodeFlags flags)
 }
 
 // p_visible == NULL                        : regular collapsing header
-// p_visible != NULL && *p_visible == true  : show a small close button on the corner of the header, clicking the button will set *p_visible = false
+// p_visible != NULL && *p_visible  : show a small close button on the corner of the header, clicking the button will set *p_visible = false
 // p_visible != NULL && *p_visible == false : do not show the header at all
 // Do not mistake this with the Open state of the header itself, which you can adjust with SetNextItemOpen() or ImGuiTreeNodeFlags_DefaultOpen.
 bool ImGui::CollapsingHeader(const char* label, bool* p_visible, ImGuiTreeNodeFlags flags)

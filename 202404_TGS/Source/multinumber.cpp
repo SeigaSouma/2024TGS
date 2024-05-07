@@ -332,7 +332,7 @@ void CMultiNumber::SettingDisp()
 void CMultiNumber::Draw()
 {
 	int nNumNumber = m_nNumNumber;
-	if (m_bDigitDraw == true)
+	if (m_bDigitDraw)
 	{// Œ…”•`‰æ‚¾‚Á‚½‚ç
 		nNumNumber = UtilFunc::Calculation::GetDigit(m_nNum);
 	}

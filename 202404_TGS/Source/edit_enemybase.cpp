@@ -142,12 +142,12 @@ void CEditEnemyBase::Update()
 	}
 
 	// 掴み処理
-	if (pInputKeyboard->GetPress(DIK_SPACE) == true)
+	if (pInputKeyboard->GetPress(DIK_SPACE))
 	{// SPACEで掴む
 		Grab();
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true)
+	if (pInputKeyboard->GetTrigger(DIK_RETURN))
 	{// ENTERで配置
 
 		// 敵の拠点の取得
@@ -160,12 +160,12 @@ void CEditEnemyBase::Update()
 		pEnemyBase->CreatePos(m_nStage, m_nEnemyType, m_pos, m_nRush);
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_DELETE) == true)
+	if (pInputKeyboard->GetTrigger(DIK_DELETE))
 	{// deleteで削除
 		Delete();
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_F9) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F9))
 	{// セーブ
 
 		// 敵の拠点の取得
@@ -207,16 +207,16 @@ void CEditEnemyBase::Control(MyLib::Vector3 &pos)
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
-	if (pInputKeyboard->GetPress(DIK_LEFT) == true)
+	if (pInputKeyboard->GetPress(DIK_LEFT))
 	{// ←キーが押された,左移動
 
-		if (pInputKeyboard->GetPress(DIK_UP) == true)
+		if (pInputKeyboard->GetPress(DIK_UP))
 		{// A+W,左上移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 			pos.z += cosf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 		}
-		else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+		else if (pInputKeyboard->GetPress(DIK_DOWN))
 		{// A+S,左下移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE;
@@ -229,16 +229,16 @@ void CEditEnemyBase::Control(MyLib::Vector3 &pos)
 			pos.z += cosf(-D3DX_PI * MOVE_LR + Camerarot.y) * MOVE;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_RIGHT) == true)
+	else if (pInputKeyboard->GetPress(DIK_RIGHT))
 	{// Dキーが押された,右移動
 
-		if (pInputKeyboard->GetPress(DIK_UP) == true)
+		if (pInputKeyboard->GetPress(DIK_UP))
 		{// D+W,右上移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 			pos.z += cosf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 		}
-		else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+		else if (pInputKeyboard->GetPress(DIK_DOWN))
 		{// D+S,右下移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE;
@@ -251,29 +251,29 @@ void CEditEnemyBase::Control(MyLib::Vector3 &pos)
 			pos.z += cosf(D3DX_PI * MOVE_LR + Camerarot.y) * MOVE;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_UP) == true)
+	else if (pInputKeyboard->GetPress(DIK_UP))
 	{// Wが押された、奥移動
 
 		pos.x += sinf(Camerarot.y) * MOVE;
 		pos.z += cosf(Camerarot.y) * MOVE;
 	}
-	else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+	else if (pInputKeyboard->GetPress(DIK_DOWN))
 	{// Sが押された、手前移動
 
 		pos.x += sinf(D3DX_PI + Camerarot.y) * MOVE;
 		pos.z += cosf(D3DX_PI + Camerarot.y) * MOVE;
 	}
 
-	if (pInputKeyboard->GetPress(DIK_A) == true)
+	if (pInputKeyboard->GetPress(DIK_A))
 	{// ←キーが押された,左移動
 
-		if (pInputKeyboard->GetPress(DIK_W) == true)
+		if (pInputKeyboard->GetPress(DIK_W))
 		{// A+W,左上移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 			pos.z += cosf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 		}
-		else if (pInputKeyboard->GetPress(DIK_S) == true)
+		else if (pInputKeyboard->GetPress(DIK_S))
 		{// A+S,左下移動
 
 			pos.x += sinf(-D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE_SLOW;
@@ -286,16 +286,16 @@ void CEditEnemyBase::Control(MyLib::Vector3 &pos)
 			pos.z += cosf(-D3DX_PI * MOVE_LR + Camerarot.y) * MOVE_SLOW;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_D) == true)
+	else if (pInputKeyboard->GetPress(DIK_D))
 	{// Dキーが押された,右移動
 
-		if (pInputKeyboard->GetPress(DIK_W) == true)
+		if (pInputKeyboard->GetPress(DIK_W))
 		{// D+W,右上移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 			pos.z += cosf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE_SLOW;
 		}
-		else if (pInputKeyboard->GetPress(DIK_S) == true)
+		else if (pInputKeyboard->GetPress(DIK_S))
 		{// D+S,右下移動
 
 			pos.x += sinf(D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE_SLOW;
@@ -308,25 +308,25 @@ void CEditEnemyBase::Control(MyLib::Vector3 &pos)
 			pos.z += cosf(D3DX_PI * MOVE_LR + Camerarot.y) * MOVE_SLOW;
 		}
 	}
-	else if (pInputKeyboard->GetPress(DIK_W) == true)
+	else if (pInputKeyboard->GetPress(DIK_W))
 	{// Wが押された、奥移動
 
 		pos.x += sinf(Camerarot.y) * MOVE_SLOW;
 		pos.z += cosf(Camerarot.y) * MOVE_SLOW;
 	}
-	else if (pInputKeyboard->GetPress(DIK_S) == true)
+	else if (pInputKeyboard->GetPress(DIK_S))
 	{// Sが押された、手前移動
 
 		pos.x += sinf(D3DX_PI + Camerarot.y) * MOVE_SLOW;
 		pos.z += cosf(D3DX_PI + Camerarot.y) * MOVE_SLOW;
 	}
 
-	if (pInputKeyboard->GetPress(DIK_I) == true)
+	if (pInputKeyboard->GetPress(DIK_I))
 	{// Iキーが押された,上昇
 
 		pos.y += MOVE;
 	}
-	else if (pInputKeyboard->GetPress(DIK_K) == true)
+	else if (pInputKeyboard->GetPress(DIK_K))
 	{// Kキーが押された,下降
 
 		pos.y -= MOVE;
@@ -347,14 +347,14 @@ void CEditEnemyBase::ChangeType()
 
 	// 配置するオブジェクト変更
 	bool bChange = false;
-	if (pInputKeyboard->GetTrigger(DIK_1) == true)
+	if (pInputKeyboard->GetTrigger(DIK_1))
 	{// 1が押された
 
 		// 色の種類更新
 		m_nEnemyType = (m_nEnemyType + (nNumAll - 1)) % nNumAll;
 		bChange = true;
 	}
-	else if (pInputKeyboard->GetTrigger(DIK_2) == true)
+	else if (pInputKeyboard->GetTrigger(DIK_2))
 	{// 2が押された
 
 		// 色の種類更新
@@ -362,20 +362,20 @@ void CEditEnemyBase::ChangeType()
 		bChange = true;
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_3) == true)
+	if (pInputKeyboard->GetTrigger(DIK_3))
 	{// 3が押された
 
 		// 色の種類更新
 		m_nStage--;
 	}
-	else if (pInputKeyboard->GetTrigger(DIK_4) == true)
+	else if (pInputKeyboard->GetTrigger(DIK_4))
 	{// 4が押された
 
 		// 色の種類更新
 		m_nStage++;
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_5) == true)
+	if (pInputKeyboard->GetTrigger(DIK_5))
 	{// 5が押された
 
 		// 影の使用状況切り替え
@@ -427,7 +427,7 @@ void CEditEnemyBase::Grab()
 	}
 
 	bool bAll = false;
-	if (pInputKeyboard->GetPress(DIK_RCONTROL) == true)
+	if (pInputKeyboard->GetPress(DIK_RCONTROL))
 	{// 右コントロールで全選択
 		bAll = true;
 	}
@@ -435,7 +435,7 @@ void CEditEnemyBase::Grab()
 	for (int i = 0; i < pEnemyBase->GetNumBase(m_nStage); i++)
 	{
 		MyLib::Vector3 TargetPoint = pEnemyBase->GetSpawnPoint(m_nStage, i);
-		if (bAll == true || UtilFunc::Collision::SphereRange(m_pos, TargetPoint, 50.0f, 50.0f).ishit)
+		if (bAll || UtilFunc::Collision::SphereRange(m_pos, TargetPoint, 50.0f, 50.0f).ishit)
 		{// 球に当たってたら
 
 			// 操作

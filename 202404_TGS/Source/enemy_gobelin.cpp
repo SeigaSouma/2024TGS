@@ -106,7 +106,7 @@ void CEnemyGobelin::Kill()
 void CEnemyGobelin::Update()
 {
 	// 死亡の判定
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -115,7 +115,7 @@ void CEnemyGobelin::Update()
 	CEnemy::Update();
 
 	// 死亡の判定
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -190,13 +190,13 @@ void CEnemyGobelin::MotionSet()
 		return;
 	}
 
-	if (pMotion->IsFinish() == true)
+	if (pMotion->IsFinish())
 	{// 終了していたら
 
 		// 現在の種類取得
 		int nType = pMotion->GetType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
+		if (m_sMotionFrag.bMove && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
 		{// 移動していたら
 
 			// 攻撃していない
@@ -205,7 +205,7 @@ void CEnemyGobelin::MotionSet()
 			// 行動別設定処理
 			pMotion->Set(MOTION_WALK);
 		}
-		else if (m_sMotionFrag.bKnockback == true)
+		else if (m_sMotionFrag.bKnockback)
 		{// やられ中だったら
 
 			// やられモーション

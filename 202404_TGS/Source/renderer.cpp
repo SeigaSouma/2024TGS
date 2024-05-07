@@ -162,7 +162,7 @@ void CRenderer::Draw()
 	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 //#if _DEBUG
-	if (pInputKeyboard->GetTrigger(DIK_F1) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F1))
 	{// •`‰æØ‚è‘Ö‚¦
 		bDisp = bDisp ? false : true;
 	}

@@ -139,7 +139,7 @@ void CObject2D_Anim::Update()
 			// 終了状態
 			m_bFinish = true;
 
-			if (m_bAutoDeath == true)
+			if (m_bAutoDeath)
 			{
 				// オブジェクト破棄
 				Uninit();

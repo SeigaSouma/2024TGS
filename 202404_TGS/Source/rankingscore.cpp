@@ -203,7 +203,7 @@ void CRankingScore::Update()
 	for (int nCntRanking = 0; nCntRanking < RANKINGNUM; nCntRanking++)
 	{
 		if (m_bArrival[nCntRanking] == false &&
-			(nCntRanking == 0 || m_bArrival[nCntRanking - 1] == true))
+			(nCntRanking == 0 || m_bArrival[nCntRanking - 1]))
 		{
 			// 移動処理
 			Moving(nCntRanking);
@@ -213,7 +213,7 @@ void CRankingScore::Update()
 		m_pScore[nCntRanking]->SetValue(m_nScore[nCntRanking]);
 	}
 
-	if (m_bNewRecord == true)
+	if (m_bNewRecord)
 	{// 記録更新していたら
 
 		// ニューレコードの更新処理
@@ -389,7 +389,7 @@ void CRankingScore::Sort()
 		}
 	}
 
-	if (m_bNewRecord == true)
+	if (m_bNewRecord)
 	{// ニューレコードの時
 
 		for (int nCount = RANKINGNUM; nCount > 0; nCount--)

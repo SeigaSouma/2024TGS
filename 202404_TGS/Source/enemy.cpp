@@ -478,7 +478,7 @@ void CEnemy::ChangeNextAction()
 void CEnemy::Update()
 {
 	// 死亡の判定
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -524,7 +524,7 @@ void CEnemy::Update()
 	Collision();
 
 	// 死亡の判定
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -536,7 +536,7 @@ void CEnemy::Update()
 	UpdateState();
 
 	// 死亡の判定
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -647,7 +647,7 @@ void CEnemy::Collision()
 		// 地面の高さに補正
 		pos.y = fHeight;
 
-		if (bLand == true)
+		if (bLand)
 		{// 着地してたら
 
 			// 着地時処理
@@ -1124,7 +1124,7 @@ void CEnemy::StateDead()
 	}
 
 	int nType = pMotion->GetType();
-	if (nType == MOTION::MOTION_KNOCKBACK && pMotion->IsFinish() == true)
+	if (nType == MOTION::MOTION_KNOCKBACK && pMotion->IsFinish())
 	{
 		// 次の行動抽選
 		m_state = STATE::STATE_FADEOUT;
@@ -1459,7 +1459,7 @@ void CEnemyBeforeAction::Action(CEnemy* boss)
 	}
 
 	int nType = pMotion->GetType();
-	if (nType == m_nIdxMotion && pMotion->IsFinish() == true)
+	if (nType == m_nIdxMotion && pMotion->IsFinish())
 	{// ステップ終了
 
 		// 次の行動設定
@@ -1513,7 +1513,7 @@ void CEnemyFlinch::Action(CEnemy* boss)
 	}
 
 	int nType = pMotion->GetType();
-	if (nType == m_nIdxMotion && pMotion->IsFinish() == true)
+	if (nType == m_nIdxMotion && pMotion->IsFinish())
 	{// ステップ終了
 
 		// 次の行動抽選
@@ -1544,7 +1544,7 @@ void CEnemyReturnDown::Action(CEnemy* boss)
 	}
 
 	int nType = pMotion->GetType();
-	if (nType == m_nIdxMotion && pMotion->IsFinish() == true)
+	if (nType == m_nIdxMotion && pMotion->IsFinish())
 	{// ステップ終了
 
 		// 次の行動抽選
@@ -1594,7 +1594,7 @@ void CEnemyAttack::Attack(CEnemy* boss)
 		return;
 	}
 
-	if (nType == m_nIdxMotion && pMotion->IsFinish() == true)
+	if (nType == m_nIdxMotion && pMotion->IsFinish())
 	{// 攻撃が終わってたら
 
 		// 次の行動抽選

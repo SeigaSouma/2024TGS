@@ -236,13 +236,13 @@ void CCamera::Update()
 
 	//#ifdef _DEBUG
 
-	if (pInputKeyboard->GetTrigger(DIK_F7) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F7))
 	{// F7が押された,追従切り替え
 
 		m_bFollow = m_bFollow ? false : true;
 	}
 
-	if (pInputKeyboard->GetTrigger(DIK_F5) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F5))
 	{
 		m_move = MyLib::Vector3(0.0f, 0.0f, 0.0f);					// 移動量
 		m_rot = MyLib::Vector3(m_rot.x, 0.0f, m_rot.z);					// 向き
@@ -395,7 +395,7 @@ void CCamera::MoveCameraMouse()
 			SetCameraV();
 
 		}
-		else if (pInputMouse->GetPress(CInputMouse::BUTTON_RIGHT) == true)
+		else if (pInputMouse->GetPress(CInputMouse::BUTTON_RIGHT))
 		{// 右クリックしてるとき,注視点回転
 
 			m_rot.y += pInputMouse->GetMouseMove().x * ROT_MOVE_MOUSE;
@@ -436,23 +436,23 @@ void CCamera::MoveCameraV()
 
 #ifdef _DEBUG
 	// 視点移動
-	if (pInputKeyboard->GetPress(DIK_Y) == true)
+	if (pInputKeyboard->GetPress(DIK_Y))
 	{// Yキーが押された,視点上移動
 
 		m_rot.z -= ROT_MOVE;
 	}
-	else if (pInputKeyboard->GetPress(DIK_N) == true)
+	else if (pInputKeyboard->GetPress(DIK_N))
 	{// Nキーが押された,視点下移動
 
 		m_rot.z += ROT_MOVE;
 	}
 
-	if (pInputKeyboard->GetPress(DIK_Z) == true)
+	if (pInputKeyboard->GetPress(DIK_Z))
 	{// Zキーが押された
 
 		m_rot.y += ROT_MOVE;
 	}
-	if (pInputKeyboard->GetPress(DIK_C) == true)
+	if (pInputKeyboard->GetPress(DIK_C))
 	{// Cキーが押された
 
 		m_rot.y -= ROT_MOVE;
@@ -482,27 +482,27 @@ void CCamera::MoveCameraR()
 
 #ifdef _DEBUG
 	// 旋回
-	if (pInputKeyboard->GetPress(DIK_Q) == true)
+	if (pInputKeyboard->GetPress(DIK_Q))
 	{// Qキーが押された,左旋回
 
 
 		m_rot.y -= ROT_MOVE;
 
 	}
-	else if (pInputKeyboard->GetPress(DIK_E) == true)
+	else if (pInputKeyboard->GetPress(DIK_E))
 	{// Eキーが押された,左旋回
 
 		m_rot.y += ROT_MOVE;
 	}
 
 	// 上昇下降
-	if (pInputKeyboard->GetPress(DIK_T) == true)
+	if (pInputKeyboard->GetPress(DIK_T))
 	{// Tキーが押された
 
 		m_rot.z += ROT_MOVE;
 
 	}
-	else if (pInputKeyboard->GetPress(DIK_B) == true)
+	else if (pInputKeyboard->GetPress(DIK_B))
 	{// Bキーが押された
 
 		m_rot.z -= ROT_MOVE;
@@ -733,7 +733,7 @@ void CCamera::SetCameraVTitle()
 		m_posV.z = m_posR.z + cosf(m_rot.z) * cosf(m_rot.y) * -m_fDistance;
 		m_posV.y = m_posR.y + sinf(m_rot.z) * -m_fDistance;
 	}
-	else if (m_bFollow == true)
+	else if (m_bFollow)
 	{// 追従ON
 
 		// 視点の代入処理
@@ -762,7 +762,7 @@ void CCamera::SetCameraVGame()
 		m_posV.z = m_posR.z + cosf(m_rot.z) * cosf(m_rot.y) * -m_fDistance;
 		m_posV.y = m_posR.y + sinf(m_rot.z) * -m_fDistance;
 	}
-	else if (m_bFollow == true)
+	else if (m_bFollow)
 	{// 追従ON
 
 		// 視点の代入処理

@@ -455,7 +455,7 @@ void CManager::Reset(CScene::MODE mode)
 	{
 		ChangePauseMode(mode);
 
-		if (m_pPause->IsPause() == true)
+		if (m_pPause->IsPause())
 		{// ポーズ中だったら
 			m_pPause->SetPause();
 		}
@@ -783,7 +783,7 @@ void CManager::Update()
 		// 入力機器の更新処理
 		m_pInput->Update();
 
-		if ((pInputKeyboard->GetTrigger(DIK_P) == true || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_START, 0) == true) &&
+		if ((pInputKeyboard->GetTrigger(DIK_P) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_START, 0)) &&
 			m_pFade->GetState() == CFade::STATE_NONE &&
 			(GetMode() == CScene::MODE_GAME || GetMode() == CScene::MODE::MODE_GAMETUTORIAL))
 		{// フェード中じゃないとき
@@ -794,7 +794,7 @@ void CManager::Update()
 		}
 
 		// ポーズの更新処理
-		if (m_pPause->IsPause() == true)
+		if (m_pPause->IsPause())
 		{// ポーズ中だったら
 			m_pPause->Update();
 
@@ -811,7 +811,7 @@ void CManager::Update()
 			return;
 		}
 
-		if (m_bHitStop == true)
+		if (m_bHitStop)
 		{// ヒットストップ中は更新停止
 
 			// ヒットストップカウンター減算
@@ -828,7 +828,7 @@ void CManager::Update()
 		}
 
 #if _DEBUG
-		if (pInputKeyboard->GetTrigger(DIK_F2) == true)
+		if (pInputKeyboard->GetTrigger(DIK_F2))
 		{// F2でワイヤーフレーム切り替え
 			m_bWireframe = m_bWireframe ? false : true;
 		}
@@ -838,7 +838,7 @@ void CManager::Update()
 			MyFog::ToggleFogFrag();
 		}
 
-		if (pInputKeyboard->GetTrigger(DIK_F8) == true)
+		if (pInputKeyboard->GetTrigger(DIK_F8))
 		{// F8でエディットモード切替え
 
 			if (m_pEdit == nullptr)

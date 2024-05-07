@@ -240,7 +240,7 @@ void CPause::UpdateSelect()
 	// ゲームパッド情報取得
 	CInputGamepad* pInputGamepad = CInputGamepad::GetInstance();
 
-	if (pInputKeyboard->GetTrigger(DIK_W) == true ||
+	if (pInputKeyboard->GetTrigger(DIK_W) ||
 		pInputGamepad->GetTrigger(CInputGamepad::BUTTON::BUTTON_UP, 0) ||
 		(pInputGamepad->GetLStickTrigger(CInputGamepad::STICK::STICK_Y) && pInputGamepad->GetStickMoveL(0).y > 0))
 	{// 上系が押された
@@ -251,7 +251,7 @@ void CPause::UpdateSelect()
 		// サウンド再生
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL::LABEL_SE_CURSOR_MOVE);
 	}
-	else if (pInputKeyboard->GetTrigger(DIK_S) == true ||
+	else if (pInputKeyboard->GetTrigger(DIK_S) ||
 		pInputGamepad->GetTrigger(CInputGamepad::BUTTON_DOWN, 0) ||
 		(pInputGamepad->GetLStickTrigger(CInputGamepad::STICK::STICK_Y) && pInputGamepad->GetStickMoveL(0).y < 0))
 	{// 下系が押された
@@ -264,7 +264,7 @@ void CPause::UpdateSelect()
 	}
 
 
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) == true || 
+	if (pInputKeyboard->GetTrigger(DIK_RETURN) || 
 		pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0))
 	{// 決定が押された
 

@@ -249,7 +249,7 @@ void CImpactWave::Draw()
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// αブレンディングを加算合成に設定
-	if (m_bAddBlend == true)
+	if (m_bAddBlend)
 	{
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);

@@ -205,7 +205,7 @@ void CElevation::Update()
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
-	if (pInputKeyboard->GetTrigger(DIK_F3) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F3))
 	{// 切り替え
 		m_bEdit = m_bEdit ? false : true;
 
@@ -223,7 +223,7 @@ void CElevation::Update()
 	}
 
 	// 頂点操作
-	if (m_bEdit == true)
+	if (m_bEdit)
 	{// エディット中なら
 		UPVtxField(m_pTargetP->GetPosition());
 	}
@@ -258,7 +258,7 @@ void CElevation::Draw()
 	//  デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
-	if (CManager::GetInstance()->IsWireframe() == true)
+	if (CManager::GetInstance()->IsWireframe())
 	{
 		pDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);	// ワイヤーフレームモード
 	}
@@ -340,7 +340,7 @@ float CElevation::GetHeight(const MyLib::Vector3& pos, bool *pLand)
 		}
 	}
 
-	if (*pLand == true)
+	if (*pLand)
 	{// 着地していたら
 
 		return fHeight;
@@ -451,7 +451,7 @@ void CElevation::UPVtxField(MyLib::Vector3 pos)
 	// キーボード情報取得
 	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
-	if (pInputKeyboard->GetTrigger(DIK_F9) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F9))
 	{// セーブ
 		Save();
 	}
@@ -562,16 +562,16 @@ void CElevation::UPVtxField(MyLib::Vector3 pos)
 		// カメラの向き取得
 		MyLib::Vector3 Camerarot = pCamera->GetRotation();
 
-		if (pInputKeyboard->GetPress(DIK_LEFT) == true)
+		if (pInputKeyboard->GetPress(DIK_LEFT))
 		{// ←キーが押された,左移動
 
-			if (pInputKeyboard->GetPress(DIK_UP) == true)
+			if (pInputKeyboard->GetPress(DIK_UP))
 			{// A+W,左上移動
 
 				pos.x += sinf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 				pos.z += cosf(-D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 			}
-			else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+			else if (pInputKeyboard->GetPress(DIK_DOWN))
 			{// A+S,左下移動
 
 				pos.x += sinf(-D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE;
@@ -584,16 +584,16 @@ void CElevation::UPVtxField(MyLib::Vector3 pos)
 				pos.z += cosf(-D3DX_PI * MOVE_LR + Camerarot.y) * MOVE;
 			}
 		}
-		else if (pInputKeyboard->GetPress(DIK_RIGHT) == true)
+		else if (pInputKeyboard->GetPress(DIK_RIGHT))
 		{// Dキーが押された,右移動
 
-			if (pInputKeyboard->GetPress(DIK_UP) == true)
+			if (pInputKeyboard->GetPress(DIK_UP))
 			{// D+W,右上移動
 
 				pos.x += sinf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 				pos.z += cosf(D3DX_PI * MOVE_LRDW + Camerarot.y) * MOVE;
 			}
-			else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+			else if (pInputKeyboard->GetPress(DIK_DOWN))
 			{// D+S,右下移動
 
 				pos.x += sinf(D3DX_PI * MOVE_LRUP + Camerarot.y) * MOVE;
@@ -606,13 +606,13 @@ void CElevation::UPVtxField(MyLib::Vector3 pos)
 				pos.z += cosf(D3DX_PI * MOVE_LR + Camerarot.y) * MOVE;
 			}
 		}
-		else if (pInputKeyboard->GetPress(DIK_UP) == true)
+		else if (pInputKeyboard->GetPress(DIK_UP))
 		{// Wが押された、奥移動
 
 			pos.x += sinf(Camerarot.y) * MOVE;
 			pos.z += cosf(Camerarot.y) * MOVE;
 		}
-		else if (pInputKeyboard->GetPress(DIK_DOWN) == true)
+		else if (pInputKeyboard->GetPress(DIK_DOWN))
 		{// Sが押された、手前移動
 
 			pos.x += sinf(D3DX_PI + Camerarot.y) * MOVE;

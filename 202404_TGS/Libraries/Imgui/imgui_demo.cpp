@@ -823,7 +823,7 @@ static void ShowDemoWindowWidgets()
         ImGui::SeparatorText("Always On");
 
         // Showcase NOT relying on a IsItemHovered() to emit a tooltip.
-        // Here the tooltip is always emitted when 'always_on == true'.
+        // Here the tooltip is always emitted when 'always_on'.
         static int always_on = 0;
         ImGui::RadioButton("Off", &always_on, 0);
         ImGui::SameLine();

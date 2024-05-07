@@ -106,7 +106,7 @@ void CDebugProc::Update()
 	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();
 
 #if _DEBUG
-	if(pInputKeyboard->GetTrigger(DIK_F1) == true)
+	if(pInputKeyboard->GetTrigger(DIK_F1))
 	{//F1キーが押されたとき
 
 		// ON,OFF切り替え
@@ -122,7 +122,7 @@ void CDebugProc::Draw()
 {
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	if (m_bDisp == true)
+	if (m_bDisp)
 	{// デバックモードがオンの時
 
 		// テキストの描画

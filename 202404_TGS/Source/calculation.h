@@ -583,7 +583,7 @@ namespace UtilFunc	// 便利関数
 				vec2 = posLeft - posRight,
 				nor = MyLib::Vector3(0.0f, 0.0f, 0.0f);
 
-			if (UtilFunc::Collision::CollisionTriangle(posCenter, posRight, posLeft, pos, pos) == true)
+			if (UtilFunc::Collision::CollisionTriangle(posCenter, posRight, posLeft, pos, pos))
 			{// 三角に入っていたら
 
 				// 外積を求める
@@ -980,7 +980,7 @@ namespace UtilFunc	// 便利関数
 			bLine3 = UtilFunc::Collision::CollisionLine3D(posRight, posCenter, MainPos, MainPosOld);
 
 			// 全ての範囲に入っていたら
-			if (bLine1 == true && bLine2 == true && bLine3 == true)
+			if (bLine1 && bLine2 && bLine3)
 			{
 				bHit = true;
 			}
@@ -1017,7 +1017,7 @@ namespace UtilFunc	// 便利関数
 			bLine4 = UtilFunc::Collision::CollisionLine3D(posLeftUP, posLeftDW, MainPos, MainPos);
 
 			// 全ての範囲に入っていたら
-			if (bLine1 == true && bLine2 == true && bLine3 == true && bLine4 == true)
+			if (bLine1 && bLine2 && bLine3 && bLine4)
 			{
 				// 当たった
 				bHit = true;
@@ -1063,7 +1063,7 @@ namespace UtilFunc	// 便利関数
 			bLine4 = UtilFunc::Collision::CollisionLine3D(LeftUp, LeftDown, MainPos, MainPos);
 
 			// 全ての範囲に入っていたら
-			if (bLine1 == true && bLine2 == true && bLine3 == true && bLine4 == true)
+			if (bLine1 && bLine2 && bLine3 && bLine4)
 			{
 				// 当たった
 				bHit = true;
@@ -1101,7 +1101,7 @@ namespace UtilFunc	// 便利関数
 			bLine4 = UtilFunc::Collision::CollisionLine2D(posLeftUP, posLeftDW, MainPos, MainPos);
 
 			// 全ての範囲に入っていたら
-			if (bLine1 == true && bLine2 == true && bLine3 == true && bLine4 == true)
+			if (bLine1 && bLine2 && bLine3 && bLine4)
 			{
 				bHit = true;
 			}
@@ -1151,19 +1151,19 @@ namespace UtilFunc	// 便利関数
 			//***********************
 			// 矩形の判定
 			//***********************
-			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, LeftUp) == true)
+			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, LeftUp))
 			{// 左上
 				return true;
 			}
-			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, RightUp) == true)
+			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, RightUp))
 			{// 右上
 				return true;
 			}
-			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, LeftDown) == true)
+			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, LeftDown))
 			{// 左下
 				return true;
 			}
-			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, RightDown) == true)
+			if (UtilFunc::Collision::CollisionSquare(MainPos, MainSize, fMainRot, RightDown))
 			{// 右下
 				return true;
 			}
@@ -1217,7 +1217,7 @@ namespace UtilFunc	// 便利関数
 			RightDown.z = 0.0f;
 
 			// 矩形の判定
-			if (UtilFunc::Collision::CollisionSquare2D(LeftUp, RightUp, LeftDown, RightDown, posCircle) == true)
+			if (UtilFunc::Collision::CollisionSquare2D(LeftUp, RightUp, LeftDown, RightDown, posCircle))
 			{// 矩形に当たった場合
 				return true;
 			}
@@ -1249,7 +1249,7 @@ namespace UtilFunc	// 便利関数
 			RightDown.z = 0.0f;
 
 			// 矩形の判定
-			if (UtilFunc::Collision::CollisionSquare2D(LeftUp, RightUp, LeftDown, RightDown, posCircle) == true)
+			if (UtilFunc::Collision::CollisionSquare2D(LeftUp, RightUp, LeftDown, RightDown, posCircle))
 			{// 矩形に当たった場合
 				return true;
 			}
@@ -1283,19 +1283,19 @@ namespace UtilFunc	// 便利関数
 			RightDown.y = posSquare.y + cosf(rotSquare.z + fAngle) * fLength;
 			RightDown.z = 0.0f;
 
-			if (UtilFunc::Collision::CircleRange2D(posCircle, LeftUp, fCircleRadius, 0.0f) == true)
+			if (UtilFunc::Collision::CircleRange2D(posCircle, LeftUp, fCircleRadius, 0.0f))
 			{// 左上
 				return true;
 			}
-			if (UtilFunc::Collision::CircleRange2D(posCircle, RightUp, fCircleRadius, 0.0f) == true)
+			if (UtilFunc::Collision::CircleRange2D(posCircle, RightUp, fCircleRadius, 0.0f))
 			{// 右上
 				return true;
 			}
-			if (UtilFunc::Collision::CircleRange2D(posCircle, LeftDown, fCircleRadius, 0.0f) == true)
+			if (UtilFunc::Collision::CircleRange2D(posCircle, LeftDown, fCircleRadius, 0.0f))
 			{// 左下
 				return true;
 			}
-			if (UtilFunc::Collision::CircleRange2D(posCircle, RightDown, fCircleRadius, 0.0f) == true)
+			if (UtilFunc::Collision::CircleRange2D(posCircle, RightDown, fCircleRadius, 0.0f))
 			{// 右下
 				return true;
 			}
@@ -1339,7 +1339,7 @@ namespace UtilFunc	// 便利関数
 			RightDown = MyLib::Vector3(posSquare.x + cosf(rotSquare.x) * sinf(rotSquare.y + D3DX_PI - fAngle) * fLength, posSquare.y, posSquare.z + cosf(rotSquare.x) * cosf(rotSquare.y + D3DX_PI - fAngle) * fLength);
 
 			// 矩形の判定
-			if (UtilFunc::Collision::CollisionSquare(LeftUp, RightUp, LeftDown, RightDown, posCircle) == true)
+			if (UtilFunc::Collision::CollisionSquare(LeftUp, RightUp, LeftDown, RightDown, posCircle))
 			{// 矩形に当たった場合
 				return true;
 			}
@@ -1360,7 +1360,7 @@ namespace UtilFunc	// 便利関数
 			RightDown = MyLib::Vector3(posSquare.x + cosf(rotSquare.x) * sinf(rotSquare.y + D3DX_PI - fAngle) * fLength, posSquare.y, posSquare.z + cosf(rotSquare.x) * cosf(rotSquare.y + D3DX_PI - fAngle) * fLength);
 
 			// 矩形の判定
-			if (UtilFunc::Collision::CollisionSquare(LeftUp, RightUp, LeftDown, RightDown, posCircle) == true)
+			if (UtilFunc::Collision::CollisionSquare(LeftUp, RightUp, LeftDown, RightDown, posCircle))
 			{// 矩形に当たった場合
 				return true;
 			}
@@ -1368,19 +1368,19 @@ namespace UtilFunc	// 便利関数
 			//***********************
 			// 各頂点毎の円の判定
 			//***********************
-			if (UtilFunc::Collision::CircleRange3D(posCircle, LeftUp, fCircleRadius, fCircleRadius) == true)
+			if (UtilFunc::Collision::CircleRange3D(posCircle, LeftUp, fCircleRadius, fCircleRadius))
 			{// 左上
 				return true;
 			}
-			if (UtilFunc::Collision::CircleRange3D(posCircle, RightUp, fCircleRadius, fCircleRadius) == true)
+			if (UtilFunc::Collision::CircleRange3D(posCircle, RightUp, fCircleRadius, fCircleRadius))
 			{// 右上
 				return true;
 			}
-			if (UtilFunc::Collision::CircleRange3D(posCircle, LeftDown, fCircleRadius, fCircleRadius) == true)
+			if (UtilFunc::Collision::CircleRange3D(posCircle, LeftDown, fCircleRadius, fCircleRadius))
 			{// 左下
 				return true;
 			}
-			if (UtilFunc::Collision::CircleRange3D(posCircle, RightDown, fCircleRadius, fCircleRadius) == true)
+			if (UtilFunc::Collision::CircleRange3D(posCircle, RightDown, fCircleRadius, fCircleRadius))
 			{// 右下
 				return true;
 			}
@@ -1416,13 +1416,13 @@ namespace UtilFunc	// 便利関数
 					+ (posLeft.z - posCenter.z) * (posLeft.z - posCenter.z));
 
 			// 円の当たり判定
-			if (UtilFunc::Collision::CircleRange3D(posCenter, TargetPos, fLen, fTargetRadius) == true)
+			if (UtilFunc::Collision::CircleRange3D(posCenter, TargetPos, fLen, fTargetRadius))
 			{// 当たっていたら
 				bCircle = true;
 			}
 
 			// 全ての範囲に入っていたら
-			if (bLine1 == true && bLine2 == true && bCircle == true)
+			if (bLine1 && bLine2 && bCircle)
 			{
 				bHit = true;
 			}

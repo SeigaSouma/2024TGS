@@ -378,14 +378,14 @@ void CPlayer::Kill()
 //==========================================================================
 void CPlayer::Update()
 {
-	if (IsDeath() == true)
+	if (IsDeath())
 	{
 		return;
 	}
 
 	// キーボード情報取得
 	CInputKeyboard* pInputKeyboard = CInputKeyboard::GetInstance();
-	if (pInputKeyboard->GetTrigger(DIK_F5) == true)
+	if (pInputKeyboard->GetTrigger(DIK_F5))
 	{// F5でリセット
 		SetPosition(MyLib::Vector3(0.0f, 0.0f, -1000.0f));
 		SetMove(MyLib::Vector3(0.0f, 0.0f, 0.0f));
@@ -561,20 +561,20 @@ void CPlayer::Controll()
 			m_state != STATE_FADEOUT)
 		{// 移動可能モーションの時
 
-			if (pInputKeyboard->GetPress(DIK_A) == true)
+			if (pInputKeyboard->GetPress(DIK_A))
 			{//←キーが押された,左移動
 
 				// 移動中にする
 				m_sMotionFrag.bMove = true;
 
-				if (pInputKeyboard->GetPress(DIK_W) == true)
+				if (pInputKeyboard->GetPress(DIK_W))
 				{//A+W,左上移動
 
 					move.x += sinf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					move.z += cosf(-D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
 				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				else if (pInputKeyboard->GetPress(DIK_S))
 				{//A+S,左下移動
 
 					move.x += sinf(-D3DX_PI * 0.75f + Camerarot.y) * fMove;
@@ -589,20 +589,20 @@ void CPlayer::Controll()
 					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
-			else if (pInputKeyboard->GetPress(DIK_D) == true)
+			else if (pInputKeyboard->GetPress(DIK_D))
 			{//Dキーが押された,右移動
 
 				// 移動中にする
 				m_sMotionFrag.bMove = true;
 
-				if (pInputKeyboard->GetPress(DIK_W) == true)
+				if (pInputKeyboard->GetPress(DIK_W))
 				{//D+W,右上移動
 
 					move.x += sinf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					move.z += cosf(D3DX_PI * 0.25f + Camerarot.y) * fMove;
 					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
 				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				else if (pInputKeyboard->GetPress(DIK_S))
 				{//D+S,右下移動
 
 					move.x += sinf(D3DX_PI * 0.75f + Camerarot.y) * fMove;
@@ -617,7 +617,7 @@ void CPlayer::Controll()
 					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
-			else if (pInputKeyboard->GetPress(DIK_W) == true)
+			else if (pInputKeyboard->GetPress(DIK_W))
 			{//Wが押された、上移動
 
 				// 移動中にする
@@ -626,7 +626,7 @@ void CPlayer::Controll()
 				move.z += cosf(D3DX_PI * 0.0f + Camerarot.y) * fMove;
 				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
 			}
-			else if (pInputKeyboard->GetPress(DIK_S) == true)
+			else if (pInputKeyboard->GetPress(DIK_S))
 			{//Sが押された、下移動
 
 				// 移動中にする
@@ -675,7 +675,7 @@ void CPlayer::Controll()
 			}
 
 			if (m_bJump == false &&
-				(pInputKeyboard->GetTrigger(DIK_SPACE) == true ||
+				(pInputKeyboard->GetTrigger(DIK_SPACE) ||
 					pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, m_nMyPlayerIdx)) &&
 				!m_bTouchBeacon)
 			{// ジャンプ
@@ -694,14 +694,14 @@ void CPlayer::Controll()
 			m_state != STATE_DEAD &&
 			m_state != STATE_FADEOUT)
 		{
-			if (pInputKeyboard->GetPress(DIK_A) == true)
+			if (pInputKeyboard->GetPress(DIK_A))
 			{//←キーが押された,左移動
 
-				if (pInputKeyboard->GetPress(DIK_W) == true)
+				if (pInputKeyboard->GetPress(DIK_W))
 				{//A+W,左上移動
 					fRotDest = D3DX_PI * 0.75f + Camerarot.y;
 				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				else if (pInputKeyboard->GetPress(DIK_S))
 				{//A+S,左下移動
 					fRotDest = D3DX_PI * 0.25f + Camerarot.y;
 				}
@@ -710,14 +710,14 @@ void CPlayer::Controll()
 					fRotDest = D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
-			else if (pInputKeyboard->GetPress(DIK_D) == true)
+			else if (pInputKeyboard->GetPress(DIK_D))
 			{//Dキーが押された,右移動
 
-				if (pInputKeyboard->GetPress(DIK_W) == true)
+				if (pInputKeyboard->GetPress(DIK_W))
 				{//D+W,右上移動
 					fRotDest = -D3DX_PI * 0.75f + Camerarot.y;
 				}
-				else if (pInputKeyboard->GetPress(DIK_S) == true)
+				else if (pInputKeyboard->GetPress(DIK_S))
 				{//D+S,右下移動
 					fRotDest = -D3DX_PI * 0.25f + Camerarot.y;
 				}
@@ -726,11 +726,11 @@ void CPlayer::Controll()
 					fRotDest = -D3DX_PI * 0.5f + Camerarot.y;
 				}
 			}
-			else if (pInputKeyboard->GetPress(DIK_W) == true)
+			else if (pInputKeyboard->GetPress(DIK_W))
 			{//Wが押された、上移動
 				fRotDest = D3DX_PI * 1.0f + Camerarot.y;
 			}
-			else if (pInputKeyboard->GetPress(DIK_S) == true)
+			else if (pInputKeyboard->GetPress(DIK_S))
 			{//Sが押された、下移動
 				fRotDest = D3DX_PI * 0.0f + Camerarot.y;
 			}
@@ -779,19 +779,19 @@ void CPlayer::Controll()
 	bool bLandStage = Collision(sakiPos, move);
 
 	bool bMove = false;
-	if (m_bLandOld == false && bLandStage == true)
+	if (m_bLandOld == false && bLandStage)
 	{// 前回は着地していなくて、今回は着地している場合
 
 		bMove = false;
 	}
 
-	if (m_bLandOld == true && bLandStage == true)
+	if (m_bLandOld && bLandStage)
 	{// 前回も今回も着地している場合
 		bMove = true;
 	}
 
 	if (m_bHitWall == false && 
-		(bLandStage == false || bMove == true || m_bLandField == true || m_bJump == true || m_sMotionFrag.bKnockBack == true || m_sMotionFrag.bDead == true))
+		(bLandStage == false || bMove || m_bLandField || m_bJump || m_sMotionFrag.bKnockBack || m_sMotionFrag.bDead))
 	{
 		pos.x = newPosition.x;
 		pos.z = newPosition.z;
@@ -898,12 +898,12 @@ void CPlayer::Controll()
 	// デバッグ用
 #if _DEBUG
 
-	if (pInputKeyboard->GetTrigger(DIK_LEFT) == true)
+	if (pInputKeyboard->GetTrigger(DIK_LEFT))
 	{
 		CCollisionObject::Create(GetPosition(), mylib_const::DEFAULT_VECTOR3, 100000.0f, 3, 10000, CCollisionObject::TAG_PLAYER);
 	}
 
-	if (pInputKeyboard->GetRepeat(DIK_RIGHT, 4) == true){
+	if (pInputKeyboard->GetRepeat(DIK_RIGHT, 4)){
 		//CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL_SE_NORMALATK_HIT2);
 		CManager::GetInstance()->GetSound()->PlaySound(CSound::LABEL::LABEL_SE_COUNTER_TURN, false);
 
@@ -911,7 +911,7 @@ void CPlayer::Controll()
 	}
 
 	static float fff = 1.0f;
-	if (pInputKeyboard->GetTrigger(DIK_UP) == true)
+	if (pInputKeyboard->GetTrigger(DIK_UP))
 	{
 		fff += 0.1f;
 		CManager::GetInstance()->GetSound()->SetFrequency(CSound::LABEL_BGM_GAME, fff);
@@ -924,7 +924,7 @@ void CPlayer::Controll()
 			weponpos, 0.0f, 0.0f, 60.0f);
 
 	}
-	if (pInputKeyboard->GetTrigger(DIK_DOWN) == true)
+	if (pInputKeyboard->GetTrigger(DIK_DOWN))
 	{
 		fff -= 0.1f;
 		CManager::GetInstance()->GetSound()->SetFrequency(CSound::LABEL_BGM_GAME, fff);
@@ -936,7 +936,7 @@ void CPlayer::Controll()
 	MyLib::Matrix mmmmmmm;
 	MyLib::Matrix mmmmmmfafm(mmmmmmm);
 
-	if (pInputKeyboard->GetPress(DIK_J) == true)
+	if (pInputKeyboard->GetPress(DIK_J))
 	{
 		CDamagePoint::Create(GetPosition(), UtilFunc::Transformation::Random(1, 99));
 	}
@@ -987,14 +987,14 @@ void CPlayer::MotionSet()
 		return;
 	}
 
-	if (pMotion->IsFinish() == true)
+	if (pMotion->IsFinish())
 	{// 終了していたら
 
 		// 現在の種類取得
 		int nType = pMotion->GetType();
 		int nOldType = pMotion->GetOldType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockBack == false && m_bJump == false &&
+		if (m_sMotionFrag.bMove && m_sMotionFrag.bKnockBack == false && m_bJump == false &&
 			m_sMotionFrag.bATK == false && m_sMotionFrag.bATK == false)
 		{// 移動していたら
 
@@ -1010,7 +1010,7 @@ void CPlayer::MotionSet()
 				pMotion->Set(MOTION_WALK);
 			}
 		}
-		else if (m_sMotionFrag.bJump == true && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
+		else if (m_sMotionFrag.bJump && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
 		{// ジャンプ中
 
 			// ジャンプのフラグOFF
@@ -1019,7 +1019,7 @@ void CPlayer::MotionSet()
 			// ジャンプモーション
 			pMotion->Set(MOTION_JUMP);
 		}
-		else if (m_bJump == true && m_sMotionFrag.bJump == false && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
+		else if (m_bJump && m_sMotionFrag.bJump == false && m_sMotionFrag.bATK == false && m_sMotionFrag.bKnockBack == false && m_sMotionFrag.bDead == false)
 		{// ジャンプ中&&ジャンプモーションが終わってる時
 
 			// 落下モーション
@@ -1296,7 +1296,7 @@ void CPlayer::AttackInDicision(CMotion::AttackInfo* pATKInfo, int nCntATK)
 
 				
 
-				if (pEnemy->Hit(damage, GetPosition()) == true)
+				if (pEnemy->Hit(damage, GetPosition()))
 				{// 当たってたら
 
 					pATKInfo->bEndAtk = true;
@@ -1393,7 +1393,7 @@ bool CPlayer::Collision(MyLib::Vector3 &pos, MyLib::Vector3 &move)
 		pos.y = fHeight;
 		m_bLandField = true;
 
-		if (bLand == true)
+		if (bLand)
 		{// 着地してたら
 
 			// ジャンプ使用可能にする
@@ -1429,7 +1429,7 @@ bool CPlayer::Collision(MyLib::Vector3 &pos, MyLib::Vector3 &move)
 		bool bLand = false;
 		fHeight = pObjX->GetHeight(pos, bLand);
 
-		if (bLand == true && fHeight > pos.y)
+		if (bLand && fHeight > pos.y)
 		{// 地面の方が自分より高かったら
 
 			// 地面の高さに補正
@@ -1445,15 +1445,15 @@ bool CPlayer::Collision(MyLib::Vector3 &pos, MyLib::Vector3 &move)
 			m_bHitStage = true;
 			m_bLandField = false;
 
-			if (bLand == true)
+			if (bLand)
 			{// 着地してたら
 
-				if ((m_sMotionFrag.bKnockBack || m_bJump == true) && GetPosition().y >= fHeight)
+				if ((m_sMotionFrag.bKnockBack || m_bJump) && GetPosition().y >= fHeight)
 				{
 					m_bLandOld = true;
 				}
 
-				if (m_bJump == true)
+				if (m_bJump)
 				{// ジャンプ中だったら
 
 					// モーション取得

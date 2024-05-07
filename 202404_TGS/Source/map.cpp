@@ -336,7 +336,7 @@ HRESULT MyMap::SaveText()
 		MyLib::Vector3 rot = pObjX->GetRotation();	// Œü‚«
 		int nShadow = 0;						// ‰eg‚¤‚©‚Ç‚¤‚©
 
-		if (pObjX->GetUseShadow() == true)
+		if (pObjX->GetUseShadow())
 		{// g‚Á‚Ä‚¢‚éê‡
 			nShadow = 1;
 		}

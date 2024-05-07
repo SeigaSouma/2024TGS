@@ -435,7 +435,7 @@ void CEffect2D::Draw()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	// αブレンディングを加算合成に設定
-	if (m_bAddAlpha == true)
+	if (m_bAddAlpha)
 	{
 		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);

@@ -233,7 +233,7 @@ void CObject::DrawNone(const LAYER layer, int nPriority)
 {
 	for (const auto& obj : m_pObj[layer][nPriority])
 	{
-		if (obj->m_bDisp == true &&
+		if (obj->m_bDisp &&
 			obj->m_bDeath == false &&
 			obj->m_type != TYPE_NONE)
 		{// NONE‚¶‚á‚È‚¯‚ê‚Î
@@ -259,7 +259,7 @@ void CObject::DrawZSort(const LAYER layer, int nPriority)
 
 	for (const auto& obj : tempVector)
 	{
-		if (obj->m_bDisp == true &&
+		if (obj->m_bDisp &&
 			obj->m_bDeath == false &&
 			obj->m_type != TYPE_NONE)
 		{// NONE‚¶‚á‚È‚¯‚ê‚Î

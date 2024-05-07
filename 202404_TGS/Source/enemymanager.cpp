@@ -150,7 +150,7 @@ void CEnemyManager::SetStageEnemy()
 		return;
 	}
 
-	if (pGameManager->IsEndNormalStage() == true)
+	if (pGameManager->IsEndNormalStage())
 	{
 		return;
 	}

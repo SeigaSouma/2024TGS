@@ -316,7 +316,7 @@ void CMotion::Update(float fBuff)
 	}
 
 
-	if (m_bFinish == true && m_pInfo[m_nType].nLoop == LOOP_OFF)
+	if (m_bFinish && m_pInfo[m_nType].nLoop == LOOP_OFF)
 	{// 終了してた && ループOFFだったら
 		return;
 	}
@@ -763,7 +763,7 @@ void CMotion::Set(int nType, bool bBlend)
 		}
 
 		// 過去の位置・向きを保存
-		if (bBlend == true)
+		if (bBlend)
 		{
 			m_pPartsOld[nCntParts].rot = m_ppModel[nCntModel]->GetRotation();
 			m_pPartsOld[nCntParts].scale = m_ppModel[nCntModel]->GetScale();

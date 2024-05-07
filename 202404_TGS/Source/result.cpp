@@ -116,9 +116,9 @@ void CResult::Update()
 	CInputGamepad *pInputGamepad = CInputGamepad::GetInstance();
 
 	// ‰æ–Ê‘JˆÚ
-	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0) == true)
+	if (pInputKeyboard->GetTrigger(DIK_RETURN) || pInputGamepad->GetTrigger(CInputGamepad::BUTTON_A, 0))
 	{
-		if (m_bAllArrival == true)
+		if (m_bAllArrival)
 		{
 			// ƒ‚[ƒhÝ’è
 			CManager::GetInstance()->GetFade()->SetFade(CScene::MODE_TITLE);

@@ -166,7 +166,7 @@ CObjectX *CObjectX::Create(const char *pFileName, const MyLib::Vector3& pos, con
 				return nullptr;
 			}
 
-			if (bShadow == true)
+			if (bShadow)
 			{
 				// ‰eÝ’è
 				float f = pObjectX->GetVtxMax().x * 0.5f;
@@ -213,7 +213,7 @@ CObjectX *CObjectX::Create(int nIdxXFile, const MyLib::Vector3& pos, const MyLib
 			// Ží—ÞÝ’è
 			//pObjectX->SetType(TYPE_XFILE);
 
-			if (bShadow == true)
+			if (bShadow)
 			{
 				// ‰eÝ’è
 				float f = pObjectX->GetVtxMax().x * 0.5f;
@@ -484,7 +484,7 @@ float CObjectX::GetHeight(MyLib::Vector3 pos, bool &bLand)
 		bool bNowLand = false;
 		float fNowHeight = UtilFunc::Calculation::GetVtxHeight(pos, pos1, pos3, pos2, &bNowLand);
 
-		if (bNowLand == true && fNowHeight > fHeightMax)
+		if (bNowLand && fNowHeight > fHeightMax)
 		{// ’…’n‚µ‚Ä‚½‚ç
 
 			// Å‘å‚‚³XV

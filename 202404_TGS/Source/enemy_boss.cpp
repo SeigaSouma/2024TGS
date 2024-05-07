@@ -152,7 +152,7 @@ void CEnemyBoss::Kill()
 void CEnemyBoss::Update()
 {
 	// 死亡の判定
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -160,7 +160,7 @@ void CEnemyBoss::Update()
 	// 更新処理
 	CEnemy::Update();
 
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// 死亡フラグが立っていたら
 		return;
 	}
@@ -251,7 +251,7 @@ bool CEnemyBoss::SmallStep()
 	}
 
 	int nType = pMotion->GetType();
-	if (nType == CEnemyBoss::MOTION_BACKSTEP_SMALL && pMotion->IsFinish() == true)
+	if (nType == CEnemyBoss::MOTION_BACKSTEP_SMALL && pMotion->IsFinish())
 	{// ステップ終了
 
 		// 待機モーション設定
@@ -292,13 +292,13 @@ void CEnemyBoss::MotionSet()
 		return;
 	}
 
-	if (pMotion->IsFinish() == true)
+	if (pMotion->IsFinish())
 	{// 終了していたら
 
 		// 現在の種類取得
 		int nType = pMotion->GetType();
 
-		if (m_sMotionFrag.bMove == true && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
+		if (m_sMotionFrag.bMove && m_sMotionFrag.bKnockback == false && m_sMotionFrag.bATK == false)
 		{// 移動していたら
 
 			// 攻撃していない
@@ -494,7 +494,7 @@ void CEnemyBoss::StateDead()
 		pMotion->Set(MOTION::MOTION_KNOCKBACK);
 	}
 
-	if (nType == MOTION::MOTION_KNOCKBACK && pMotion->IsFinish() == true)
+	if (nType == MOTION::MOTION_KNOCKBACK && pMotion->IsFinish())
 	{
 		// 次の行動抽選
 		m_state = STATE::STATE_FADEOUT;

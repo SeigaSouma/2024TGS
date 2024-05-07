@@ -160,7 +160,7 @@ void CExplosion::Update()
 	// ó‘Ô•Êˆ—
 	(this->*(m_FuncList[m_state]))();
 
-	if (IsDeath() == true)
+	if (IsDeath())
 	{// €–Sƒtƒ‰ƒO‚ª—§‚Á‚Ä‚¢‚½‚ç
 		return;
 	}
@@ -340,7 +340,7 @@ void CExplosion::CollisionEnemy()
 		}
 	}
 
-	if (bHit == true)
+	if (bHit)
 	{// “–‚½‚Á‚Ä‚½‚ç
 
 		// I—¹ˆ—
