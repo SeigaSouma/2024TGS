@@ -159,7 +159,7 @@ HRESULT CEffect3D::Init()
 	m_fGravity = mylib_const::GRAVITY;
 
 	// 種類の設定
-	SetType(TYPE_EFFECT3D);
+	SetType(CObject::TYPE::TYPE_OBJECT3D);
 
 	// 初期化処理
 	hr = CObjectBillboard::Init();
@@ -246,7 +246,7 @@ HRESULT CEffect3D::Init(const MyLib::Vector3& pos, const MyLib::Vector3& move, c
 	m_bZSort = true;
 
 	// 種類の設定
-	SetType(TYPE_EFFECT3D);
+	SetType(CObject::TYPE::TYPE_OBJECT3D);
 
 	// テクスチャの割り当て
 	if (m_nTexIdx[m_nType] == 0)

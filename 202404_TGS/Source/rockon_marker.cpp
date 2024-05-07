@@ -73,7 +73,7 @@ HRESULT CRockOnMarker::Init()
 	SetSize(D3DXVECTOR2(30.0f, 30.0f));
 
 	// Ží—Þ‚ÌÝ’è
-	SetType(TYPE_HPGAUGE);
+	SetType(CObject::TYPE::TYPE_OBJECTBILLBOARD);
 
 	int nTexIdx = CTexture::GetInstance()->Regist(TEXTURE);
 

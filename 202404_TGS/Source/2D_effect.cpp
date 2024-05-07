@@ -175,7 +175,7 @@ HRESULT CEffect2D::Init()
 	m_bAddAlpha = true;							// 加算合成の判定
 
 	// 種類の設定
-	SetType(TYPE_EFFECT2D);
+	SetType(CObject::TYPE::TYPE_OBJECT2D);
 
 	// テクスチャデータの配列分繰り返す
 	for (int nCntTex = 0; nCntTex < sizeof(m_apTextureFile) / sizeof(*m_apTextureFile); nCntTex++)
@@ -256,7 +256,7 @@ HRESULT CEffect2D::Init(const MyLib::Vector3 pos, const MyLib::Vector3 move, con
 	}
 
 	// 種類の設定
-	SetType(TYPE_EFFECT2D);
+	SetType(CObject::TYPE::TYPE_OBJECT2D);
 
 	// テクスチャの割り当て
 	m_nTexIdx[m_nType] = CTexture::GetInstance()->Regist(m_apTextureFile[m_nType]);

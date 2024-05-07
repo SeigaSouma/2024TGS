@@ -95,7 +95,7 @@ CHP_Gauge* CHP_Gauge::Create(float fPosLen, int nMaxLife, float fSizeBuff)
 		pHPGauge->Init();
 
 		// Ží—Þ‚ÌÝ’è
-		pHPGauge->SetType(TYPE_HPGAUGE);
+		pHPGauge->SetType(CObject::TYPE::TYPE_OBJECTBILLBOARD);
 	}
 
 	return pHPGauge;

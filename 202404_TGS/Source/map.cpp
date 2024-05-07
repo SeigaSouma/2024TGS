@@ -46,6 +46,7 @@ namespace mapdate
 vector<std::string> ModelFile;		// モデルファイル名
 vector<std::string> TextureFile;	// テクスチャファイル名
 vector<int> ModelIdx;	// モデルインデックス
+vector<int> TextureIdx;	// テクスチャインデックス
 mapdate::SMap g_Map;
 
 //==========================================================================
@@ -164,6 +165,8 @@ HRESULT MyMap::SaveText()
 		fprintf(pFile, "MODEL_FILENAME = %s\t\t# [%d]\n", &ModelFile[nCntFileNum][0], nCntFileNum);
 	}
 
+	// テクスチャ取得
+	CTexture* pTexture = CTexture::GetInstance();
 
 	//**********************************
 	// 空配置
@@ -174,41 +177,39 @@ HRESULT MyMap::SaveText()
 		"# 空情報\n"
 		"#==============================================================================\n");
 
-	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
+
+	std::map<CObject::LAYER, std::map<int, std::vector<CObject*>>> objects = CObject::GetTop();
+	for (const auto& layer : objects)
 	{
-		// 先頭を保存
-		CObject *pObj = CObject::GetTop(nCntPriority);
+		for (const auto& priority : layer.second)
+		{
+			for (const auto& obj : priority.second)
+			{
+				// 種類の取得
+				CObject::TYPE TargetType = obj->GetType();
 
-		while (pObj != nullptr)
-		{// nullptrが来るまで無限ループ
+				if (TargetType == CObject::TYPE_MESHDOME)
+				{// メッシュドームだったら
 
-			// 次のオブジェクトを一時保存
-			CObject *pObjNext = pObj->GetNext();
+					// Xファイルの情報取得
+					CObject3DMesh* pObjMesh = obj->GetObject3DMesh();
 
-			// 種類の取得
-			CObject::TYPE TargetType = pObj->GetType();
+					// テクスチャのインデックス番号
+					int nType = pObjMesh->GetIdxTex();	// 種類
 
-			if (TargetType == CObject::TYPE_MESHDOME)
-			{// メッシュドームだったら
+					// テクスチャ名
+					vector<string>::iterator itr = find(TextureFile.begin(), TextureFile.end(), pTexture->GetTextureInfo(nType).filename);
+					nType = static_cast<int>(std::distance(TextureFile.begin(), itr));
 
-				// Xファイルの情報取得
-				CObject3DMesh *pObjMesh = pObj->GetObject3DMesh();
-
-				// テクスチャのインデックス番号
-				int nType = pObjMesh->GetIdxTex();	// 種類
-				nType--;	// nullptr分
-
-				// 出力
-				fprintf(pFile,
-					"SKYSET\n"
-					"\tTEXTYPE = %d\n"
-					"\tMOVE = %f\n"
-					"END_SKYSET\n\n",
-					nType, g_Map.fMove);
+					// 出力
+					fprintf(pFile,
+						"SKYSET\n"
+						"\tTEXTYPE = %d\n"
+						"\tMOVE = %f\n"
+						"END_SKYSET\n\n",
+						nType, g_Map.fMove);
+				}
 			}
-
-			// 次のオブジェクトを代入
-			pObj = pObjNext;
 		}
 	}
 
@@ -222,39 +223,35 @@ HRESULT MyMap::SaveText()
 		"# 山情報\n"
 		"#==============================================================================\n");
 
-	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
+	for (const auto& layer : objects)
 	{
-		// 先頭を保存
-		CObject *pObj = CObject::GetTop(nCntPriority);
+		for (const auto& priority : layer.second)
+		{
+			for (const auto& obj : priority.second)
+			{
+				// 種類の取得
+				CObject::TYPE TargetType = obj->GetType();
 
-		while (pObj != nullptr)
-		{// nullptrが来るまで無限ループ
+				if (TargetType == CObject::TYPE_MESHCYLINDER)
+				{// メッシュシリンダーだったら
 
-			// 次のオブジェクトを一時保存
-			CObject *pObjNext = pObj->GetNext();
+					// Xファイルの情報取得
+					CObject3DMesh* pObjMesh = obj->GetObject3DMesh();
 
-			// 種類の取得
-			CObject::TYPE TargetType = pObj->GetType();
+					// テクスチャのインデックス番号
+					int nType = pObjMesh->GetIdxTex();	// 種類
 
-			if (TargetType == CObject::TYPE_MESHCYLINDER)
-			{// メッシュシリンダーだったら
+					// テクスチャ名
+					vector<string>::iterator itr = find(TextureFile.begin(), TextureFile.end(), pTexture->GetTextureInfo(nType).filename);
+					nType = static_cast<int>(std::distance(TextureFile.begin(), itr));
 
-				// メッシュの情報取得
-				CObject3DMesh *pObjMesh = pObj->GetObject3DMesh();
-
-				// テクスチャのインデックス番号
-				int nType = pObjMesh->GetIdxTex();	// 種類
-				nType--;	// nullptr分
-
-				// 出力
-				fprintf(pFile,
-					"MOUNTAINSET\n"
-					"\tTEXTYPE = %d\n"
-					"END_MOUNTAINSET\n\n", nType);
+					// 出力
+					fprintf(pFile,
+						"MOUNTAINSET\n"
+						"\tTEXTYPE = %d\n"
+						"END_MOUNTAINSET\n\n", nType);
+				}
 			}
-
-			// 次のオブジェクトを代入
-			pObj = pObjNext;
 		}
 	}
 
@@ -268,56 +265,54 @@ HRESULT MyMap::SaveText()
 		"# 地面情報\n"
 		"#==============================================================================\n");
 
-	for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
+
+	for (const auto& layer : objects)
 	{
-		// 先頭を保存
-		CObject *pObj = CObject::GetTop(nCntPriority);
+		for (const auto& priority : layer.second)
+		{
+			for (const auto& obj : priority.second)
+			{
+				// 種類の取得
+				CObject::TYPE TargetType = obj->GetType();
 
-		while (pObj != nullptr)
-		{// nullptrが来るまで無限ループ
+				if (TargetType == CObject::TYPE_MESHFIELD)
+				{// メッシュフィールドだったら
 
-			// 次のオブジェクトを一時保存
-			CObject *pObjNext = pObj->GetNext();
+					// Xファイルの情報取得
+					CObject3DMesh* pObjMesh = obj->GetObject3DMesh();
 
-			// 種類の取得
-			CObject::TYPE TargetType = pObj->GetType();
+					// テクスチャのインデックス番号
+					int nType = pObjMesh->GetIdxTex();	// 種類
 
-			if (TargetType == CObject::TYPE_MESHFIELD ||
-				TargetType == CObject::TYPE_WATERFIELD)
-			{// メッシュフィールドだったら
+					// テクスチャ名
+					vector<string>::iterator itr = find(TextureFile.begin(), TextureFile.end(), pTexture->GetTextureInfo(nType).filename);
+					nType = static_cast<int>(std::distance(TextureFile.begin(), itr));
 
-				// メッシュの情報取得
-				CObject3DMesh *pObjMesh = pObj->GetObject3DMesh();
+					MyLib::Vector3 pos = pObjMesh->GetPosition();		// 位置
+					MyLib::Vector3 rot = pObjMesh->GetRotation();		// 向き
+					int nWidth = pObjMesh->GetWidthBlock();			// 横分割数
+					int nHeight = pObjMesh->GetHeightBlock();		// 縦分割数
+					float fWidthLen = pObjMesh->GetWidthLen();		// 横長さ
+					float fHeightLen = pObjMesh->GetHeightLen();	// 縦長さ
 
-				// テクスチャのインデックス番号
-				int nType = pObjMesh->GetIdxTex();	// 種類
-				MyLib::Vector3 pos = pObjMesh->GetPosition();		// 位置
-				MyLib::Vector3 rot = pObjMesh->GetRotation();		// 向き
-				int nWidth = pObjMesh->GetWidthBlock();			// 横分割数
-				int nHeight = pObjMesh->GetHeightBlock();		// 縦分割数
-				float fWidthLen = pObjMesh->GetWidthLen();		// 横長さ
-				float fHeightLen = pObjMesh->GetHeightLen();	// 縦長さ
-				nType--;	// nullptr分
-
-				// 出力
-				fprintf(pFile,
-					"FIELDSET\n"
-					"\tTEXTYPE = %d\n"
-					"\tPOS = %.0f %.0f %.0f\n"
-					"\tROT = %.0f %.0f %.0f\n"
-					"\tBLOCK = %d %d\n"
-					"\tSIZE = %.0f %.0f\n"
-					"END_FIELDSET\n\n",
-					nType, pos.x, pos.y, pos.z,
-					rot.x, rot.y, rot.z,
-					nWidth, nHeight,
-					fWidthLen, fHeightLen);
+					// 出力
+					fprintf(pFile,
+						"FIELDSET\n"
+						"\tTEXTYPE = %d\n"
+						"\tPOS = %.0f %.0f %.0f\n"
+						"\tROT = %.0f %.0f %.0f\n"
+						"\tBLOCK = %d %d\n"
+						"\tSIZE = %.0f %.0f\n"
+						"END_FIELDSET\n\n",
+						nType, pos.x, pos.y, pos.z,
+						rot.x, rot.y, rot.z,
+						nWidth, nHeight,
+						fWidthLen, fHeightLen);
+				}
 			}
-
-			// 次のオブジェクトを代入
-			pObj = pObjNext;
 		}
 	}
+	
 
 	fprintf(pFile,
 		"\n"
@@ -331,8 +326,7 @@ HRESULT MyMap::SaveText()
 		// Xファイルの情報取得
 		CObjectX* pObjX = mapdate::pObjX[i];
 
-		if (pObjX == nullptr)
-		{
+		if (pObjX == nullptr) {
 			continue;
 		}
 
@@ -359,52 +353,7 @@ HRESULT MyMap::SaveText()
 			rot.x, rot.y, rot.z, nShadow);
 	}
 
-	//for (int nCntPriority = 0; nCntPriority < mylib_const::PRIORITY_NUM; nCntPriority++)
-	//{
-	//	// 先頭を保存
-	//	CObject *pObj = CObject::GetTop(nCntPriority);
-
-	//	while (pObj != nullptr)
-	//	{// nullptrが来るまで無限ループ
-
-	//		// 次のオブジェクトを一時保存
-	//		CObject *pObjNext = pObj->GetNext();
-
-	//		// 種類の取得
-	//		CObject::TYPE TargetType = pObj->GetType();
-
-	//		if (TargetType == CObject::TYPE_XFILE)
-	//		{// Xファイルのモデルだったら
-
-	//			// Xファイルの情報取得
-	//			CObjectX *pObjX = pObj->GetObjectX();
-
-	//			int nType = pObjX->GetIdxXFile();		// 種類
-	//			MyLib::Vector3 pos = pObjX->GetPosition();	// 位置
-	//			MyLib::Vector3 rot = pObjX->GetRotation();	// 向き
-	//			int nShadow = 0;						// 影使うかどうか
-
-	//			if (pObjX->GetUseShadow() == true)
-	//			{// 使っている場合
-	//				nShadow = 1;
-	//			}
-
-	//			// 出力
-	//			fprintf(pFile,
-	//				"MODELSET\n"
-	//				"\tTYPE = %d\n"
-	//				"\tPOS = %.2f %.2f %.2f\n"
-	//				"\tROT = %.2f %.2f %.2f\n"
-	//				"\tSHADOW = %d\n"
-	//				"END_MODELSET\n\n",
-	//				nType, pos.x, pos.y, pos.z,
-	//				rot.x, rot.y, rot.z, nShadow);
-	//		}
-
-	//		// 次のオブジェクトを代入
-	//		pObj = pObjNext;
-	//	}
-	//}
+	
 
 	fprintf(pFile, "\nEND_SCRIPT		# この行は絶対消さないこと！");
 
@@ -462,6 +411,8 @@ HRESULT MyMap::ReadTexture()
 		return E_FAIL;
 	}
 
+	TextureIdx.clear();
+
 	while (1)
 	{// END_SCRIPTが来るまで繰り返す
 
@@ -493,6 +444,10 @@ HRESULT MyMap::ReadTexture()
 
 				// テクスチャの割り当て
 				CTexture::GetInstance()->Regist(&TextureFile[nCntTexture][0]);
+
+				// テクスチャ情報追加
+				TextureIdx.emplace_back();
+				TextureIdx.back()= nCntTexture;
 
 				nCntTexture++;	// テクスチャ数加算
 			}

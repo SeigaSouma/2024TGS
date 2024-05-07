@@ -108,7 +108,7 @@ CBallast* CBallast::Create(MyLib::Vector3 pos, MyLib::Vector3 move, int nNum, fl
 HRESULT CBallast::Init()
 {
 	// éÌóﬁÇÃê›íË
-	SetType(TYPE_BALLAST);
+	SetType(CObject::TYPE::TYPE_OBJECTX);
 
 	// éıñΩê›íË
 	m_nLife = LIFE * m_nNumAll;

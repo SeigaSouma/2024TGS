@@ -132,7 +132,7 @@ HRESULT CImpactWave::Init()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	// í—Şİ’è
-	SetType(TYPE_MESHDONUTS);
+	SetType(CObject::TYPE::TYPE_OBJECT3D);
 
 	m_fRotWidth = (D3DX_PI * 2) / (float)(WIDTH);		//1•ªŠ„”‚ ‚½‚è‚ÌŠp“xŠ„‡
 	m_nMaxLife = m_nLife;	// Å‘åõ–½

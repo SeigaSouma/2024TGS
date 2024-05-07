@@ -140,7 +140,7 @@ void CEnemyBase::CreatePos(int nStage, int nPattern, MyLib::Vector3 pos, int nRu
 
 	// 目印生成
 	m_apObjX[m_nNumAll] = CObjectX::Create(MARKOBJ, mylib_const::DEFAULT_VECTOR3, mylib_const::DEFAULT_VECTOR3, false);	// オブジェクトX
-	m_apObjX[m_nNumAll]->SetType(CObject::TYPE_BALLAST);
+	m_apObjX[m_nNumAll]->SetType(CObject::TYPE::TYPE_OBJECTX);
 	m_apObjX[m_nNumAll]->SetPosition(m_EnemyBaseInfo[nStage][m_nBaseNum[nStage]].pos);
 
 	// 総数加算

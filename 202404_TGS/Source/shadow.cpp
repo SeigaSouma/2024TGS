@@ -125,7 +125,7 @@ HRESULT CShadow::Init()
 	SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f));	// F
 
 	// í—Ş‚Ìİ’è
-	SetType(TYPE_SHADOW);
+	SetType(CObject::TYPE::TYPE_OBJECT3D);
 
 	// ‰Šú‰»ˆ—
 	hr = CObject3D::Init();

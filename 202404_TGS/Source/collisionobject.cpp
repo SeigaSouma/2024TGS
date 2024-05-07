@@ -117,7 +117,7 @@ HRESULT CCollisionObject::Init()
 	m_nMaxLife = m_nLife;						// Н≈СеОхЦљ(М≈Ти)
 
 	// ОнЧёВћРЁТи
-	SetType(TYPE_EFFECT3D);
+	SetType(CObject::TYPE::TYPE_OBJECTX);
 
 #if 0
 	if (m_nIdxTex == 0)

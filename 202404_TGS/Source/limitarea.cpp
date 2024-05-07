@@ -95,7 +95,7 @@ HRESULT CLimitArea::Init()
 {
 
 	// í—Şİ’è
-	SetType(TYPE_ELEVATION);
+	SetType(CObject::TYPE::TYPE_OBJECT3D);
 
 	// Š„‚è“–‚Ä
 	m_List.Regist(this);

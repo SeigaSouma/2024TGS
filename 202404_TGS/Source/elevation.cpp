@@ -134,7 +134,7 @@ HRESULT CElevation::Init(const char *pText)
 	BindTexture(m_nTexIdx);
 
 	// í—Şİ’è
-	SetType(TYPE_ELEVATION);
+	SetType(CObject::TYPE::TYPE_OBJECT3D);
 
 	// Šeí•Ï”‰Šú‰»
 	SetPosition(m_aInfo.pos);				// ˆÊ’u

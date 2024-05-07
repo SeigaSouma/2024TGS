@@ -100,7 +100,7 @@ CRankingScore *CRankingScore::Create()
 HRESULT CRankingScore::Init()
 {
 	// éÌóﬁê›íË
-	SetType(CObject::TYPE_SCORE);
+	SetType(CObject::TYPE::TYPE_OBJECT2D);
 
 	for (int nCntVtx = 0; nCntVtx < VTX_MAX; nCntVtx++)
 	{
@@ -131,7 +131,7 @@ HRESULT CRankingScore::Init()
 		}
 
 		// éÌóﬁÇÃê›íË
-		m_pObj2D[nCntVtx]->GetObject2D()->SetType(CObject::TYPE_SCORE);
+		m_pObj2D[nCntVtx]->GetObject2D()->SetType(CObject::TYPE::TYPE_OBJECT2D);
 	}
 
 	for (int nCntRanking = 0; nCntRanking < RANKINGNUM; nCntRanking++)
